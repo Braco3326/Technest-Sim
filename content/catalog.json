@@ -1,0 +1,476 @@
+{
+  "$schema": "./catalog.schema.json",
+  "version": 1,
+  "meta": {
+    "name": "audio-sim catalog",
+    "status": "canonical v1 — SOURCE OF TRUTH (Prompt 0.5b, real gear)",
+    "note": "Real brand/model names are internal reference data only (personal learning tool). Visual assets use generic equivalents per CLAUDE.md Trademark rule.",
+    "scope": "Only gear required by starter levels A1 (Live), B1 (Radio), C1 (Duplex/N-1), D1 (Post)."
+  },
+
+  "connectorTypes": [
+    { "id": "xlr3-m",         "label": "XLR3 male",                 "gender": "male",   "matesWith": ["xlr3-f"] },
+    { "id": "xlr3-f",         "label": "XLR3 female",               "gender": "female", "matesWith": ["xlr3-m"] },
+    { "id": "xlr5-m",         "label": "XLR5 male (DMX)",           "gender": "male",   "matesWith": ["xlr5-f"] },
+    { "id": "xlr5-f",         "label": "XLR5 female (DMX)",         "gender": "female", "matesWith": ["xlr5-m"] },
+    { "id": "trs-quarter",    "label": "6.35 mm TRS jack (balanced/stereo)", "gender": "universal", "matesWith": ["trs-quarter"] },
+    { "id": "ts-quarter",     "label": "6.35 mm TS jack (unbalanced)",       "gender": "universal", "matesWith": ["ts-quarter"] },
+    { "id": "trs-35mm",       "label": "3.5 mm TRS mini-jack",      "gender": "universal", "matesWith": ["trs-35mm"] },
+    { "id": "rca",            "label": "RCA / cinch",               "gender": "universal", "matesWith": ["rca"] },
+    { "id": "rj45",           "label": "RJ45 (Cat5e/6)",            "gender": "universal", "matesWith": ["rj45", "ethercon"] },
+    { "id": "ethercon",       "label": "Neutrik etherCON (ruggedized RJ45)", "gender": "universal", "matesWith": ["ethercon", "rj45"] },
+    { "id": "speakon-nl4",    "label": "Neutrik Speakon NL4",       "gender": "universal", "matesWith": ["speakon-nl4"] },
+    { "id": "powercon-blue",  "label": "Neutrik powerCON (blue, power-in)", "gender": "universal", "matesWith": ["powercon-blue"] },
+    { "id": "powercon-true1", "label": "Neutrik powerCON TRUE1",    "gender": "universal", "matesWith": ["powercon-true1"] },
+    { "id": "iec-c13",        "label": "IEC C13 (mains cable end)", "gender": "female", "matesWith": ["iec-c14"] },
+    { "id": "iec-c14",        "label": "IEC C14 (chassis mains inlet)", "gender": "male", "matesWith": ["iec-c13"] },
+    { "id": "schuko-plug",    "label": "Schuko plug (CEE 7/7)",     "gender": "male",   "matesWith": ["schuko-socket"] },
+    { "id": "schuko-socket",  "label": "Schuko wall socket (CEE 7/3)", "gender": "female", "matesWith": ["schuko-plug"] },
+    { "id": "bnc",            "label": "BNC 75 Ω (wordclock / MADI coax)", "gender": "universal", "matesWith": ["bnc"] },
+    { "id": "tt-bantam",      "label": "TT / Bantam 4.4 mm (patchbay)",    "gender": "universal", "matesWith": ["tt-bantam"] },
+    { "id": "dsub25",         "label": "D-sub 25 (TASCAM analog / AES59 digital pinout)", "gender": "universal", "matesWith": ["dsub25"] },
+    { "id": "toslink",        "label": "TOSLINK optical",           "gender": "universal", "matesWith": ["toslink"] },
+    { "id": "usb-a",          "label": "USB Type-A",                "gender": "universal", "matesWith": ["usb-b"] },
+    { "id": "usb-b",          "label": "USB Type-B",                "gender": "universal", "matesWith": ["usb-a"] },
+    { "id": "usb-c",          "label": "USB Type-C / Thunderbolt 3", "gender": "universal", "matesWith": ["usb-c"] },
+    { "id": "digilink",       "label": "Avid DigiLink",             "gender": "universal", "matesWith": ["digilink"] },
+    { "id": "gpio-terminal",  "label": "GPIO terminal block / D-sub logic port", "gender": "universal", "matesWith": ["gpio-terminal"] }
+  ],
+
+  "signalTypes": [
+    { "id": "mic-level",           "label": "Mic level (~-40 dBu, balanced)",            "class": "analog" },
+    { "id": "line-level-pro",      "label": "Pro line level (+4 dBu, balanced)",         "class": "analog" },
+    { "id": "line-level-consumer", "label": "Consumer line level (-10 dBV, unbalanced)", "class": "analog" },
+    { "id": "instrument-hiz",      "label": "Instrument Hi-Z (guitar/bass)",             "class": "analog" },
+    { "id": "speaker-level",       "label": "Speaker level (amplified)",                 "class": "analog" },
+    { "id": "headphone-level",     "label": "Headphone level",                           "class": "analog" },
+    { "id": "aes3",                "label": "AES3 / AES-EBU digital stereo",             "class": "digital" },
+    { "id": "spdif",               "label": "S/PDIF digital stereo",                     "class": "digital" },
+    { "id": "madi",                "label": "MADI (AES10) multichannel",                 "class": "digital" },
+    { "id": "aoip",                "label": "Audio over IP (Dante / AES67 / Livewire+ / codec stream — simplified)", "class": "digital" },
+    { "id": "wordclock",           "label": "Word clock sync",                           "class": "digital" },
+    { "id": "usb-audio",           "label": "Computer audio link (USB / Thunderbolt / DigiLink — simplified)", "class": "digital" },
+    { "id": "gpio-tally",          "label": "GPIO logic / tally",                        "class": "control" },
+    { "id": "dmx512",              "label": "DMX512 lighting control",                   "class": "control" },
+    { "id": "phantom-48v",         "label": "Phantom power +48 V (carried on mic lines)", "class": "power" },
+    { "id": "mains-power",         "label": "Mains power 230 V",                         "class": "power" }
+  ],
+
+  "devices": [
+    {
+      "id": "yamaha-ql1",
+      "label": "Yamaha QL1",
+      "levels": ["a1"],
+      "realWorld": {
+        "brand": "Yamaha", "model": "QL1", "category": "console",
+        "typicalUse": "Compact digital FOH console for small venues, corporate and installs",
+        "notes": "Native Dante (RJ45 primary/secondary). Ports simplified: 2 of 16 local mic-ins modeled."
+      },
+      "ports": [
+        { "portId": "in-mic-1",      "dir": "in",    "connector": "xlr3-f",   "signal": "mic-level",      "flags": ["isMicInput", "providesPhantom"] },
+        { "portId": "in-mic-2",      "dir": "in",    "connector": "xlr3-f",   "signal": "mic-level",      "flags": ["isMicInput", "providesPhantom"] },
+        { "portId": "out-main-l",    "dir": "out",   "connector": "xlr3-m",   "signal": "line-level-pro" },
+        { "portId": "out-main-r",    "dir": "out",   "connector": "xlr3-m",   "signal": "line-level-pro" },
+        { "portId": "out-mix-1",     "dir": "out",   "connector": "xlr3-m",   "signal": "line-level-pro", "flags": ["isMonitorOut"] },
+        { "portId": "dante-primary", "dir": "bidir", "connector": "rj45",     "signal": "aoip",           "flags": ["isDantePrimary"] },
+        { "portId": "power-in",      "dir": "in",    "connector": "iec-c14",  "signal": "mains-power" }
+      ]
+    },
+    {
+      "id": "yamaha-rio3224-d2",
+      "label": "Yamaha Rio3224-D2",
+      "levels": ["a1"],
+      "realWorld": {
+        "brand": "Yamaha", "model": "Rio3224-D2", "category": "stagebox",
+        "typicalUse": "Dante stagebox (32 in / 16 out) paired with CL/QL consoles",
+        "notes": "etherCON Dante ports. Simplified: 2 of 32 mic-ins, 2 of 16 line-outs modeled."
+      },
+      "ports": [
+        { "portId": "in-mic-1",      "dir": "in",    "connector": "xlr3-f",   "signal": "mic-level",      "flags": ["isMicInput", "providesPhantom"] },
+        { "portId": "in-mic-2",      "dir": "in",    "connector": "xlr3-f",   "signal": "mic-level",      "flags": ["isMicInput", "providesPhantom"] },
+        { "portId": "out-line-1",    "dir": "out",   "connector": "xlr3-m",   "signal": "line-level-pro" },
+        { "portId": "out-line-2",    "dir": "out",   "connector": "xlr3-m",   "signal": "line-level-pro" },
+        { "portId": "dante-primary", "dir": "bidir", "connector": "ethercon", "signal": "aoip",           "flags": ["isDantePrimary"] },
+        { "portId": "power-in",      "dir": "in",    "connector": "iec-c14",  "signal": "mains-power" }
+      ]
+    },
+    {
+      "id": "shure-sm58",
+      "label": "Shure SM58",
+      "levels": ["a1"],
+      "realWorld": {
+        "brand": "Shure", "model": "SM58", "category": "microphone",
+        "typicalUse": "Industry-standard dynamic vocal microphone (live)",
+        "notes": "Dynamic — needs no phantom, tolerates it."
+      },
+      "ports": [
+        { "portId": "out-xlr", "dir": "out", "connector": "xlr3-m", "signal": "mic-level" }
+      ]
+    },
+    {
+      "id": "shure-sm57",
+      "label": "Shure SM57",
+      "levels": ["a1"],
+      "realWorld": {
+        "brand": "Shure", "model": "SM57", "category": "microphone",
+        "typicalUse": "Industry-standard dynamic instrument mic (snare, guitar amps)",
+        "notes": "Dynamic."
+      },
+      "ports": [
+        { "portId": "out-xlr", "dir": "out", "connector": "xlr3-m", "signal": "mic-level" }
+      ]
+    },
+    {
+      "id": "qsc-k12-2",
+      "label": "QSC K12.2",
+      "levels": ["a1"],
+      "realWorld": {
+        "brand": "QSC", "model": "K12.2", "category": "powered-speaker",
+        "typicalUse": "Ubiquitous 12\" powered PA top for small/medium events",
+        "notes": "Active — takes line level, mains via IEC. No Speakon (that is for passive systems; kept in connectorTypes for teaching)."
+      },
+      "ports": [
+        { "portId": "in-line-a",  "dir": "in",  "connector": "xlr3-f",  "signal": "line-level-pro" },
+        { "portId": "thru-out-a", "dir": "out", "connector": "xlr3-m",  "signal": "line-level-pro" },
+        { "portId": "power-in",   "dir": "in",  "connector": "iec-c14", "signal": "mains-power" }
+      ]
+    },
+    {
+      "id": "yamaha-dbr12",
+      "label": "Yamaha DBR12",
+      "levels": ["a1"],
+      "realWorld": {
+        "brand": "Yamaha", "model": "DBR12", "category": "powered-speaker",
+        "typicalUse": "Common powered wedge/stage monitor",
+        "notes": "Judgment call: chosen as the wedge to keep the Yamaha live ecosystem coherent."
+      },
+      "ports": [
+        { "portId": "in-line",  "dir": "in",  "connector": "xlr3-f",  "signal": "line-level-pro" },
+        { "portId": "link-out", "dir": "out", "connector": "xlr3-m",  "signal": "line-level-pro" },
+        { "portId": "power-in", "dir": "in",  "connector": "iec-c14", "signal": "mains-power" }
+      ]
+    },
+    {
+      "id": "km-210-9",
+      "label": "K&M 210/9",
+      "levels": ["a1"],
+      "realWorld": {
+        "brand": "König & Meyer", "model": "210/9", "category": "accessory",
+        "typicalUse": "The classic telescopic boom microphone stand",
+        "notes": "Prop / mounting only — no signal ports."
+      },
+      "ports": []
+    },
+
+    {
+      "id": "axia-iq",
+      "label": "Axia iQ",
+      "levels": ["b1", "c1"],
+      "realWorld": {
+        "brand": "Axia (Telos Alliance)", "model": "iQ", "category": "console",
+        "typicalUse": "8-fader AoIP broadcast radio console (Livewire+)",
+        "notes": "Judgment call: chosen over Yamaha 01V96 because B1 teaches broadcast logic — the iQ has native GPIO tally, monitor-mute-on-open-mic behavior and AoIP; the 01V96 is a music console with none of that. Ports simplified onto the console (physical I/O lives in xNodes)."
+      },
+      "ports": [
+        { "portId": "in-mic-1",      "dir": "in",    "connector": "xlr3-f",       "signal": "mic-level",      "flags": ["isMicInput", "providesPhantom"] },
+        { "portId": "in-line-1",     "dir": "in",    "connector": "xlr3-f",       "signal": "line-level-pro" },
+        { "portId": "out-monitor-l", "dir": "out",   "connector": "xlr3-m",       "signal": "line-level-pro", "flags": ["isMonitorOut"] },
+        { "portId": "out-monitor-r", "dir": "out",   "connector": "xlr3-m",       "signal": "line-level-pro", "flags": ["isMonitorOut"] },
+        { "portId": "out-program-aes", "dir": "out", "connector": "xlr3-m",       "signal": "aes3" },
+        { "portId": "out-n1",        "dir": "out",   "connector": "xlr3-m",       "signal": "line-level-pro" },
+        { "portId": "gpio",          "dir": "bidir", "connector": "gpio-terminal", "signal": "gpio-tally",    "flags": ["isOnAirTally"] },
+        { "portId": "livewire",      "dir": "bidir", "connector": "rj45",         "signal": "aoip" },
+        { "portId": "power-in",      "dir": "in",    "connector": "iec-c14",      "signal": "mains-power" }
+      ]
+    },
+    {
+      "id": "ev-re20",
+      "label": "Electro-Voice RE20",
+      "levels": ["b1"],
+      "realWorld": {
+        "brand": "Electro-Voice", "model": "RE20", "category": "microphone",
+        "typicalUse": "THE classic radio broadcast dynamic microphone (Variable-D)",
+        "notes": "Chosen over SM7B: RE20 is the historic radio standard; SM7B trends podcast/studio."
+      },
+      "ports": [
+        { "portId": "out-xlr", "dir": "out", "connector": "xlr3-m", "signal": "mic-level" }
+      ]
+    },
+    {
+      "id": "yellowtec-mika",
+      "label": "Yellowtec m!ka",
+      "levels": ["b1"],
+      "realWorld": {
+        "brand": "Yellowtec", "model": "m!ka Microphone Arm", "category": "accessory",
+        "typicalUse": "Standard on-air microphone boom arm in radio studios",
+        "notes": "Prop / mounting only — no signal ports."
+      },
+      "ports": []
+    },
+    {
+      "id": "yellowtec-litt",
+      "label": "Yellowtec litt",
+      "levels": ["b1"],
+      "realWorld": {
+        "brand": "Yellowtec", "model": "litt", "category": "signaling",
+        "typicalUse": "Modular LED ON-AIR studio signaling light",
+        "notes": "Same brand family as the m!ka arm. Power supply simplified out; GPIO drive modeled."
+      },
+      "ports": [
+        { "portId": "in-gpio", "dir": "in", "connector": "gpio-terminal", "signal": "gpio-tally", "flags": ["isOnAirTally"] }
+      ]
+    },
+    {
+      "id": "genelec-8030c",
+      "label": "Genelec 8030C",
+      "levels": ["b1", "d1"],
+      "realWorld": {
+        "brand": "Genelec", "model": "8030C", "category": "studio-monitor",
+        "typicalUse": "Ubiquitous active nearfield monitor (radio studios, post rooms)",
+        "notes": "Reused in B1 and D1 — one model, two rooms, like real life."
+      },
+      "ports": [
+        { "portId": "in-analog", "dir": "in", "connector": "xlr3-f",  "signal": "line-level-pro" },
+        { "portId": "power-in",  "dir": "in", "connector": "iec-c14", "signal": "mains-power" }
+      ]
+    },
+    {
+      "id": "playout-pc",
+      "label": "Playout PC",
+      "levels": ["b1"],
+      "realWorld": {
+        "brand": "Generic (e.g. Dell workstation)", "model": "Radio playout workstation", "category": "computer",
+        "typicalUse": "Runs the playout automation (RCS Zetta, WinMedia, Open Radio…)",
+        "notes": "Judgment call: playout PCs are commodity hardware — the software defines the role, so this id stays role-based. AoIP driver (Livewire) + consumer mini-jack out kept on purpose to teach R2 (consumer vs pro level)."
+      },
+      "ports": [
+        { "portId": "aoip",              "dir": "bidir", "connector": "rj45",     "signal": "aoip" },
+        { "portId": "out-analog-consumer", "dir": "out", "connector": "trs-35mm", "signal": "line-level-consumer" },
+        { "portId": "power-in",          "dir": "in",    "connector": "iec-c14",  "signal": "mains-power" }
+      ]
+    },
+
+    {
+      "id": "aeta-scoop5-s",
+      "label": "AETA Scoop5 S",
+      "levels": ["c1"],
+      "realWorld": {
+        "brand": "AETA Audio Systems", "model": "Scoop5 S", "category": "codec",
+        "typicalUse": "French-standard rack STUDIO audio codec for remotes/duplex (radio)",
+        "notes": "Judgment call: the prompt said 'Scoopy+ S (studio)', but the Scoopy+ S is AETA's PORTABLE reporter codec — roles were swapped to match reality: Scoop5 S in the rack, Scoopy+ S in the field. AETA kept on both ends (Radio France practice)."
+      },
+      "ports": [
+        { "portId": "in-send",    "dir": "in",    "connector": "xlr3-f",  "signal": "line-level-pro" },
+        { "portId": "out-return", "dir": "out",   "connector": "xlr3-m",  "signal": "line-level-pro" },
+        { "portId": "ip",         "dir": "bidir", "connector": "rj45",    "signal": "aoip" },
+        { "portId": "power-in",   "dir": "in",    "connector": "iec-c14", "signal": "mains-power" }
+      ]
+    },
+    {
+      "id": "aeta-scoopy-plus-s",
+      "label": "AETA Scoopy+ S",
+      "levels": ["c1"],
+      "realWorld": {
+        "brand": "AETA Audio Systems", "model": "Scoopy+ S", "category": "codec",
+        "typicalUse": "Portable reporter codec (field side of a duplex) — classic French radio kit",
+        "notes": "Battery powered — mains port omitted. Tieline Bridge-IT is the noted alternative if you prefer a second brand."
+      },
+      "ports": [
+        { "portId": "in-mic",        "dir": "in",    "connector": "xlr3-f",      "signal": "mic-level", "flags": ["isMicInput", "providesPhantom"] },
+        { "portId": "out-headphone", "dir": "out",   "connector": "trs-quarter", "signal": "headphone-level" },
+        { "portId": "ip",            "dir": "bidir", "connector": "rj45",        "signal": "aoip" }
+      ]
+    },
+    {
+      "id": "ev-re50",
+      "label": "Electro-Voice RE50B",
+      "levels": ["c1"],
+      "realWorld": {
+        "brand": "Electro-Voice", "model": "RE50B", "category": "microphone",
+        "typicalUse": "The standard omnidirectional dynamic reporter/interview mic (ENG)",
+        "notes": "Dynamic, internally shock-mounted."
+      },
+      "ports": [
+        { "portId": "out-xlr", "dir": "out", "connector": "xlr3-m", "signal": "mic-level" }
+      ]
+    },
+
+    {
+      "id": "avid-protools-hdx",
+      "label": "Pro Tools | HDX Workstation",
+      "levels": ["d1"],
+      "realWorld": {
+        "brand": "Avid", "model": "Pro Tools | HDX system (workstation + HDX card)", "category": "computer",
+        "typicalUse": "Industry-standard post-production DAW rig",
+        "notes": "Judgment call: role-based composite (any workstation + HDX PCIe card). DigiLink carries the audio to the interface."
+      },
+      "ports": [
+        { "portId": "digilink", "dir": "bidir", "connector": "digilink", "signal": "usb-audio" },
+        { "portId": "power-in", "dir": "in",    "connector": "iec-c14",  "signal": "mains-power" }
+      ]
+    },
+    {
+      "id": "avid-hd-io",
+      "label": "Avid HD I/O 8x8x8",
+      "levels": ["d1"],
+      "realWorld": {
+        "brand": "Avid", "model": "HD I/O 8x8x8", "category": "audio-interface",
+        "typicalUse": "Canonical Pro Tools HDX converter/interface in post facilities",
+        "notes": "Chosen over UA Apollo x8: DB25 analog + AES on DB25 + BNC wordclock is exactly the D1 patchbay/clock lesson. NO mic preamps — that is the point (teaches why a preamp exists)."
+      },
+      "ports": [
+        { "portId": "digilink",         "dir": "bidir", "connector": "digilink", "signal": "usb-audio" },
+        { "portId": "analog-in-db25",   "dir": "in",    "connector": "dsub25",   "signal": "line-level-pro" },
+        { "portId": "analog-out-db25",  "dir": "out",   "connector": "dsub25",   "signal": "line-level-pro" },
+        { "portId": "aes-io-db25",      "dir": "bidir", "connector": "dsub25",   "signal": "aes3" },
+        { "portId": "wordclock-in",     "dir": "in",    "connector": "bnc",      "signal": "wordclock", "flags": ["isClockSlave"] },
+        { "portId": "wordclock-out",    "dir": "out",   "connector": "bnc",      "signal": "wordclock", "flags": ["isClockMaster"] },
+        { "portId": "power-in",         "dir": "in",    "connector": "iec-c14",  "signal": "mains-power" }
+      ]
+    },
+    {
+      "id": "focusrite-isa-one",
+      "label": "Focusrite ISA One",
+      "levels": ["d1"],
+      "realWorld": {
+        "brand": "Focusrite", "model": "ISA One", "category": "mic-preamp",
+        "typicalUse": "Very common transformer mic preamp in project/post studios",
+        "notes": "ADDED beyond the prompt list: the HD I/O has no mic preamps, so the U87 needs one — this is itself the D1 lesson. Provides +48 V (R4)."
+      },
+      "ports": [
+        { "portId": "in-mic",   "dir": "in",  "connector": "xlr3-f",  "signal": "mic-level", "flags": ["isMicInput", "providesPhantom"] },
+        { "portId": "out-line", "dir": "out", "connector": "xlr3-m",  "signal": "line-level-pro" },
+        { "portId": "power-in", "dir": "in",  "connector": "iec-c14", "signal": "mains-power" }
+      ]
+    },
+    {
+      "id": "grace-m905",
+      "label": "Grace Design m905",
+      "levels": ["d1"],
+      "realWorld": {
+        "brand": "Grace Design", "model": "m905", "category": "monitor-controller",
+        "typicalUse": "Reference monitor controller in high-end post/mastering rooms",
+        "notes": "Chosen over Mackie Big Knob: pro AES3 input makes the digital monitoring path teachable. Ports simplified."
+      },
+      "ports": [
+        { "portId": "in-analog-l",   "dir": "in",  "connector": "xlr3-f",      "signal": "line-level-pro" },
+        { "portId": "in-analog-r",   "dir": "in",  "connector": "xlr3-f",      "signal": "line-level-pro" },
+        { "portId": "in-aes3",       "dir": "in",  "connector": "xlr3-f",      "signal": "aes3" },
+        { "portId": "out-main-l",    "dir": "out", "connector": "xlr3-m",      "signal": "line-level-pro", "flags": ["isMonitorOut"] },
+        { "portId": "out-main-r",    "dir": "out", "connector": "xlr3-m",      "signal": "line-level-pro", "flags": ["isMonitorOut"] },
+        { "portId": "out-headphone", "dir": "out", "connector": "trs-quarter", "signal": "headphone-level" },
+        { "portId": "power-in",      "dir": "in",  "connector": "iec-c14",     "signal": "mains-power" }
+      ]
+    },
+    {
+      "id": "neumann-u87-ai",
+      "label": "Neumann U 87 Ai",
+      "levels": ["d1"],
+      "realWorld": {
+        "brand": "Neumann", "model": "U 87 Ai", "category": "microphone",
+        "typicalUse": "THE studio large-diaphragm condenser (voice-over, foley, everything)",
+        "notes": "Condenser — REQUIRES +48 V phantom (R4 teaching star)."
+      },
+      "ports": [
+        { "portId": "out-xlr", "dir": "out", "connector": "xlr3-m", "signal": "mic-level", "flags": ["requiresPhantom"] }
+      ]
+    },
+    {
+      "id": "switchcraft-studiopatch-9625",
+      "label": "Switchcraft StudioPatch 9625",
+      "levels": ["d1"],
+      "realWorld": {
+        "brand": "Switchcraft", "model": "StudioPatch 9625", "category": "patchbay",
+        "typicalUse": "96-point TT/Bantam patchbay with DB25 rear — post/studio standard",
+        "notes": "Judgment call: chosen over ADC / Mosses & Mitchell — same job, far more common in current studios, and the DB25 rear pairs directly with the HD I/O. Simplified to one rear pair + two front TT points."
+      },
+      "ports": [
+        { "portId": "rear-in-db25",  "dir": "in",    "connector": "dsub25",    "signal": "line-level-pro" },
+        { "portId": "rear-out-db25", "dir": "out",   "connector": "dsub25",    "signal": "line-level-pro" },
+        { "portId": "front-tt-1",    "dir": "bidir", "connector": "tt-bantam", "signal": "line-level-pro" },
+        { "portId": "front-tt-2",    "dir": "bidir", "connector": "tt-bantam", "signal": "line-level-pro" }
+      ]
+    },
+    {
+      "id": "antelope-ocx-hd",
+      "label": "Antelope Audio OCX HD",
+      "levels": ["d1"],
+      "realWorld": {
+        "brand": "Antelope Audio", "model": "OCX HD", "category": "master-clock",
+        "typicalUse": "Studio master word clock generator/distributor",
+        "notes": "ADDED beyond the prompt list so R8 (clock master/slave) has a real master device to teach with."
+      },
+      "ports": [
+        { "portId": "wordclock-out-1", "dir": "out", "connector": "bnc",     "signal": "wordclock", "flags": ["isClockMaster"] },
+        { "portId": "wordclock-out-2", "dir": "out", "connector": "bnc",     "signal": "wordclock", "flags": ["isClockMaster"] },
+        { "portId": "power-in",        "dir": "in",  "connector": "iec-c14", "signal": "mains-power" }
+      ]
+    },
+    {
+      "id": "mogami-gold-db25-xlrm",
+      "label": "Mogami Gold DB25 → 8×XLR-M loom",
+      "levels": ["d1"],
+      "realWorld": {
+        "brand": "Mogami", "model": "Gold DB25-XLRM (8-channel breakout snake)", "category": "cable",
+        "typicalUse": "Standard analog breakout from DB25 interface outputs to XLR gear",
+        "notes": "Cables-as-devices: how DB25 world meets XLR world in every real studio. Simplified to 2 of 8 tails."
+      },
+      "ports": [
+        { "portId": "in-db25",   "dir": "in",  "connector": "dsub25", "signal": "line-level-pro" },
+        { "portId": "out-xlr-1", "dir": "out", "connector": "xlr3-m", "signal": "line-level-pro" },
+        { "portId": "out-xlr-2", "dir": "out", "connector": "xlr3-m", "signal": "line-level-pro" }
+      ]
+    }
+  ],
+
+  "rules": [
+    {
+      "id": "R1", "slug": "connector-mate-mismatch", "module": "engine", "severity": "error",
+      "title": "Connector mismatch",
+      "check": "The two connectors must physically mate (connectorTypes.matesWith).",
+      "teach": "An XLR male mates an XLR female; a TT plug mates a TT jack. If it doesn't fit, it isn't the right cable — never force it."
+    },
+    {
+      "id": "R2", "slug": "signal-mismatch", "module": "engine", "severity": "error",
+      "title": "Signal type mismatch",
+      "check": "Source and destination signal types must be compatible: mic→mic-pre, line→line, digital→same digital format, pro (+4 dBu) vs consumer (-10 dBV) flagged.",
+      "teach": "A mic into a line input is 40 dB too quiet; line into a mic-pre clips; AES3 into an analog input is just noise; consumer gear into pro gear runs 12 dB low."
+    },
+    {
+      "id": "R3", "slug": "direction-mismatch", "module": "engine", "severity": "error",
+      "title": "Direction mismatch",
+      "check": "An output must feed an input (out→in). out→out and in→in are invalid; bidir ports accept either end.",
+      "teach": "Signal flows one way: source → destination. Two outputs fighting each other can damage gear."
+    },
+    {
+      "id": "R4", "slug": "phantom-power", "module": "logic/phantom", "severity": "error",
+      "title": "Phantom power (+48 V)",
+      "check": "A port flagged requiresPhantom must reach an input flagged providesPhantom with phantom enabled (error if missing). Warning if +48 V is enabled toward a ribbon/line source.",
+      "teach": "Condensers (U 87) are silent without +48 V. Dynamics (SM58, RE20) ignore it. Vintage ribbons can be damaged by it."
+    },
+    {
+      "id": "R5", "slug": "on-air-tally", "module": "logic/gpio", "severity": "warning",
+      "title": "ON-AIR tally light",
+      "check": "When a mic fader is open on a broadcast console, its GPIO tally output must drive an ON-AIR light (isOnAirTally chain complete).",
+      "teach": "The red light is a safety contract: open mic = ON-AIR lit, or someone will walk in talking during the news."
+    },
+    {
+      "id": "R6", "slug": "monitor-mute-open-mic", "module": "logic/gpio", "severity": "error",
+      "title": "Monitor mute on open mic (feedback)",
+      "check": "Opening a mic in the same room as active monitor outputs (isMonitorOut) must mute those monitors, else feedback loop detected.",
+      "teach": "Studio speakers + open mic = larsen. Broadcast consoles mute the control-room monitors automatically when your mic is open."
+    },
+    {
+      "id": "R7", "slug": "mix-minus-n1", "module": "logic/mixMinus", "severity": "error",
+      "title": "Mix-minus / N-1 return echo",
+      "check": "The feed sent to a remote codec must be the program MINUS the codec's own return (N-1). If the return is present in its own send, echo is detected.",
+      "teach": "Send a guest their own voice back and they hear themselves delayed — unusable. Every duplex needs an N-1 bus."
+    },
+    {
+      "id": "R8", "slug": "wordclock-sync", "module": "logic/clock", "severity": "error",
+      "title": "Word clock master/slave & sample rate",
+      "check": "Every digital audio connection needs exactly one clock master upstream; slaves lock to it. Two masters, no master, or mismatched sample rates on a link are errors.",
+      "teach": "Digital audio without a shared clock = clicks and pops. One master (OCX HD or the interface), everyone else slaves."
+    }
+  ]
+}
