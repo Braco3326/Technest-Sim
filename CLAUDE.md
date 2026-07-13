@@ -21,6 +21,13 @@ content/{catalog.json, levels/{a1,b1,c1,d1}.json} · src/{engine,scene,ui,logic}
 - logic/{gpio,mixMinus,phantom,clock} = fonctions PURES
 - Découplage : l'engine n'importe jamais logic/* directement ; RuleEvaluator les invoque via les logicChecks déclarés par niveau.
 
+## Invariants engine vs logicChecks (ne jamais confondre)
+- R1 (connector-mate), R2 (signal), R3 (direction) = INVARIANTS ENGINE : appliqués par ConnectionGraph.connect() dans TOUS les niveaux, toujours actifs, quoi qu'il arrive.
+- logicChecks (dans levels/*.json) ne déclare QUE les modules de domaine R4–R8. Le validateur REFUSE R1/R2/R3 dans logicChecks.
+
+## État de device (ADR-0001)
+- Les toggles physiques (ex. +48V) sont un ÉTAT, pas un câble : déclarés au catalog (devices[].controls, avec enables:{flag,ports}), stockés dans ConnectionGraph, mutés UNIQUEMENT via intent UI (setControl), exposés aux logic/* en snapshot pur. Voir docs/adr/0001-device-state.md.
+
 ## Flux unidirectionnel
 pointer pick → drag → snap candidate (connect() dry-run vert/rouge) → drop → ConnectionGraph.connect → RuleEvaluator sweep → toast → LevelRunner.check → win. L'UI dispatch des intents, ne mute JAMAIS le graphe.
 

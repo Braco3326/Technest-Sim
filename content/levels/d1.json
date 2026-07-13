@@ -28,7 +28,7 @@
     { "from": { "instance": "m905-1",  "port": "out-main-r" },      "to": { "instance": "gen-r",  "port": "in-analog" } },
     { "from": { "instance": "clock-1", "port": "wordclock-out-1" }, "to": { "instance": "hdio-1", "port": "wordclock-in" } }
   ],
-  "logicChecks": ["R8"],
-  "successMessage": "Locked to house clock, VO chain armed. (Full version will route the mic path through the patchbay — bay-1 is on the desk waiting.)",
-  "notes": "ISA One → HD I/O analog-in runs through the patchbay in the full level; stub keeps the chain minimal. R4 becomes active in the full version (U 87 needs +48 V from the ISA One)."
+  "logicChecks": ["R4", "R8"],
+  "successMessage": "Locked to house clock, +48 V up, VO chain armed. (Full version will route the mic path through the patchbay — bay-1 is on the desk waiting.)",
+  "notes": "R4 is ACTIVE in the stub: the U 87 (requiresPhantom) must reach the ISA One's mic input with its '+48V' control toggled ON — wiring it with phantom off triggers the R4 teaching toast (see docs/adr/0001, device state). ISA One → HD I/O analog-in runs through the patchbay in the full level; stub keeps the chain minimal."
 }

@@ -21,7 +21,7 @@
     { "from": { "instance": "ql1-1",  "port": "out-main-l" },     "to": { "instance": "k12-1",   "port": "in-line-a" } },
     { "from": { "instance": "ql1-1",  "port": "out-mix-1" },      "to": { "instance": "dbr12-1", "port": "in-line" } }
   ],
-  "logicChecks": ["R1", "R2", "R3"],
+  "logicChecks": [],
   "successMessage": "Soundcheck passed — the vocal is in the PA, the amp is miked, and the wedge is live. Welcome to FOH.",
-  "notes": "No condenser in this level, so R4 is not active. Power connections exist on devices for exploration but are not part of the required chain in v1."
+  "notes": "R1–R3 are ENGINE INVARIANTS, always active in every level via ConnectionGraph.connect() — logicChecks only declares domain modules (R4–R8), none needed here. No condenser in this level, so R4 is not active. Power connections exist on devices for exploration but are not part of the required chain in v1."
 }

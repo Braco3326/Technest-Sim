@@ -335,12 +335,21 @@
       "realWorld": {
         "brand": "Focusrite", "model": "ISA One", "category": "mic-preamp",
         "typicalUse": "Very common transformer mic preamp in project/post studios",
-        "notes": "ADDED beyond the prompt list: the HD I/O has no mic preamps, so the U87 needs one — this is itself the D1 lesson. Provides +48 V (R4)."
+        "notes": "ADDED beyond the prompt list: the HD I/O has no mic preamps, so the U87 needs one — this is itself the D1 lesson. Provides +48 V (R4) — gated by the 'phantom-48v' control (default OFF, the player must switch it on)."
       },
       "ports": [
         { "portId": "in-mic",   "dir": "in",  "connector": "xlr3-f",  "signal": "mic-level", "flags": ["isMicInput", "providesPhantom"] },
         { "portId": "out-line", "dir": "out", "connector": "xlr3-m",  "signal": "line-level-pro" },
         { "portId": "power-in", "dir": "in",  "connector": "iec-c14", "signal": "mains-power" }
+      ],
+      "controls": [
+        {
+          "id": "phantom-48v",
+          "type": "toggle",
+          "label": "+48V phantom",
+          "default": false,
+          "enables": { "flag": "providesPhantom", "ports": ["in-mic"] }
+        }
       ]
     },
     {
