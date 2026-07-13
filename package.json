@@ -10,6 +10,7 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "validate:catalog": "tsx tools/validate-catalog.ts",
+    "gen:schema": "tsx tools/generate-schema.ts > content/catalog.schema.json",
     "lint": "eslint src tools --ext .ts",
     "format": "prettier --write \"src/**/*.ts\" \"tools/**/*.ts\""
   },
@@ -29,6 +30,7 @@
     "tsx": "^4.11.0",
     "typescript": "^5.4.0",
     "vite": "^5.2.0",
-    "vitest": "^1.6.0"
+    "vitest": "^1.6.0",
+    "zod-to-json-schema": "^3.25.2"
   }
 }

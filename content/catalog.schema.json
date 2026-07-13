@@ -1,0 +1,328 @@
+{
+  "$ref": "#/definitions/Catalog",
+  "definitions": {
+    "Catalog": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "number"
+        },
+        "meta": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "connectorTypes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1
+              },
+              "gender": {
+                "type": "string",
+                "enum": [
+                  "male",
+                  "female",
+                  "universal"
+                ]
+              },
+              "matesWith": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1
+              }
+            },
+            "required": [
+              "id",
+              "label",
+              "gender",
+              "matesWith"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "signalTypes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1
+              },
+              "class": {
+                "type": "string",
+                "enum": [
+                  "analog",
+                  "digital",
+                  "control",
+                  "power"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "label",
+              "class"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "devices": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1
+              },
+              "levels": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "realWorld": {
+                "type": "object",
+                "properties": {
+                  "brand": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "model": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "category": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "typicalUse": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "notes": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "brand",
+                  "model",
+                  "category",
+                  "typicalUse",
+                  "notes"
+                ],
+                "additionalProperties": false
+              },
+              "ports": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "portId": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "dir": {
+                      "type": "string",
+                      "enum": [
+                        "in",
+                        "out",
+                        "bidir"
+                      ]
+                    },
+                    "connector": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "signal": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "flags": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "providesPhantom",
+                          "requiresPhantom",
+                          "isClockMaster",
+                          "isClockSlave",
+                          "isMicInput",
+                          "isMonitorOut",
+                          "isOnAirTally",
+                          "isDantePrimary"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "portId",
+                    "dir",
+                    "connector",
+                    "signal"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "controls": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "toggle"
+                      ]
+                    },
+                    "label": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "default": {
+                      "type": "boolean"
+                    },
+                    "enables": {
+                      "type": "object",
+                      "properties": {
+                        "flag": {
+                          "type": "string",
+                          "enum": [
+                            "providesPhantom",
+                            "requiresPhantom",
+                            "isClockMaster",
+                            "isClockSlave",
+                            "isMicInput",
+                            "isMonitorOut",
+                            "isOnAirTally",
+                            "isDantePrimary"
+                          ]
+                        },
+                        "ports": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "minItems": 1
+                        }
+                      },
+                      "required": [
+                        "flag",
+                        "ports"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "type",
+                    "label",
+                    "default"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "id",
+              "label",
+              "levels",
+              "realWorld",
+              "ports"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^R[1-8]$"
+              },
+              "slug": {
+                "type": "string",
+                "minLength": 1
+              },
+              "module": {
+                "type": "string",
+                "enum": [
+                  "engine",
+                  "logic/phantom",
+                  "logic/gpio",
+                  "logic/mixMinus",
+                  "logic/clock"
+                ]
+              },
+              "severity": {
+                "type": "string",
+                "enum": [
+                  "error",
+                  "warning"
+                ]
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1
+              },
+              "check": {
+                "type": "string",
+                "minLength": 1
+              },
+              "teach": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "id",
+              "slug",
+              "module",
+              "severity",
+              "title",
+              "check",
+              "teach"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "version",
+        "meta",
+        "connectorTypes",
+        "signalTypes",
+        "devices",
+        "rules"
+      ],
+      "additionalProperties": true
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
