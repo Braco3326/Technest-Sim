@@ -1,6 +1,6 @@
 # ADR-0001 — Device state for stateful teaching rules (R4 phantom, and beyond)
 
-- **Status:** Proposed (awaiting Oscar's OK — engine step 4 implements it)
+- **Status:** Accepted (Oscar, 2026-07-13) — implemented in engine step 4
 - **Date:** 2026-07-13
 - **Context rule:** R4 (phantom +48 V). Later consumers: R5/R6 (fader open), R8 (sample rate).
 
