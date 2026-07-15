@@ -392,6 +392,14 @@
                        "kind":  "device",
                        "ports":  3,
                        "status":  "ok"
+                   },
+                   {
+                       "id":  "mogami-gold-db25-xlrm",
+                       "optimized":  true,
+                       "tris":  236,
+                       "kind":  "device",
+                       "ports":  3,
+                       "status":  "ok"
                    }
                ]
 }
