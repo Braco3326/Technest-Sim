@@ -344,6 +344,14 @@
                        "kind":  "device",
                        "ports":  2,
                        "status":  "ok"
+                   },
+                   {
+                       "id":  "avid-hd-io",
+                       "optimized":  true,
+                       "tris":  12,
+                       "kind":  "device",
+                       "ports":  7,
+                       "status":  "ok"
                    }
                ]
 }
