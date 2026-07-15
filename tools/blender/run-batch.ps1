@@ -57,7 +57,9 @@ foreach ($item in $work) {
     }
 
     # 2) optimize (Draco). Failure is non-fatal: raw glb stays.
-    $opt = "$glb.opt"
+    # Output MUST end in .glb: any other extension makes gltf-transform emit
+    # JSON glTF + external .bin instead of a binary GLB.
+    $opt = $glb -replace '\.glb$', '.opt.glb'
     & npx --yes @gltf-transform/cli optimize $glb $opt --compress draco --texture-compress false 2>$null | Out-Null
     if ($LASTEXITCODE -eq 0 -and (Test-Path $opt)) {
         Move-Item -Force $opt $glb
