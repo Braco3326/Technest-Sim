@@ -384,6 +384,14 @@
                        "kind":  "device",
                        "ports":  4,
                        "status":  "ok"
+                   },
+                   {
+                       "id":  "antelope-ocx-hd",
+                       "optimized":  true,
+                       "tris":  144,
+                       "kind":  "device",
+                       "ports":  3,
+                       "status":  "ok"
                    }
                ]
 }
