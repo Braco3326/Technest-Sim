@@ -304,6 +304,14 @@
                        "kind":  "device",
                        "ports":  2,
                        "status":  "ok"
+                   },
+                   {
+                       "id":  "playout-pc",
+                       "optimized":  true,
+                       "tris":  24,
+                       "kind":  "device",
+                       "ports":  3,
+                       "status":  "ok"
                    }
                ]
 }
