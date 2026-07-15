@@ -160,6 +160,14 @@
                        "kind":  "connector",
                        "ports":  0,
                        "status":  "ok"
+                   },
+                   {
+                       "id":  "toslink",
+                       "optimized":  true,
+                       "tris":  24,
+                       "kind":  "connector",
+                       "ports":  0,
+                       "status":  "ok"
                    }
                ]
 }
