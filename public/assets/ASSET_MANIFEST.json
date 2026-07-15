@@ -368,6 +368,14 @@
                        "kind":  "device",
                        "ports":  7,
                        "status":  "ok"
+                   },
+                   {
+                       "id":  "neumann-u87-ai",
+                       "optimized":  true,
+                       "tris":  316,
+                       "kind":  "device",
+                       "ports":  1,
+                       "status":  "ok"
                    }
                ]
 }
