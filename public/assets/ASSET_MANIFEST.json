@@ -264,6 +264,14 @@
                        "kind":  "device",
                        "ports":  0,
                        "status":  "ok"
+                   },
+                   {
+                       "id":  "axia-iq",
+                       "optimized":  true,
+                       "tris":  132,
+                       "kind":  "device",
+                       "ports":  9,
+                       "status":  "ok"
                    }
                ]
 }
