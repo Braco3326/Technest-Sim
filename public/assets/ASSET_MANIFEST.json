@@ -128,6 +128,14 @@
                        "kind":  "connector",
                        "ports":  0,
                        "status":  "ok"
+                   },
+                   {
+                       "id":  "schuko-socket",
+                       "optimized":  true,
+                       "tris":  92,
+                       "kind":  "connector",
+                       "ports":  0,
+                       "status":  "ok"
                    }
                ]
 }

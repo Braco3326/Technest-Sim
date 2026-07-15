@@ -1,0 +1,119 @@
+{
+  "asset": {
+    "generator": "glTF-Transform v4.4.1",
+    "version": "2.0"
+  },
+  "accessors": [
+    {
+      "type": "SCALAR",
+      "componentType": 5123,
+      "count": 276
+    },
+    {
+      "type": "VEC3",
+      "componentType": 5126,
+      "count": 144,
+      "max": [
+        0.017999999225139618,
+        0.007000000216066837,
+        0.017999999225139618
+      ],
+      "min": [
+        -0.017999999225139618,
+        -0.007000000216066837,
+        -0.017999999225139618
+      ]
+    },
+    {
+      "type": "VEC3",
+      "componentType": 5126,
+      "count": 144
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteOffset": 0,
+      "byteLength": 451
+    }
+  ],
+  "buffers": [
+    {
+      "uri": "schuko-socket.glb.bin",
+      "byteLength": 451
+    }
+  ],
+  "materials": [
+    {
+      "name": "PBR_Neutral.001",
+      "doubleSided": true,
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.8999999761581421,
+          0.8999999761581421,
+          0.8799999952316284,
+          1
+        ],
+        "roughnessFactor": 0.4000000059604645,
+        "metallicFactor": 0
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "name": "Cylinder",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 1,
+            "NORMAL": 2
+          },
+          "mode": 4,
+          "material": 0,
+          "indices": 0,
+          "extensions": {
+            "KHR_draco_mesh_compression": {
+              "bufferView": 0,
+              "attributes": {
+                "POSITION": 0,
+                "NORMAL": 1
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "name": "schuko-socket",
+      "translation": [
+        0,
+        0,
+        -0.007000000216066837
+      ],
+      "rotation": [
+        0.7071068286895752,
+        0,
+        0,
+        0.7071068286895752
+      ],
+      "mesh": 0
+    }
+  ],
+  "scenes": [
+    {
+      "name": "Scene",
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "scene": 0,
+  "extensionsUsed": [
+    "KHR_draco_mesh_compression"
+  ],
+  "extensionsRequired": [
+    "KHR_draco_mesh_compression"
+  ]
+}
