@@ -312,6 +312,14 @@
                        "kind":  "device",
                        "ports":  3,
                        "status":  "ok"
+                   },
+                   {
+                       "id":  "aeta-scoop5-s",
+                       "optimized":  true,
+                       "tris":  144,
+                       "kind":  "device",
+                       "ports":  4,
+                       "status":  "ok"
                    }
                ]
 }
