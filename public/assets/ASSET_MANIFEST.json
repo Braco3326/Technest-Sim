@@ -320,6 +320,14 @@
                        "kind":  "device",
                        "ports":  4,
                        "status":  "ok"
+                   },
+                   {
+                       "id":  "aeta-scoopy-plus-s",
+                       "optimized":  true,
+                       "tris":  144,
+                       "kind":  "device",
+                       "ports":  3,
+                       "status":  "ok"
                    }
                ]
 }
