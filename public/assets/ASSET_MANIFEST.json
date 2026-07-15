@@ -1,0 +1,13 @@
+﻿{
+    "generated":  "2026-07-15 07:07",
+    "assets":  [
+                   {
+                       "id":  "xlr3-m",
+                       "optimized":  true,
+                       "tris":  292,
+                       "kind":  "connector",
+                       "ports":  0,
+                       "status":  "ok"
+                   }
+               ]
+}
