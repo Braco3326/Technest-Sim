@@ -32,6 +32,14 @@
                        "kind":  "connector",
                        "ports":  0,
                        "status":  "ok"
+                   },
+                   {
+                       "id":  "trs-quarter",
+                       "optimized":  true,
+                       "tris":  320,
+                       "kind":  "connector",
+                       "ports":  0,
+                       "status":  "ok"
                    }
                ]
 }
