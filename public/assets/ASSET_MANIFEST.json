@@ -256,6 +256,14 @@
                        "kind":  "device",
                        "ports":  3,
                        "status":  "ok"
+                   },
+                   {
+                       "id":  "km-210-9",
+                       "optimized":  true,
+                       "tris":  292,
+                       "kind":  "device",
+                       "ports":  0,
+                       "status":  "ok"
                    }
                ]
 }
