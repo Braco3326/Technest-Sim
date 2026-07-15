@@ -232,6 +232,14 @@
                        "kind":  "device",
                        "ports":  1,
                        "status":  "ok"
+                   },
+                   {
+                       "id":  "shure-sm57",
+                       "optimized":  true,
+                       "tris":  316,
+                       "kind":  "device",
+                       "ports":  1,
+                       "status":  "ok"
                    }
                ]
 }
