@@ -88,6 +88,14 @@
                        "kind":  "connector",
                        "ports":  0,
                        "status":  "ok"
+                   },
+                   {
+                       "id":  "powercon-blue",
+                       "optimized":  true,
+                       "tris":  208,
+                       "kind":  "connector",
+                       "ports":  0,
+                       "status":  "ok"
                    }
                ]
 }
