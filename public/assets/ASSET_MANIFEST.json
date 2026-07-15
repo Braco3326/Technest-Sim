@@ -288,6 +288,14 @@
                        "kind":  "device",
                        "ports":  0,
                        "status":  "ok"
+                   },
+                   {
+                       "id":  "yellowtec-litt",
+                       "optimized":  true,
+                       "tris":  184,
+                       "kind":  "device",
+                       "ports":  1,
+                       "status":  "ok"
                    }
                ]
 }
