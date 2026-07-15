@@ -248,6 +248,14 @@
                        "kind":  "device",
                        "ports":  3,
                        "status":  "ok"
+                   },
+                   {
+                       "id":  "yamaha-dbr12",
+                       "optimized":  true,
+                       "tris":  196,
+                       "kind":  "device",
+                       "ports":  3,
+                       "status":  "ok"
                    }
                ]
 }
