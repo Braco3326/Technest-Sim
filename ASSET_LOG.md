@@ -31,3 +31,9 @@ serveur MCP Blender n'y est enregistré dans Claude Code.
    puis relancer la consigne d'origine telle quelle.
 
 **Aucun asset généré, aucun fichier modifié dans public/assets/.**
+
+## 2026-07-15 18:31 - Run 2 : batch CLI headless (Blender 5.1)
+
+- 50/50 assets generes (voir public/assets/ASSET_MANIFEST.json)
+- Echecs: aucun
+- Pipeline: blender --background + gen_asset.py -> gltf-transform draco -> vignette -> commit/push par asset
