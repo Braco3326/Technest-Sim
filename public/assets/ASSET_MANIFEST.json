@@ -228,10 +228,11 @@
     {
       "id": "shure-sm58",
       "optimized": true,
-      "tris": 316,
+      "tris": 744,
       "kind": "device",
       "ports": 1,
-      "status": "ok"
+      "status": "ok",
+      "note": "v2 MCP live: taper + collar + ball grille"
     },
     {
       "id": "shure-sm57",
