@@ -336,6 +336,14 @@
                        "kind":  "device",
                        "ports":  1,
                        "status":  "ok"
+                   },
+                   {
+                       "id":  "avid-protools-hdx",
+                       "optimized":  true,
+                       "tris":  24,
+                       "kind":  "device",
+                       "ports":  2,
+                       "status":  "ok"
                    }
                ]
 }
