@@ -63,12 +63,7 @@ export class Interaction {
   }
 
   private onDown(): void {
-    const pick = this.scene.pick(
-      this.scene.pointerX,
-      this.scene.pointerY,
-      (m: AbstractMesh) => m.metadata?.isPortMarker === true,
-    )
-    const ref = pick?.pickedMesh?.metadata?.portRef as PortRef | undefined
+    const ref = this.portUnderPointer()
     if (!ref) return
 
     const from = this.ports.find((p) => p.ref.instance === ref.instance && p.ref.port === ref.port)
@@ -113,27 +108,51 @@ export class Interaction {
 
   private onUp(): void {
     if (!this.drag) return
-    const { from, candidate, candidateOk } = this.drag
+    const { from, candidate } = this.drag
     this.drag = null
     this.camera.attachControl(true)
     this.cables.endDrag()
 
-    // Drop on a green candidate → intent. The orchestrator owns the mutation;
-    // it re-validates via connect() and draws the committed cable on success.
-    if (candidate && candidateOk) {
+    // Dropping on ANY candidate dispatches the intent — including red ones:
+    // the engine rejects it and the orchestrator toasts the teaching text.
+    // That rejection IS the lesson (R1/R2/R3); a drop in empty space aborts.
+    if (candidate) {
       this.deps.dispatch({ type: 'CONNECT', a: from.ref, b: candidate.ref })
     }
   }
 
-  /** Port pick sphere under the pointer (excluding the drag origin), if any. */
-  private pickPort(): PortPoint | null {
-    if (!this.drag) return null
-    const pick = this.scene.pick(
+  /**
+   * Port under the pointer. multiPick + closest-center-to-ray: on dense port
+   * grids single pick() returns whichever overlapping sphere is nearest the
+   * CAMERA — often a neighbour — not the port the user is aiming at.
+   */
+  private portUnderPointer(): PortRef | null {
+    const hits = this.scene.multiPick(
       this.scene.pointerX,
       this.scene.pointerY,
       (m: AbstractMesh) => m.metadata?.isPortMarker === true,
     )
-    const ref = pick?.pickedMesh?.metadata?.portRef as PortRef | undefined
+    if (!hits?.length) return null
+    const ray = this.scene.createPickingRay(this.scene.pointerX, this.scene.pointerY, null, this.camera)
+    let best: PortRef | null = null
+    let bestD = Infinity
+    for (const hit of hits) {
+      const mesh = hit.pickedMesh
+      if (!mesh) continue
+      const toCenter = mesh.getAbsolutePosition().subtract(ray.origin)
+      const d = ray.direction.cross(toCenter).length() // ray.direction is normalized
+      if (d < bestD) {
+        bestD = d
+        best = mesh.metadata.portRef as PortRef
+      }
+    }
+    return best
+  }
+
+  /** Drop/hover candidate during a drag (excluding the drag origin). */
+  private pickPort(): PortPoint | null {
+    if (!this.drag) return null
+    const ref = this.portUnderPointer()
     if (!ref) return null
     const from = this.drag.from.ref
     if (ref.instance === from.instance && ref.port === from.port) return null

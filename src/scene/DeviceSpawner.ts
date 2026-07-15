@@ -124,8 +124,13 @@ export class DeviceSpawner {
       marker.material = this.material(`dir:${port.dir}`, undefined, DIR_COLOR[port.dir])
       marker.isPickable = false
 
-      // Invisible, larger pick target — small markers are hostile to pointers.
-      const pick = MeshBuilder.CreateSphere(`pick:${instanceId}:${port.portId}`, { diameter: 0.12 }, this.scene)
+      // Invisible, enlarged pick target — capped by grid spacing ONLY along
+      // axes that actually have neighbours: overlapping spheres make the ray
+      // grab a neighbour port, but a lone port keeps the full comfort size.
+      const capX = cols > 1 ? sx * 0.95 : 0.12
+      const capY = rows > 1 ? sy * 0.95 : 0.12
+      const pickDiameter = Math.max(0.035, Math.min(0.12, capX, capY))
+      const pick = MeshBuilder.CreateSphere(`pick:${instanceId}:${port.portId}`, { diameter: pickDiameter }, this.scene)
       pick.parent = root
       pick.position = local
       pick.visibility = 0

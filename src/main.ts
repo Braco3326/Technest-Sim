@@ -36,6 +36,8 @@ import { CableRenderer } from './scene/CableRenderer'
 import { Interaction } from './scene/Interaction'
 import type { PortPoint } from './scene/snap'
 import type { Intent } from './ui/intents'
+import { Hud } from './ui/hud'
+import { LocalStorageProgressStore } from './ui/ProgressStore'
 
 // ── content (source of truth) ────────────────────────────────────────────────
 const registry = loadCatalog(catalogJson)
@@ -57,7 +59,7 @@ const babylon = new Engine(canvas, true)
 const scene = new Scene(babylon)
 scene.clearColor = new Color4(0.04, 0.05, 0.1, 1)
 
-const camera = new ArcRotateCamera('cam', -Math.PI / 2, Math.PI / 3.2, 9, new Vector3(0, 0.6, 0), scene)
+const camera = new ArcRotateCamera('cam', -Math.PI / 2, Math.PI / 3.6, 8.5, new Vector3(0, 0.4, 0.4), scene)
 camera.attachControl(true)
 camera.lowerRadiusLimit = 2
 camera.upperRadiusLimit = 40
@@ -78,7 +80,7 @@ const LAYOUT: Record<string, Vector3> = {
   'sm57-1': new Vector3(1.6, 0, 2.2),
   'stand-1': new Vector3(-1.9, 0, 2.2),
   'rio-1': new Vector3(0, 0, 3.2),
-  'ql1-1': new Vector3(0, 0, -3.6),
+  'ql1-1': new Vector3(0, 0, -2.6),
   'k12-1': new Vector3(-3.2, 0, 1.2),
   'dbr12-1': new Vector3(3.2, 0, 1.8),
 }
@@ -107,21 +109,46 @@ const portPos = (ref: PortRef): Vector3 => {
 
 // ── orchestrator: intents → engine → scene/UI notifications ────────────────
 const cables = new CableRenderer(scene)
+const hud = new Hud(document.getElementById('hud')!, registry, level)
+const progress = new LocalStorageProgressStore(window.localStorage)
+
+const { data: progressData, wasReset } = progress.load()
+if (wasReset)
+  hud.toast('info', 'Progression réinitialisée', 'Sauvegarde incompatible avec cette version — repart de zéro.')
+let mistakes = [...(progressData.levels[level.id]?.mistakes ?? [])]
+
+let won = false
+const activeViolations = new Set<string>()
 
 const refresh = (): LevelState => {
   const state = runner.check(graph)
-  // Step 6 replaces this with the HUD/toast overlay.
+  hud.update(state)
   console.info(
     `[a1] ${state.connectedRequired}/${state.totalRequired} required — ${state.won ? 'WIN' : 'in progress'}`,
   )
+  // Toast NEW logic violations (R4–R8 sweeps); clear ones that got fixed.
+  for (const v of state.violations) {
+    if (activeViolations.has(v.ruleId)) continue
+    activeViolations.add(v.ruleId)
+    hud.toast(v.severity, v.title, v.teach)
+    mistakes = progress.recordMistake(level.id, v.ruleId).levels[level.id]!.mistakes
+  }
+  for (const id of [...activeViolations])
+    if (!state.violations.some((v) => v.ruleId === id)) activeViolations.delete(id)
+
+  if (state.won && !won) {
+    won = true
+    progress.markCompleted(level.id)
+    hud.showWin(mistakes)
+  }
   return state
 }
 
 const onRejected = (e: TypedError): void => {
-  const teach = e.ruleId ? registry.ruleById.get(e.ruleId)?.teach : undefined
-  console.warn(
-    `[rejected ${e.code}${e.ruleId ? ` ${e.ruleId}` : ''}] ${e.message}${teach ? ` — ${teach}` : ''}`,
-  )
+  const rule = e.ruleId ? registry.ruleById.get(e.ruleId) : undefined
+  hud.toast('error', rule?.title ?? 'Connexion impossible', rule?.teach ?? e.message)
+  mistakes = progress.recordMistake(level.id, e.ruleId ?? e.code).levels[level.id]!.mistakes
+  console.warn(`[rejected ${e.code}${e.ruleId ? ` ${e.ruleId}` : ''}] ${e.message}`)
 }
 
 const dispatch = (intent: Intent): void => {
@@ -150,7 +177,7 @@ const dispatch = (intent: Intent): void => {
   }
 }
 
-new Interaction(scene, camera, cables, portPoints, {
+const interaction = new Interaction(scene, camera, cables, portPoints, {
   canConnect: (a, b) => graph.canConnect(a, b),
   dispatch,
 })
@@ -180,6 +207,7 @@ declare global {
       level: typeof level
       canConnect: (a: PortRef, b: PortRef) => ReturnType<ConnectionGraph['canConnect']>
       portScreen: typeof portScreen
+      snap: () => { ref: PortRef; ok: boolean } | null
     }
   }
 }
@@ -189,6 +217,7 @@ window.__audioSim = {
   level,
   canConnect: (a, b) => graph.canConnect(a, b),
   portScreen,
+  snap: () => interaction.snapCandidate,
 }
 
 babylon.runRenderLoop(() => scene.render())
