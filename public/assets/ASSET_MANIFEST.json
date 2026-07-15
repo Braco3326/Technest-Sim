@@ -224,6 +224,14 @@
                        "kind":  "device",
                        "ports":  6,
                        "status":  "ok"
+                   },
+                   {
+                       "id":  "shure-sm58",
+                       "optimized":  true,
+                       "tris":  316,
+                       "kind":  "device",
+                       "ports":  1,
+                       "status":  "ok"
                    }
                ]
 }
