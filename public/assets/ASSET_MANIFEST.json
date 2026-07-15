@@ -360,6 +360,14 @@
                        "kind":  "device",
                        "ports":  3,
                        "status":  "ok"
+                   },
+                   {
+                       "id":  "grace-m905",
+                       "optimized":  true,
+                       "tris":  144,
+                       "kind":  "device",
+                       "ports":  7,
+                       "status":  "ok"
                    }
                ]
 }
