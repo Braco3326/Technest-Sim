@@ -328,6 +328,14 @@
                        "kind":  "device",
                        "ports":  3,
                        "status":  "ok"
+                   },
+                   {
+                       "id":  "ev-re50",
+                       "optimized":  true,
+                       "tris":  316,
+                       "kind":  "device",
+                       "ports":  1,
+                       "status":  "ok"
                    }
                ]
 }
