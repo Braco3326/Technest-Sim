@@ -72,6 +72,14 @@
                        "kind":  "connector",
                        "ports":  0,
                        "status":  "ok"
+                   },
+                   {
+                       "id":  "ethercon",
+                       "optimized":  true,
+                       "tris":  116,
+                       "kind":  "connector",
+                       "ports":  0,
+                       "status":  "ok"
                    }
                ]
 }
