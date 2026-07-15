@@ -9,7 +9,6 @@ const b1 = makeLevel('b1')
 const rules = (g: ConnectionGraph) => gpioCheck(g.snapshot()).map((v) => v.ruleId)
 
 // b1 chain indexes: 0 mic→iq, 1 mon-l, 2 mon-r, 3 gpio→litt, 4 playout
-const GPIO_CONN = 3
 
 describe('R5 — on-air tally', () => {
   it('triggers: fader open (default), tally not wired', () => {

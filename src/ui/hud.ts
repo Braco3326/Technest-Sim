@@ -22,13 +22,18 @@ export class Hud {
     private registry: Registry,
     private level: LevelT,
   ) {
+    const nav = ['a1', 'b1', 'c1', 'd1']
+      .map((id) => `<a href="?level=${id}" class="${id === level.id ? 'current' : ''}">${id.toUpperCase()}</a>`)
+      .join('')
     root.innerHTML = `
       <section class="hud-panel" id="hud-objectives">
+        <nav id="hud-levels">${nav}</nav>
         <h1>${level.title}</h1>
         <p class="hud-brief">${level.brief}</p>
         <ol id="hud-checklist"></ol>
         <p id="hud-counter"></p>
       </section>
+      <aside class="hud-panel" id="hud-controls" hidden></aside>
       <div id="hud-toasts"></div>
       <div id="hud-win" hidden></div>`
     this.checklist = root.querySelector('#hud-checklist')!

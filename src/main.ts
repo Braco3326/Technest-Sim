@@ -19,6 +19,9 @@ import {
 
 import catalogJson from '../content/catalog.json'
 import a1Json from '../content/levels/a1.json'
+import b1Json from '../content/levels/b1.json'
+import c1Json from '../content/levels/c1.json'
+import d1Json from '../content/levels/d1.json'
 
 import { loadCatalog, loadLevel } from './engine/CatalogLoader'
 import { ConnectionGraph } from './engine/ConnectionGraph'
@@ -37,11 +40,14 @@ import { Interaction } from './scene/Interaction'
 import type { PortPoint } from './scene/snap'
 import type { Intent } from './ui/intents'
 import { Hud } from './ui/hud'
+import { ControlsPanel } from './ui/controlsPanel'
 import { LocalStorageProgressStore } from './ui/ProgressStore'
 
 // ── content (source of truth) ────────────────────────────────────────────────
 const registry = loadCatalog(catalogJson)
-const level = loadLevel(a1Json)
+const LEVELS: Record<string, unknown> = { a1: a1Json, b1: b1Json, c1: c1Json, d1: d1Json }
+const levelId = new URLSearchParams(location.search).get('level') ?? 'a1'
+const level = loadLevel(LEVELS[levelId] ?? a1Json)
 
 // ── engine ───────────────────────────────────────────────────────────────────
 const graph = new ConnectionGraph(registry, level.devices)
@@ -74,16 +80,46 @@ groundMat.specularColor = Color3.Black()
 ground.material = groundMat
 ground.isPickable = false
 
-// A1 stage layout (meters). Any instance not listed falls back to a grid.
-const LAYOUT: Record<string, Vector3> = {
-  'sm58-1': new Vector3(-1.6, 0, 2.2),
-  'sm57-1': new Vector3(1.6, 0, 2.2),
-  'stand-1': new Vector3(-1.9, 0, 2.2),
-  'rio-1': new Vector3(0, 0, 3.2),
-  'ql1-1': new Vector3(0, 0, -2.6),
-  'k12-1': new Vector3(-3.2, 0, 1.2),
-  'dbr12-1': new Vector3(3.2, 0, 1.8),
+// Per-level stage layouts (meters). Any instance not listed falls back to a grid.
+const LAYOUTS: Record<string, Record<string, Vector3>> = {
+  a1: {
+    'sm58-1': new Vector3(-1.6, 0, 2.2),
+    'sm57-1': new Vector3(1.6, 0, 2.2),
+    'stand-1': new Vector3(-1.9, 0, 2.2),
+    'rio-1': new Vector3(0, 0, 3.2),
+    'ql1-1': new Vector3(0, 0, -2.6),
+    'k12-1': new Vector3(-3.2, 0, 1.2),
+    'dbr12-1': new Vector3(3.2, 0, 1.8),
+  },
+  b1: {
+    're20-1': new Vector3(-1.4, 0, 1),
+    'mika-1': new Vector3(-1.7, 0, 1),
+    'iq-1': new Vector3(0, 0, -1.4),
+    'litt-1': new Vector3(1.6, 0, 0.6),
+    'gen-l': new Vector3(-1.4, 0, 2.6),
+    'gen-r': new Vector3(1.4, 0, 2.6),
+    'playout-1': new Vector3(2.6, 0, -0.8),
+  },
+  c1: {
+    're50-1': new Vector3(-2.8, 0, 1.6),
+    'scoopy-1': new Vector3(-1.4, 0, 0.6),
+    'scoop5-1': new Vector3(0.6, 0, 0.6),
+    'iq-1': new Vector3(2.2, 0, -1.2),
+  },
+  d1: {
+    'u87-1': new Vector3(-3, 0, 1.4),
+    'isa-1': new Vector3(-2, 0, 0.3),
+    'bay-1': new Vector3(-1, 0, -0.8),
+    'hdio-1': new Vector3(0.3, 0, -0.8),
+    'hdx-1': new Vector3(1.7, 0, -1.6),
+    'loom-1': new Vector3(0, 0, 0.9),
+    'm905-1': new Vector3(1.3, 0, 0.6),
+    'gen-l': new Vector3(-1, 0, 2.8),
+    'gen-r': new Vector3(1.5, 0, 2.8),
+    'clock-1': new Vector3(2.7, 0, -0.2),
+  },
 }
+const LAYOUT = LAYOUTS[level.id] ?? {}
 
 const spawner = new DeviceSpawner(scene, registry)
 const instances = level.devices.map((d, i) =>
@@ -111,6 +147,12 @@ const portPos = (ref: PortRef): Vector3 => {
 const cables = new CableRenderer(scene)
 const hud = new Hud(document.getElementById('hud')!, registry, level)
 const progress = new LocalStorageProgressStore(window.localStorage)
+const controlsPanel = new ControlsPanel(
+  document.getElementById('hud-controls')!,
+  registry,
+  level,
+  (intent) => dispatch(intent),
+)
 
 const { data: progressData, wasReset } = progress.load()
 if (wasReset)
@@ -123,8 +165,9 @@ const activeViolations = new Set<string>()
 const refresh = (): LevelState => {
   const state = runner.check(graph)
   hud.update(state)
+  controlsPanel.update(graph.snapshot())
   console.info(
-    `[a1] ${state.connectedRequired}/${state.totalRequired} required — ${state.won ? 'WIN' : 'in progress'}`,
+    `[${level.id}] ${state.connectedRequired}/${state.totalRequired} required — ${state.won ? 'WIN' : 'in progress'}`,
   )
   // Toast NEW logic violations (R4–R8 sweeps); clear ones that got fixed.
   for (const v of state.violations) {
