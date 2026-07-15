@@ -376,6 +376,14 @@
                        "kind":  "device",
                        "ports":  1,
                        "status":  "ok"
+                   },
+                   {
+                       "id":  "switchcraft-studiopatch-9625",
+                       "optimized":  true,
+                       "tris":  144,
+                       "kind":  "device",
+                       "ports":  4,
+                       "status":  "ok"
                    }
                ]
 }
