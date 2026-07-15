@@ -272,6 +272,14 @@
                        "kind":  "device",
                        "ports":  9,
                        "status":  "ok"
+                   },
+                   {
+                       "id":  "ev-re20",
+                       "optimized":  true,
+                       "tris":  316,
+                       "kind":  "device",
+                       "ports":  1,
+                       "status":  "ok"
                    }
                ]
 }
