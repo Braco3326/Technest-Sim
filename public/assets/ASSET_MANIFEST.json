@@ -296,6 +296,14 @@
                        "kind":  "device",
                        "ports":  1,
                        "status":  "ok"
+                   },
+                   {
+                       "id":  "genelec-8030c",
+                       "optimized":  true,
+                       "tris":  196,
+                       "kind":  "device",
+                       "ports":  2,
+                       "status":  "ok"
                    }
                ]
 }
