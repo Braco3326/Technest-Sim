@@ -88,6 +88,26 @@ for (const d of catalog.devices) {
   if (d.controls) {
     assertUnique(d.controls.map((c) => c.id), `controls.id in ${d.id}`)
     for (const ctl of d.controls) {
+      // Naming conventions consumed by logic/* modules (see equipment-catalog.md):
+      //   fader-<portId>          → port must exist and be an isMicInput
+      //   route-<srcPort>-to-<busPort> → both ports must exist (src=in, bus=out)
+      if (ctl.id.startsWith('fader-')) {
+        const pid = ctl.id.slice('fader-'.length)
+        const port = d.ports.find((p) => p.portId === pid)
+        if (!port) fail(`devices["${d.id}"].controls["${ctl.id}"] → unknown port "${pid}"`)
+        else if (!(port.flags ?? []).includes('isMicInput'))
+          fail(`devices["${d.id}"].controls["${ctl.id}"] → port "${pid}" is not flagged isMicInput (fader-* convention drives R5/R6)`)
+      }
+      const route = /^route-(.+)-to-(.+)$/.exec(ctl.id)
+      if (route) {
+        const [, src, bus] = route
+        const srcPort = d.ports.find((p) => p.portId === src)
+        const busPort = d.ports.find((p) => p.portId === bus)
+        if (!srcPort) fail(`devices["${d.id}"].controls["${ctl.id}"] → unknown source port "${src}"`)
+        else if (srcPort.dir === 'out') fail(`devices["${d.id}"].controls["${ctl.id}"] → source "${src}" must be an input/bidir`)
+        if (!busPort) fail(`devices["${d.id}"].controls["${ctl.id}"] → unknown bus port "${bus}"`)
+        else if (busPort.dir === 'in') fail(`devices["${d.id}"].controls["${ctl.id}"] → bus "${bus}" must be an output/bidir`)
+      }
       if (!ctl.enables) continue
       for (const pid of ctl.enables.ports) {
         const port = d.ports.find((p) => p.portId === pid)

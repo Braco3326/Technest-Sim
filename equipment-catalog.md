@@ -101,6 +101,19 @@ Control: GPIO/tally · DMX512. Power: phantom +48 V · mains 230 V.
 | R7 mix-minus N-1 | codec send = program − own return | logic/mixMinus | C1 |
 | R8 word clock | one master, slaves lock, rates match | logic/clock | D1 |
 
+## Controls — conventions de nommage (ADR-0001, consommées par logic/*)
+
+Les `devices[].controls` sont des toggles d'état ; certains ids portent une **sémantique par convention**, vérifiée par le validateur :
+
+| Convention | Sens | Consommé par |
+|---|---|---|
+| `fader-<portId>` | le fader du canal alimenté par `<portId>` (doit être `isMicInput`) est OUVERT | R5 (tally), R6 (monitor mute) |
+| `monitor-mute` | les monitors de la régie (`isMonitorOut` du même device) sont coupés | R6 |
+| `route-<srcPort>-to-<busPort>` | la source `<srcPort>` est assignée au bus `<busPort>` (matrice de routage) | R7 (N-1) |
+| `phantom-48v` + `enables` | +48 V gate le flag `providesPhantom` du port visé | R4 |
+
+Défauts pédagogiques voulus : sur l'Axia iQ, `fader-in-mic-1` démarre **OUVERT** (le présentateur est à l'antenne dès le début de B1 → R5 enseigne immédiatement) et `route-in-line-1-to-out-n1` démarre **ON** (C1 démarre avec l'erreur d'écho N-1 classique pré-câblée — le joueur doit la trouver et la couper).
+
 ## Assumptions (v1)
 
 1. **Port sets are teaching-simplified** — e.g. 2 of the Rio's 32 mic-ins, one QL1 mix-out; enough for each level's chain, never every physical connector.
@@ -109,3 +122,6 @@ Control: GPIO/tally · DMX512. Power: phantom +48 V · mains 230 V.
 4. **DigiLink carries the `usb-audio` signal id** ("computer audio link") to keep the signal list at 16.
 5. **Accessories (stands, arm) have empty port lists** — they're scene props supporting realism.
 6. Consumer/pro level mismatch (playout PC mini-jack) is a **deliberate R2 trap**, not an error in the catalog.
+7. **R6 sans notion de pièce** : v1 suppose mic et monitors dans la même pièce (vrai pour B1). Le modèle « rooms » est P2.
+8. **R8 v1 = master/slave uniquement** : le mismatch de sample-rate attend l'extension `enum` des controls (ADR-0001 §Consequences) — un toggle booléen ne peut pas porter 44.1/48/96 proprement.
+9. **Win = chaîne + zéro violation** : fermer le fader en B1 est une échappatoire acceptée v1 (physiquement cohérent : mic fermé = pas de larsen ni d'antenne) ; des prédicats d'état de victoire sont P2.

@@ -181,6 +181,12 @@
         { "portId": "gpio",          "dir": "bidir", "connector": "gpio-terminal", "signal": "gpio-tally",    "flags": ["isOnAirTally"] },
         { "portId": "livewire",      "dir": "bidir", "connector": "rj45",         "signal": "aoip" },
         { "portId": "power-in",      "dir": "in",    "connector": "iec-c14",      "signal": "mains-power" }
+      ],
+      "controls": [
+        { "id": "fader-in-mic-1", "type": "toggle", "label": "Mic 1 fader (channel open)", "default": true },
+        { "id": "monitor-mute", "type": "toggle", "label": "CR monitor mute", "default": false },
+        { "id": "route-in-mic-1-to-out-n1", "type": "toggle", "label": "Mic 1 -> N-1 bus", "default": false },
+        { "id": "route-in-line-1-to-out-n1", "type": "toggle", "label": "Line 1 (codec return) -> N-1 bus", "default": true }
       ]
     },
     {
