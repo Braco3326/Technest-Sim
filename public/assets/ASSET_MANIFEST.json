@@ -335,10 +335,11 @@
     {
       "id": "ev-re50",
       "optimized": true,
-      "tris": 316,
+      "tris": 468,
       "kind": "device",
       "ports": 1,
-      "status": "ok"
+      "status": "ok",
+      "note": "v2 MCP live: ENG handle + foam windscreen ball"
     },
     {
       "id": "avid-protools-hdx",
