@@ -278,10 +278,11 @@
     {
       "id": "ev-re20",
       "optimized": true,
-      "tris": 316,
+      "tris": 868,
       "kind": "device",
       "ports": 1,
-      "status": "ok"
+      "status": "ok",
+      "note": "v2 MCP live: fat tan body, vent rings, domed end"
     },
     {
       "id": "yellowtec-mika",
