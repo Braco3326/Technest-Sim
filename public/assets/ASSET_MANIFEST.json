@@ -240,6 +240,14 @@
                        "kind":  "device",
                        "ports":  1,
                        "status":  "ok"
+                   },
+                   {
+                       "id":  "qsc-k12-2",
+                       "optimized":  true,
+                       "tris":  196,
+                       "kind":  "device",
+                       "ports":  3,
+                       "status":  "ok"
                    }
                ]
 }
