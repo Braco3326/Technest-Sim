@@ -216,6 +216,14 @@
                        "kind":  "device",
                        "ports":  7,
                        "status":  "ok"
+                   },
+                   {
+                       "id":  "yamaha-rio3224-d2",
+                       "optimized":  true,
+                       "tris":  12,
+                       "kind":  "device",
+                       "ports":  6,
+                       "status":  "ok"
                    }
                ]
 }
