@@ -376,10 +376,11 @@
     {
       "id": "neumann-u87-ai",
       "optimized": true,
-      "tris": 316,
+      "tris": 636,
       "kind": "device",
       "ports": 1,
-      "status": "ok"
+      "status": "ok",
+      "note": "v2 MCP live: nickel body + large basket capsule"
     },
     {
       "id": "switchcraft-studiopatch-9625",
