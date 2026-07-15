@@ -11,10 +11,12 @@ import {
   Mesh,
   MeshBuilder,
   Scene,
+  SceneLoader,
   StandardMaterial,
   TransformNode,
   Vector3,
 } from '@babylonjs/core'
+import '@babylonjs/loaders/glTF'
 import type { Registry, DeviceT } from '../engine/CatalogLoader'
 import type { PortRef } from '../engine/types'
 
@@ -69,8 +71,10 @@ export class DeviceSpawner {
     root.position = position.clone()
 
     const portMarkers = this.buildPlaceholder(device, instanceId, root)
-    // Async .glb replacement is the asset track's job (Prompt A); the engine
-    // and interaction only ever depend on the marker metadata built here.
+    // Async .glb replacement — assets NEVER block gameplay: the placeholder is
+    // live immediately, the model swaps in when (and only when) it loads.
+    // Engine + interaction depend only on the marker metadata built above.
+    this.tryLoadModel(device.id, instanceId, root)
 
     return {
       instanceId,
@@ -79,6 +83,24 @@ export class DeviceSpawner {
       portMarkers,
       dispose: () => root.dispose(false, true),
     }
+  }
+
+  /**
+   * Swap the placeholder box for public/assets/<deviceId>.glb when it exists.
+   * Any failure (404, decode, Draco) keeps the box and logs a warning —
+   * gameplay never depends on the model. Port markers/labels always stay:
+   * they are the interaction surface, the glb is visual only.
+   */
+  private tryLoadModel(deviceId: string, instanceId: string, root: TransformNode): void {
+    SceneLoader.ImportMeshAsync(null, '/assets/', `${deviceId}.glb`, this.scene)
+      .then(({ meshes }) => {
+        const glbRoot = meshes[0]
+        glbRoot.name = `glb:${instanceId}`
+        glbRoot.parent = root
+        for (const m of meshes) m.isPickable = false
+        this.scene.getMeshByName(`box:${instanceId}`)?.setEnabled(false)
+      })
+      .catch(() => console.warn(`[assets] ${deviceId}.glb unavailable — placeholder kept`))
   }
 
   // ── placeholder box + labelled port markers ───────────────────────────────
