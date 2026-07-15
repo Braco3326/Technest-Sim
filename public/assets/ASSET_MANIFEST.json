@@ -352,6 +352,14 @@
                        "kind":  "device",
                        "ports":  7,
                        "status":  "ok"
+                   },
+                   {
+                       "id":  "focusrite-isa-one",
+                       "optimized":  true,
+                       "tris":  144,
+                       "kind":  "device",
+                       "ports":  3,
+                       "status":  "ok"
                    }
                ]
 }
