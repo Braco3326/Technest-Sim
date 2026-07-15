@@ -280,6 +280,14 @@
                        "kind":  "device",
                        "ports":  1,
                        "status":  "ok"
+                   },
+                   {
+                       "id":  "yellowtec-mika",
+                       "optimized":  true,
+                       "tris":  292,
+                       "kind":  "device",
+                       "ports":  0,
+                       "status":  "ok"
                    }
                ]
 }
