@@ -9,7 +9,7 @@ const main = async () => {
   page.on('console', (m) => {
     if (m.type() === 'error' || m.type() === 'warning') console.log(`[${m.type()}]`, m.text().slice(0, 300))
   })
-  await page.goto('http://localhost:3000/?level=a1')
+  await page.goto('http://localhost:3001/?level=a1')
   await page.waitForTimeout(6000)
   console.log('__audioSim present:', await page.evaluate(() => !!window.__audioSim))
   await browser.close()

@@ -19,6 +19,7 @@ import {
 import '@babylonjs/loaders/glTF'
 import type { Registry, DeviceT } from '../engine/CatalogLoader'
 import type { PortRef } from '../engine/types'
+import { TOKENS } from '../design/tokens'
 
 export interface DeviceInstance {
   instanceId: string
@@ -50,9 +51,9 @@ const SIZE_BY_CATEGORY: Record<string, [number, number, number]> = {
 const DEFAULT_SIZE: [number, number, number] = [0.4, 0.3, 0.3]
 
 const DIR_COLOR: Record<string, Color3> = {
-  in: Color3.FromHexString('#4da6ff'),
-  out: Color3.FromHexString('#ffa94d'),
-  bidir: Color3.FromHexString('#b98cff'),
+  in: Color3.FromHexString(TOKENS.color.portIn),
+  out: Color3.FromHexString(TOKENS.color.portOut),
+  bidir: Color3.FromHexString(TOKENS.color.portBidir),
 }
 
 export class DeviceSpawner {
@@ -111,8 +112,12 @@ export class DeviceSpawner {
     const box = MeshBuilder.CreateBox(`box:${instanceId}`, { width: w, height: h, depth: d }, this.scene)
     box.parent = root
     box.position.y = h / 2
-    box.material = this.material('body', '#39415c')
+    box.material = this.material('body', TOKENS.color.deviceBody)
     box.isPickable = false
+
+    // Soft contact shadow: a radial-gradient blob on the floor grounds the
+    // device on the white stage (VISION §6 "gentle contact shadows").
+    this.shadowBlob(instanceId, Math.max(w, d) * 1.7, root)
 
     this.labelPlane(`label:${instanceId}`, device.label, 0.8, 0.2, root, new Vector3(0, h + 0.22, 0))
 
@@ -174,6 +179,37 @@ export class DeviceSpawner {
     return markers
   }
 
+  /** Radial soft-shadow decal under the device (cheap contact shadow). */
+  private shadowBlob(instanceId: string, size: number, parent: TransformNode): void {
+    let tex = this.shadowTexture
+    if (!tex) {
+      tex = new DynamicTexture('tex:contact-shadow', { width: 256, height: 256 }, this.scene, false)
+      const ctx = tex.getContext() as CanvasRenderingContext2D
+      const g = ctx.createRadialGradient(128, 128, 8, 128, 128, 126)
+      g.addColorStop(0, TOKENS.color.contactShadow)
+      g.addColorStop(1, 'rgba(20, 24, 32, 0)')
+      ctx.fillStyle = g
+      ctx.fillRect(0, 0, 256, 256)
+      tex.update()
+      tex.hasAlpha = true
+      this.shadowTexture = tex
+    }
+    const mat = new StandardMaterial(`mat:shadow:${instanceId}`, this.scene)
+    mat.diffuseTexture = tex
+    mat.opacityTexture = tex
+    mat.emissiveColor = Color3.Black()
+    mat.diffuseColor = Color3.Black()
+    mat.disableLighting = true
+
+    const blob = MeshBuilder.CreatePlane(`shadow:${instanceId}`, { size }, this.scene)
+    blob.rotation.x = Math.PI / 2
+    blob.parent = parent
+    blob.position.y = 0.002 // just above the floor, below everything else
+    blob.material = mat
+    blob.isPickable = false
+  }
+  private shadowTexture?: DynamicTexture
+
   private labelPlane(
     name: string,
     text: string,
@@ -186,13 +222,12 @@ export class DeviceSpawner {
     const texW = 512
     const texH = Math.round((texW * hPlane) / wPlane)
     const tex = new DynamicTexture(`tex:${name}`, { width: texW, height: texH }, this.scene, false)
-    tex.hasAlpha = true
-    tex.drawText(text, null, null, `bold ${fontPx}px system-ui`, '#e8ecff', 'transparent', true)
+    // Ink on OPAQUE white — a tiny gallery label card. No alpha pipeline at
+    // all: dark glyphs die in luminance-derived opacity (learned the hard way).
+    tex.drawText(text, null, null, `bold ${fontPx}px sans-serif`, TOKENS.color.ink, TOKENS.color.floor, true)
 
     const mat = new StandardMaterial(`mat:${name}`, this.scene)
-    mat.diffuseTexture = tex
-    mat.emissiveColor = Color3.White()
-    mat.opacityTexture = tex
+    mat.emissiveTexture = tex
     mat.disableLighting = true
     mat.backFaceCulling = false
 

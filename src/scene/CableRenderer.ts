@@ -7,6 +7,7 @@
  */
 import { Color3, Mesh, MeshBuilder, Scene, StandardMaterial, Vector3 } from '@babylonjs/core'
 import { CableBudget, catenaryPoints, SEGMENTS_FULL, type P3 } from './cablePath'
+import { TOKENS } from '../design/tokens'
 
 export type DragTint = 'neutral' | 'ok' | 'bad'
 
@@ -30,10 +31,10 @@ export class CableRenderer {
       return m
     }
     this.mats = {
-      neutral: make('neutral', '#c8cede'),
-      ok: make('ok', '#3ddc7f'),
-      bad: make('bad', '#ff4d5e'),
-      committed: make('committed', '#20263b', 0.15),
+      neutral: make('neutral', TOKENS.color.cableNeutral, 0.35),
+      ok: make('ok', TOKENS.color.cableOk, 0.4),
+      bad: make('bad', TOKENS.color.cableBad, 0.4),
+      committed: make('committed', TOKENS.color.cable, 0.1),
     }
   }
 

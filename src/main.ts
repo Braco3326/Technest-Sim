@@ -8,6 +8,7 @@ import {
   ArcRotateCamera,
   Color3,
   Color4,
+  DirectionalLight,
   Engine,
   HemisphericLight,
   Matrix,
@@ -16,6 +17,7 @@ import {
   StandardMaterial,
   Vector3,
 } from '@babylonjs/core'
+import { injectTokens, TOKENS } from './design/tokens'
 
 import catalogJson from '../content/catalog.json'
 import a1Json from '../content/levels/a1.json'
@@ -59,11 +61,13 @@ const evaluator = new RuleEvaluator(registry, level, {
 })
 const runner = new LevelRunner(level, evaluator)
 
-// ── scene ────────────────────────────────────────────────────────────────────
+// ── scene (white gallery — design tokens, VISION §6) ───────────────────────
+injectTokens()
 const canvas = document.getElementById('renderCanvas') as HTMLCanvasElement
 const babylon = new Engine(canvas, true)
 const scene = new Scene(babylon)
-scene.clearColor = new Color4(0.04, 0.05, 0.1, 1)
+const bg = Color3.FromHexString(TOKENS.color.bg)
+scene.clearColor = new Color4(bg.r, bg.g, bg.b, 1)
 
 const camera = new ArcRotateCamera('cam', -Math.PI / 2, Math.PI / 3.6, 8.5, new Vector3(0, 0.4, 0.4), scene)
 camera.attachControl(true)
@@ -71,11 +75,16 @@ camera.lowerRadiusLimit = 2
 camera.upperRadiusLimit = 40
 camera.wheelDeltaPercentage = 0.02
 
-new HemisphericLight('light', new Vector3(0.2, 1, 0.3), scene)
+// Soft, even museum light: bright hemisphere + a gentle key for shape.
+const hemi = new HemisphericLight('light', new Vector3(0.2, 1, 0.3), scene)
+hemi.intensity = 0.95
+hemi.groundColor = Color3.FromHexString('#DDE1E8')
+const key = new DirectionalLight('key', new Vector3(-0.35, -1, 0.25), scene)
+key.intensity = 0.35
 
 const ground = MeshBuilder.CreateGround('stage', { width: 24, height: 14 }, scene)
 const groundMat = new StandardMaterial('mat:stage', scene)
-groundMat.diffuseColor = Color3.FromHexString('#151a2c')
+groundMat.diffuseColor = Color3.FromHexString(TOKENS.color.floor)
 groundMat.specularColor = Color3.Black()
 ground.material = groundMat
 ground.isPickable = false
