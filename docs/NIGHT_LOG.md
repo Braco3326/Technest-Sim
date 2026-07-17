@@ -227,3 +227,42 @@ Blocages (skip+log) :
 
 Etat : validate:catalog VERT · 130 vitest VERT · 23 e2e VERT (2 nouveaux) · build OK.
 ADR du run : aucun (pur data). Relecture : docs/REVIEW-ME.md §6 ([A VERIFIER] c1 monitoring).
+
+## Run durcissement "smooth/clean/fast" (2026-07-17, soir) — 4 axes
+
+### FAIT (gates verts a chaque commit : validate + vitest + e2e + build)
+1. **Deep-scan** (agent read-only) -> corrections sures appliquees :
+   - ProgressStore.save + saveRig : setItem protege (QuotaExceeded/private-mode) -> warn, jamais de throw.
+   - mistakes[] borne a 50/niveau (la readiness ne lit que .length).
+   - win-card retractee si un niveau gagne regresse (cable requis retire).
+   Le reste (NEEDS-DECISION) -> docs/REVIEW-ME.md §7.
+2. **Perf** :
+   - SPAWN sandbox cape a 24 appareils (toast "Rack plein").
+   - markerScale : O(instances×ports)/pointer-move -> O(1) (2 markers touches).
+   - **FALLBACK 2D basse-fidelite (exigence VISION)** : render/detect (decideRenderer PUR :
+     ?render=2d|3d + pref persistee + auto no-WebGL/low-end) + render/Render2D (board SVG
+     sans WebGL, jouable : clic 2 ports -> connect avec dry-run vert/rouge, clic cable ->
+     disconnect) + game2d (racine de composition sans Babylon, reutilise engine+Hud+
+     ControlsPanel+Exam+ProgressStore+coach). main.ts route 2D/3D par detection. Toggle "Vue 3D".
+     Sandbox reste 3D (logge). 8 vitest + 3 e2e.
+3. **A11y WCAG AA** : focus-visible global, cellules de routage 18->24px + aria-label,
+   #hud-toasts aria-live=polite, nav aria-current, warningInk (5.1:1) pour le texte warning
+   (l'ancien 2.9:1 echouait). Verifie par screenshots headless (dashboard, boards c1/d1, toasts).
+4. **R8 sample-rate** (ADR-0007) : controls enum (toggle|enum discrimine), ConnectionGraph
+   valide les options (INVALID_CONTROL_VALUE), logic/clock detecte le mismatch de frequence
+   sur un lien numerique, ControlsPanel rend un <select>. sample-rate sur hdx/hdio/ocx
+   (defaut 48000 -> D1 inchange). 8 vitest. Patchbay (ADR-0002) SKIP (attend Oscar).
+
+### DECISIONS
+- 2D = fallback pour les NIVEAUX gradues (a1-d1, le coeur pedagogique). Sandbox 3D-only en v1.
+- Sample-rate : defaut identique partout -> piege optionnel + teste, PAS une etape requise de D1
+  (ne casse pas l'arc phantom+clock). Option future : le rendre requis (ADR-0007 §Rejete).
+- game2d duplique la boucle d'orchestration de game.ts (~120 l). Assume pour v1 ; extraction
+  d'un "GameSession" partage = candidat P2 (docs/prompts/07).
+
+### RESTE (-> docs/prompts/07-hardening-leftovers.md, pret a coller)
+- Deep-scan NEEDS-DECISION : fader iQ ouvert par defaut = surprise sandbox R5 ; cross-ref
+  loadLevel au boot ; flags morts isDantePrimary/isClockMaster ; garde map vide dans recommend ;
+  couverture de tests du tier scene/orchestration.
+- 2D : support sandbox + polish overlap des labels a gauche ; extraction GameSession partagee.
+- getElementById(...)! sans garde (hardening mineur).

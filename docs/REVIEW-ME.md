@@ -80,3 +80,34 @@ engine n'affiche jamais plus d'un message à la fois).
    câblables (pas de loom XLR→DB25 fan-in, pas de normalling patchbay modélisé). Fermer ce
    trou = soit un device catalog (loom XLR→DB25), soit ADR-0002 (normalling) — hors périmètre
    d'un run content-only. bay-1 reste sur le bureau comme promesse visible.
+
+## 7. Run durcissement (2026-07-17 soir) — décisions en attente
+
+### Deep-scan NEEDS-DECISION (aucune tranchée en silence — à toi)
+1. **[À VÉRIFIER PAR OSCAR] Axia iQ `fader-in-mic-1` ouvert par défaut** : dans la sandbox,
+   déposer une iQ seule déclenche R5 (« câble la tally ») sans aucun câble — cohérent avec
+   la réalité broadcast (un studio est on-air par défaut) mais surprenant en bac à sable, et
+   ça bloque le crédit « rig propre » tant que l'élève n'a pas trouvé le fader. Options :
+   (a) garder ; (b) ne déclencher R5/R6 que si l'appareil a au moins un port connecté ;
+   (c) fader fermé par défaut au catalog + le brief B1 dit « ouvre le fader ». Mon avis : (b).
+2. **loadLevel ne fait que valider la forme** (zod), pas les références de requiredChain ni
+   les logicChecks — ça vit dans validate-catalog (CI). Un niveau livré sans CI pourrait être
+   injouable sans erreur claire. Option : passe de cross-ref légère au boot. Décision : garder
+   la CI comme garde (statu quo) ou durcir ?
+3. **Flags `isDantePrimary` / `isClockMaster` définis mais lus par AUCUN code** (P2 : redondance
+   Dante, double-master). Garder comme intention documentée, ou retirer jusqu'à ce que le
+   consommateur arrive ? (Lié à ADR-0007 §Rejeté double-master.)
+4. **recommend() suppose `map.rules` non vide** — vrai avec R1–R8, mais pas de garde/temps.
+
+### A11y — état
+Contrastes AA vérifiés (ink 15:1, muted 6.4:1, accent/​info 4.6:1, error 4.5:1, warning **texte**
+corrigé à 5.1:1 via warningInk). Focus clavier visible partout, cibles de routage à 24px,
+toasts annoncés (aria-live), nav aria-current. Vérifié par screenshots headless.
+Reste (non-bloquant) : le canvas 3D lui-même n'est pas navigable au clavier (le board 2D l'est,
+lui — c'est le chemin accessible). Les `getElementById(...)!` sans garde = hardening mineur.
+
+### 2D fallback — périmètre v1
+Couvre les niveaux gradués a1–d1 (le cœur). **Sandbox reste 3D** (pas de spawn/étagères en 2D).
+Petit défaut cosmétique : les labels des appareils à gauche passent sous le panneau objectifs.
+game2d.ts duplique la boucle de game.ts (~120 l) — candidat à une extraction « GameSession »
+partagée (docs/prompts/07).
