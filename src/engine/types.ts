@@ -10,6 +10,8 @@ export type ErrorCode =
   | 'UNKNOWN_PORT'
   | 'UNKNOWN_CONTROL'
   | 'UNKNOWN_CONNECTION'
+  | 'UNKNOWN_DEVICE' // addInstance (ADR-0004)
+  | 'DUPLICATE_INSTANCE' // addInstance (ADR-0004)
   | 'SELF_CONNECTION'
   | 'PORT_OCCUPIED'
   | 'DIRECTION_MISMATCH' // R3

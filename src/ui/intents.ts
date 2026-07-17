@@ -9,5 +9,7 @@ export type Intent =
   | { type: 'CONNECT'; a: PortRef; b: PortRef }
   | { type: 'DISCONNECT'; connectionId: string }
   | { type: 'SET_CONTROL'; instance: string; control: string; value: boolean }
+  /** Sandbox (ADR-0004): grab a device from the shelves, drop it on stage. */
+  | { type: 'SPAWN'; deviceId: string }
 
 export type IntentDispatcher = (intent: Intent) => void

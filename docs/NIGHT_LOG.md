@@ -53,3 +53,16 @@
 - Schemas zod Environment + Level etendus ; validateur : preset existant + chaque layout pointe une instance reelle du level.
 - Champs "status":"stub" perimes retires de b1/c1/d1 (ils sont jouables et testes depuis le run domaine).
 - 87 unit + 14 e2e verts, build OK.
+
+## Tache 5 - SANDBOX v1 OK (Beat 3, ADR-0004)
+
+**Livre :**
+- Extension engine MINIMALE (ADR-0004) : ConnectionGraph.addInstance(instanceId, deviceId) -> Ok|TypedError (DUPLICATE_INSTANCE / UNKNOWN_DEVICE). Controls aux defauts catalog. Testee (2 unit). Rien d'autre ne change.
+- Sandbox = pseudo-level DATA construit par le routeur : requiredChain [], logicChecks [R4..R8] -> meme RuleEvaluator, les regles enseignent en direct (hints ON, contrairement a l'examen). Jamais de win screen (pas de chaine requise).
+- Etageres par categorie LUES DU CATALOG (vignettes des assets), intent SPAWN -> spawn dynamique sur grille + ports interactifs immediatement cablables.
+- Gating par maitrise : readiness globale < 15% -> palette guidee 3 items (SM58/stagebox/console) + brief "connecte le micro a la console" (le gout du Beat 1) ; sinon etageres completes.
+- Play = assessment : les erreurs sandbox s'enregistrent sous "sandbox" et ruleScores compte desormais les erreurs de TOUTES les entrees du store (test dedie).
+- Rig nomme sauvegarde (localStorage audio-sim/rigs, versionne, ecrase par nom).
+- 90 vitest + 17 e2e verts (3 e2e sandbox : palette guidee, spawn->cablage->toast->store, save rig).
+
+**Reste (voir docs/prompts/) :** CHARGEMENT d'un rig (exige removeInstance/reset -> P2), signal positif "rig propre" vers la readiness, drag&drop physique depuis l'etagere (v1 = clic-pour-poser).

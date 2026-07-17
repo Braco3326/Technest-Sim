@@ -47,6 +47,18 @@ describe('ruleScores', () => {
     expect(two.R4.score).toBe(0) // a1 does not exercise R4
   })
 
+  it('sandbox mistakes count too — play is assessment (ADR-0004)', () => {
+    const scores = ruleScores(
+      withData({
+        a1: { wins: 2, mistakes: [] },
+        sandbox: { wins: 0, mistakes: [{ ruleId: 'R2', at: 'x' }, { ruleId: 'R2', at: 'x' }] },
+      }),
+      levels,
+      map,
+    )
+    expect(scores.R2.score).toBe(0.5) // 2 wins / (2 + 2 sandbox errors)
+  })
+
   it('errors drag the ratio down', () => {
     const scores = ruleScores(
       withData({ a1: { wins: 2, mistakes: [{ ruleId: 'R2', at: 'x' }, { ruleId: 'R2', at: 'x' }] } }),

@@ -23,12 +23,16 @@ export class Hud {
     private level: LevelT,
   ) {
     const examMode = new URLSearchParams(location.search).get('mode') === 'exam'
+    const sandbox = level.id === 'sandbox'
     const nav =
       `<a href="${location.pathname}" title="Retour au tableau de bord">←</a>` +
       ['a1', 'b1', 'c1', 'd1']
         .map((id) => `<a href="?level=${id}" class="${id === level.id ? 'current' : ''}">${id.toUpperCase()}</a>`)
         .join('') +
-      `<a href="?level=${level.id}&mode=exam" class="hud-exam ${examMode ? 'current' : ''}" title="Mode examen : chrono, sans aides, note /20">Examen</a>`
+      `<a href="?level=sandbox" class="${sandbox ? 'current' : ''}">Sandbox</a>` +
+      (sandbox
+        ? ''
+        : `<a href="?level=${level.id}&mode=exam" class="hud-exam ${examMode ? 'current' : ''}" title="Mode examen : chrono, sans aides, note /20">Examen</a>`)
     root.innerHTML = `
       <section class="hud-panel" id="hud-objectives">
         <nav id="hud-levels">${nav}</nav>
@@ -38,6 +42,7 @@ export class Hud {
         <p id="hud-counter"></p>
       </section>
       <aside class="hud-panel" id="hud-controls" hidden></aside>
+      <aside class="hud-panel" id="hud-shelf" hidden></aside>
       <div id="hud-toasts"></div>
       <div id="hud-win" hidden></div>`
     this.checklist = root.querySelector('#hud-checklist')!
@@ -64,7 +69,10 @@ export class Hud {
       )
       this.items[i].classList.toggle('done', !missing)
     })
-    this.counter.textContent = `${state.connectedRequired}/${state.totalRequired} connexions requises`
+    this.counter.textContent =
+      state.totalRequired === 0
+        ? 'Jeu libre — les règles veillent sur chaque connexion.'
+        : `${state.connectedRequired}/${state.totalRequired} connexions requises`
   }
 
   toast(severity: 'error' | 'warning' | 'info', title: string, body: string): void {

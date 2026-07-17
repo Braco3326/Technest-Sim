@@ -123,6 +123,25 @@ describe('gameplay errors (not rules)', () => {
   })
 })
 
+describe('dynamic spawn — ADR-0004 (sandbox)', () => {
+  it('addInstance spawns with catalog control defaults and full invariants', () => {
+    const g = new ConnectionGraph(registry, [])
+    expect(g.addInstance('u87-x', 'neumann-u87-ai')).toMatchObject({ ok: true })
+    expect(g.addInstance('isa-x', 'focusrite-isa-one')).toMatchObject({ ok: true })
+    expect(g.getControl('isa-x', 'phantom-48v')).toBe(false) // catalog default
+    expect(
+      g.connect({ instance: 'u87-x', port: 'out-xlr' }, { instance: 'isa-x', port: 'in-mic' }).ok,
+    ).toBe(true)
+  })
+
+  it('rejects duplicate instance ids and unknown devices (gameplay errors, not exceptions)', () => {
+    const g = new ConnectionGraph(registry, [])
+    g.addInstance('x', 'shure-sm58')
+    expect(g.addInstance('x', 'shure-sm57')).toMatchObject({ ok: false, code: 'DUPLICATE_INSTANCE' })
+    expect(g.addInstance('y', 'no-such-device')).toMatchObject({ ok: false, code: 'UNKNOWN_DEVICE' })
+  })
+})
+
 describe('device state — ADR-0001', () => {
   it('initializes controls to catalog defaults and toggles via setControl', () => {
     const g = new ConnectionGraph(registry, d1.devices)

@@ -40,10 +40,12 @@ export function ruleScores(
     let errors = 0
     for (const level of levels) {
       const lp = data.levels[level.id]
-      if (!lp) continue
-      if (rulesOfLevel(level).includes(ruleId)) wins += lp.wins
-      errors += lp.mistakes.filter((m) => m.ruleId === ruleId).length
+      if (lp && rulesOfLevel(level).includes(ruleId)) wins += lp.wins
     }
+    // Errors count from EVERY store entry — including the sandbox: free play
+    // feeds the same assessment (ADR-0004 "play = assessment").
+    for (const lp of Object.values(data.levels))
+      errors += lp.mistakes.filter((m) => m.ruleId === ruleId).length
     const coverage = Math.min(1, wins / TARGET_WINS)
     const ratio = wins + errors > 0 ? wins / (wins + errors) : 0
     out[ruleId] = { score: ratio * coverage, wins, errors }

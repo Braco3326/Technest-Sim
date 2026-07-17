@@ -84,6 +84,7 @@ export function renderDashboard(
 
       <nav class="db-levels">
         ${levels.map((l) => `<a href="?level=${l.id}">${l.id.toUpperCase()} · ${esc(l.title.split('—')[1]?.trim() ?? l.title)}</a>`).join('')}
+        <a href="?level=sandbox" class="db-sandbox">Sandbox · ${global < 0.15 ? 'palette guidée' : 'étagères libres'}</a>
       </nav>
     </div>`
 }

@@ -38,6 +38,7 @@ import { Hud } from './ui/hud'
 import { ControlsPanel } from './ui/controlsPanel'
 import { LocalStorageProgressStore } from './ui/ProgressStore'
 import { ExamController } from './ui/exam'
+import { Shelf, saveRig } from './ui/shelf'
 
 declare global {
   interface Window {
@@ -72,10 +73,16 @@ function loadEnvironment(id: string | undefined): EnvironmentT {
   return parsed.data
 }
 
-export function bootGame(registry: Registry, rawLevel: unknown): void {
+export interface BootOptions {
+  /** Sandbox gating (ADR-0004): true = guided 3-item palette, false = full shelves. */
+  sandboxGuided?: boolean
+}
+
+export function bootGame(registry: Registry, rawLevel: unknown, opts: BootOptions = {}): void {
   const level = loadLevel(rawLevel)
+  const sandboxMode = level.id === 'sandbox'
   // Exam mode (Beat 5): same engine, no hints, a clock, a /20 report.
-  const examMode = new URLSearchParams(location.search).get('mode') === 'exam'
+  const examMode = !sandboxMode && new URLSearchParams(location.search).get('mode') === 'exam'
 
   // ── engine ────────────────────────────────────────────────────────────────
   const graph = new ConnectionGraph(registry, level.devices)
@@ -185,7 +192,8 @@ export function bootGame(registry: Registry, rawLevel: unknown): void {
     for (const id of [...activeViolations])
       if (!state.violations.some((v) => v.ruleId === id)) activeViolations.delete(id)
 
-    if (state.won && !won) {
+    if (state.won && !won && !sandboxMode) {
+      // Sandbox has no requiredChain — "won" is meaningless there (ADR-0004).
       won = true
       progress.recordWin(level.id) // feeds the readiness model (ADR-0003)
       if (exam) exam.finish()
@@ -204,6 +212,26 @@ export function bootGame(registry: Registry, rawLevel: unknown): void {
     sessionMistakes += 1
     mistakes = progress.recordMistake(level.id, e.ruleId ?? e.code).levels[level.id]!.mistakes
     console.warn(`[rejected ${e.code}${e.ruleId ? ` ${e.ruleId}` : ''}] ${e.message}`)
+  }
+
+  // Sandbox spawns land on a simple grid rows-of-5, front of stage.
+  let spawnCount = 0
+  const spawnDevice = (deviceId: string): void => {
+    const instanceId = `${deviceId}-s${++spawnCount}`
+    const r = graph.addInstance(instanceId, deviceId)
+    if (!r.ok) {
+      hud.toast('error', 'Spawn impossible', r.message)
+      return
+    }
+    const n = level.devices.length + spawnCount - 1
+    const pos = new Vector3(-3 + (n % 5) * 1.6, 0, -1.2 - Math.floor(n / 5) * 1.6)
+    const inst = spawner.spawn(deviceId, pos, instanceId)
+    scene.render() // compute absolute positions for the new markers
+    for (const [portId, marker] of inst.portMarkers) {
+      const p = marker.getAbsolutePosition()
+      portPoints.push({ ref: { instance: instanceId, port: portId }, x: p.x, y: p.y, z: p.z })
+    }
+    refresh()
   }
 
   const dispatch = (intent: Intent): void => {
@@ -230,6 +258,10 @@ export function bootGame(registry: Registry, rawLevel: unknown): void {
         if (graph.setControl(intent.instance, intent.control, intent.value).ok) refresh()
         break
       }
+      case 'SPAWN': {
+        if (sandboxMode) spawnDevice(intent.deviceId)
+        break
+      }
     }
   }
 
@@ -248,6 +280,26 @@ export function bootGame(registry: Registry, rawLevel: unknown): void {
       })
     : null
   void interaction
+
+  // Sandbox shelves (ADR-0004): catalog-driven, mastery-gated, rig save box.
+  if (sandboxMode) {
+    new Shelf(
+      document.getElementById('hud-shelf')!,
+      registry,
+      opts.sandboxGuided ?? true,
+      dispatch,
+      (name) => {
+        const snap = graph.snapshot()
+        saveRig(window.localStorage, {
+          name,
+          savedAt: new Date().toISOString(),
+          instances: snap.instances.map((i) => ({ instanceId: i.instanceId, deviceId: i.deviceId })),
+          connections: snap.connections,
+          controls: Object.fromEntries(snap.instances.map((i) => [i.instanceId, i.controls])),
+        })
+      },
+    )
+  }
 
   // Debug/e2e hook (Playwright drives the same intents a pointer would, and
   // portScreen() lets it aim REAL pointer drags at port markers).

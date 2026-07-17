@@ -14,14 +14,45 @@ import { loadCatalog, loadLevel } from './engine/CatalogLoader'
 import { bootGame } from './game'
 import { renderDashboard } from './ui/dashboard'
 import { LocalStorageProgressStore } from './ui/ProgressStore'
-import type { ReadinessMap } from './ui/readiness'
+import { epreuveScores, globalReadiness, ruleScores, type ReadinessMap } from './ui/readiness'
+import { GUIDED_BRIEF } from './ui/shelf'
 
 injectTokens()
 
 const LEVELS: Record<string, unknown> = { a1: a1Json, b1: b1Json, c1: c1Json, d1: d1Json }
 const levelParam = new URLSearchParams(location.search).get('level')
 
-if (levelParam) {
+/** Mastery gate for the sandbox palette (ADR-0004): guided under 15% global readiness. */
+function sandboxGuided(): boolean {
+  const { data } = new LocalStorageProgressStore(window.localStorage).load()
+  const levels = Object.values(LEVELS).map((raw) => loadLevel(raw))
+  const map = readinessJson as ReadinessMap
+  return globalReadiness(epreuveScores(ruleScores(data, levels, map), map), map) < 0.15
+}
+
+if (levelParam === 'sandbox') {
+  const registry = loadCatalog(catalogJson)
+  const guided = sandboxGuided()
+  bootGame(
+    registry,
+    {
+      id: 'sandbox',
+      version: 1,
+      domain: 'live',
+      title: 'Sandbox — construis ton système',
+      brief: guided
+        ? GUIDED_BRIEF
+        : 'Étagères complètes : prends du matériel, câble, écoute les règles. Tout compte pour ta readiness.',
+      devices: [],
+      requiredChain: [],
+      logicChecks: ['R4', 'R5', 'R6', 'R7', 'R8'],
+      successMessage: '—',
+      environment: 'studio',
+      layout: {},
+    },
+    { sandboxGuided: guided },
+  )
+} else if (levelParam) {
   const registry = loadCatalog(catalogJson)
   bootGame(registry, LEVELS[levelParam] ?? a1Json)
 } else {
