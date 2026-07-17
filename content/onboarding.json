@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "note": "Questions d'onboarding (Beat 1) - 2 questions + date, 90 secondes max avant le premier geste. Les 'rules' des options seedent le recommandeur (tie-break sur scores nuls). Textes a relire par Oscar (docs/REVIEW-ME.md).",
+  "intro": "Deux questions, et on te met une console entre les mains.",
+  "examDateLabel": "Ton épreuve BTS, c'est quand ?",
+  "questions": [
+    {
+      "id": "weak-area",
+      "label": "Où te sens-tu le plus fragile aujourd'hui ?",
+      "options": [
+        { "id": "cabling", "label": "Câblage & connectique de base", "rules": ["R1", "R2", "R3"] },
+        { "id": "studio-tech", "label": "Studio : phantom, numérique, horloge", "rules": ["R4", "R8"] },
+        { "id": "broadcast", "label": "Antenne : tally, larsen, duplex N-1", "rules": ["R5", "R6", "R7"] },
+        { "id": "no-idea", "label": "Aucune idée — montre-moi", "rules": [] }
+      ]
+    },
+    {
+      "id": "self-level",
+      "label": "Ton niveau ressenti en technique son ?",
+      "options": [
+        { "id": "debutant", "label": "Débutant — tout est nouveau", "rules": [] },
+        { "id": "moyen", "label": "Des bases, mais fragiles", "rules": [] },
+        { "id": "avance", "label": "À l'aise, je veux consolider", "rules": [] }
+      ]
+    }
+  ],
+  "cta": "C'est parti — mets-moi aux manettes"
+}

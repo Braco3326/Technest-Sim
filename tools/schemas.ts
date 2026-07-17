@@ -149,8 +149,30 @@ export const Coach = z.object({
   ),
 }).passthrough()
 
+/** Onboarding questionnaire (content/onboarding.json, Beat 1). */
+export const Onboarding = z.object({
+  version: z.number(),
+  intro: z.string().min(1),
+  examDateLabel: z.string().min(1),
+  questions: z.array(
+    z.object({
+      id: z.string().min(1),
+      label: z.string().min(1),
+      options: z.array(
+        z.object({
+          id: z.string().min(1),
+          label: z.string().min(1),
+          rules: z.array(z.string().regex(/^R[1-8]$/)),
+        }),
+      ).min(2),
+    }),
+  ).min(1),
+  cta: z.string().min(1),
+}).passthrough()
+
 export type CatalogT = z.infer<typeof Catalog>
 export type LevelT = z.infer<typeof Level>
 export type ReadinessT = z.infer<typeof Readiness>
 export type EnvironmentT = z.infer<typeof Environment>
 export type CoachT = z.infer<typeof Coach>
+export type OnboardingT = z.infer<typeof Onboarding>

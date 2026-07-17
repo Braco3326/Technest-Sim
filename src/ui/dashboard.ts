@@ -16,6 +16,7 @@ import {
   type ReadinessMap,
 } from './readiness'
 import { detectComeback, detectLowMoment, tipFor, type CoachFile } from './coach'
+import { daysToExam, type OnboardingAnswers } from './onboarding'
 
 const esc = (s: string): string => s.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`)
 
@@ -25,14 +26,16 @@ export function renderDashboard(
   levels: LevelT[],
   map: ReadinessMap,
   coach?: CoachFile,
+  onboarding?: OnboardingAnswers | null,
 ): void {
   const scores = ruleScores(data, levels, map)
   const bcs = bcScores(scores, map)
   const eps = epreuveScores(scores, map)
   const global = globalReadiness(eps, map)
-  const rec = recommend(data, levels, map)
+  const rec = recommend(data, levels, map, onboarding?.weakRules ?? [])
   const today = new Date().toISOString().slice(0, 10)
   const streak = computeStreak(data.activity, today)
+  const jDays = daysToExam(onboarding?.examDate ?? null, today)
 
   // Coach on the dashboard (Beat 4): ONE message max, timed to the moment —
   // forgiveness > comeback > low-moment. Never a wall of text.
@@ -73,7 +76,7 @@ export function renderDashboard(
       <header class="db-head">
         <div>
           <h1>TekPractice</h1>
-          <p class="db-sub">Ta préparation BTS Métiers du son — readiness, pas des points.</p>
+          <p class="db-sub">Ta préparation BTS Métiers du son — readiness, pas des points.${jDays !== null ? ` <strong class="db-jday">J−${jDays}</strong>` : ''}</p>
         </div>
         <div class="db-streak" title="${streak.forgivenessUsed ? 'Un jour manqué a été pardonné — la régularité compte, pas la perfection.' : 'Jours actifs consécutifs'}">
           <span class="db-streak-n">${streak.days}</span>

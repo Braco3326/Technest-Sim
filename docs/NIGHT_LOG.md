@@ -122,3 +122,14 @@ Ordre conseille : Vercel d'abord (toi), puis 04 (visible), puis 01, 02, 03.
 - 100 vitest (10 nouveaux coach) + 17 e2e verts.
 
 **A relire (docs/REVIEW-ME.md) :** les 13 textes + les fenetres de detection (3 jours/2 jours).
+
+## Tache 2 - ONBOARDING OK (Beat 1)
+
+**Livre :**
+- content/onboarding.json (data, valide) : date d'epreuve + 2 questions (zone fragile -> seed de rules, niveau ressenti) + option "Passer" - AUCUN mur d'inscription, jamais.
+- src/ui/onboarding.ts : persistance localStorage v1, daysToExam, rendu formulaire blanc.
+- Seed du recommandeur : la peur declaree gagne les egalites a score nul, mais ne SURPASSE JAMAIS une faiblesse mesuree (test dedie) - honnetete du modele.
+- Flux Beat 1 : soumission -> redirection DIRECTE vers le level recommande (le "taste" en 90s). Retour accueil -> dashboard avec compte a rebours J-XX.
+- 107 vitest (7 nouveaux) + 20 e2e verts (3 nouveaux onboarding ; dashboard.spec adapte pour seeder l'onboarding).
+
+**A relire :** textes des questions/options (REVIEW-ME.md), groupes de rules par option.

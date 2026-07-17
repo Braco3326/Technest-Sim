@@ -102,16 +102,24 @@ export interface Recommendation {
 
 const MASTERY = 0.8
 
-/** The single next best action: attack the weakest rule via the least-won level exercising it. */
+/**
+ * The single next best action: attack the weakest rule via the least-won
+ * level exercising it. `seedWeak` (onboarding self-assessment, Beat 1) breaks
+ * ties at equal weakness — her declared fear gets attacked first.
+ */
 export function recommend(
   data: ProgressData,
   levels: LevelT[],
   map: ReadinessMap,
+  seedWeak: readonly string[] = [],
 ): Recommendation {
   const scores = ruleScores(data, levels, map)
   const ordered = Object.keys(map.rules) // R1..R8 order is the tie-break
   let weakestId = ordered[0]
   for (const id of ordered) if (scores[id].score < scores[weakestId].score) weakestId = id
+  const min = scores[weakestId].score
+  const seeded = ordered.find((id) => scores[id].score === min && seedWeak.includes(id))
+  if (seeded) weakestId = seeded
 
   const allStrong = ordered.every((id) => scores[id].score >= MASTERY)
   const pool = allStrong ? levels : levels.filter((l) => rulesOfLevel(l).includes(weakestId))

@@ -9,7 +9,10 @@ import c1Json from '../content/levels/c1.json'
 import d1Json from '../content/levels/d1.json'
 import readinessJson from '../content/readiness.json'
 import coachJson from '../content/coach/tips.json'
+import onboardingJson from '../content/onboarding.json'
 import type { CoachFile } from './ui/coach'
+import { loadOnboarding, renderOnboarding, type OnboardingConfig } from './ui/onboarding'
+import { recommend } from './ui/readiness'
 
 import { injectTokens } from './design/tokens'
 import { loadCatalog, loadLevel } from './engine/CatalogLoader'
@@ -62,7 +65,19 @@ if (levelParam === 'sandbox') {
   const dashboard = document.getElementById('dashboard')!
   const { data } = new LocalStorageProgressStore(window.localStorage).load()
   const levels = Object.values(LEVELS).map((raw) => loadLevel(raw))
-  renderDashboard(dashboard, data, levels, readinessJson as ReadinessMap, coachJson as CoachFile)
+  const map = readinessJson as ReadinessMap
+  const onboarding = loadOnboarding(window.localStorage)
+
+  if (!onboarding) {
+    // First visit (Beat 1): 2 questions + date, then STRAIGHT into a level —
+    // the first win comes before any wall.
+    renderOnboarding(dashboard, onboardingJson as OnboardingConfig, (answers) => {
+      const rec = recommend(data, levels, map, answers.weakRules)
+      location.href = `?level=${rec.levelId}`
+    })
+  } else {
+    renderDashboard(dashboard, data, levels, map, coachJson as CoachFile, onboarding)
+  }
   dashboard.hidden = false
   document.getElementById('renderCanvas')!.style.display = 'none'
 }

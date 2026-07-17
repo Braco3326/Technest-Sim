@@ -21,7 +21,7 @@ import { readFileSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { z } from 'zod'
-import { Catalog, Coach, Environment, Level, Readiness } from './schemas'
+import { Catalog, Coach, Environment, Level, Onboarding, Readiness } from './schemas'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const read = (p: string) => JSON.parse(readFileSync(resolve(root, p), 'utf8'))
@@ -202,6 +202,15 @@ for (const tip of coach.tips)
 for (const r of catalog.rules)
   if (!coach.tips.some((t) => t.trigger.kind === 'rule' && t.trigger.ruleId === r.id))
     fail(`content/coach/tips.json: rule "${r.id}" has no contextual coach tip`)
+
+// ── onboarding (content/onboarding.json) ────────────────────────────────────
+const onboarding = parseOrDie(Onboarding, read('content/onboarding.json'), 'content/onboarding.json')
+for (const q of onboarding.questions) {
+  assertUnique(q.options.map((o) => o.id), `onboarding options.id in "${q.id}"`)
+  for (const o of q.options)
+    for (const r of o.rules)
+      if (!ruleById.has(r)) fail(`content/onboarding.json: ${q.id}/${o.id} → unknown rule "${r}"`)
+}
 
 // ── report ──────────────────────────────────────────────────────────────────
 if (errors.length) {
