@@ -6,3 +6,8 @@ dist/
 .DS_Store
 playwright-report/
 test-results/
+
+# 3D modeling reference material — INTERNAL ONLY, never committed or published.
+# Third-party datasheets/photos live here purely as modeling reference; the .glb
+# assets we ship are OUR recreations (see assets-source/SOURCES.md legal note).
+assets-source/
