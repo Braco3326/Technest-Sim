@@ -17,6 +17,8 @@ import { recommend } from './ui/readiness'
 import { injectTokens } from './design/tokens'
 import { loadCatalog, loadLevel } from './engine/CatalogLoader'
 import { bootGame } from './game'
+import { bootGame2D } from './game2d'
+import { decideRenderer, readRenderEnv } from './render/detect'
 import { renderDashboard } from './ui/dashboard'
 import { LocalStorageProgressStore } from './ui/ProgressStore'
 import { epreuveScores, globalReadiness, ruleScores, type ReadinessMap } from './ui/readiness'
@@ -59,7 +61,17 @@ if (levelParam === 'sandbox') {
   )
 } else if (levelParam) {
   const registry = loadCatalog(catalogJson)
-  bootGame(registry, LEVELS[levelParam] ?? a1Json)
+  const rawLevel = LEVELS[levelParam] ?? a1Json
+  // VISION: a weak PC (no WebGL / low-end / explicit ?render=2d) gets the
+  // WebGL-free 2D board instead of the Babylon scene — same engine, same rules.
+  const decision = decideRenderer(readRenderEnv())
+  if (decision.use2d) {
+    console.info(`[render] 2D board (${decision.reason})`)
+    document.getElementById('renderCanvas')!.style.display = 'none'
+    bootGame2D(registry, rawLevel)
+  } else {
+    bootGame(registry, rawLevel)
+  }
 } else {
   // Home: pure DOM — the 3D engine never boots (fast, calm, Beat 2).
   const dashboard = document.getElementById('dashboard')!

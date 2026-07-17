@@ -16,6 +16,28 @@
         color: var(--tk-ink, #1b2129);
       }
       #renderCanvas { width: 100vw; height: 100vh; touch-action: none; }
+      /* 2D low-fidelity fallback board (VISION: playable on weak PCs). */
+      #board2d { position: fixed; inset: 0; width: 100vw; height: 100vh; background: var(--tk-bg, #f5f6f8); }
+      .board2d { width: 100%; height: 100%; display: block; }
+      /* Bodies/labels are inert — only ports and cables capture clicks. */
+      .b2d-device { fill: var(--tk-surface, #fff); stroke: var(--tk-surface-border, #e6e8ee); stroke-width: 1.5; pointer-events: none; }
+      .b2d-label { fill: var(--tk-ink, #1b2129); font-size: 13px; font-family: var(--tk-font, system-ui, sans-serif); font-weight: var(--tk-weight-medium, 550); pointer-events: none; }
+      .b2d-port { stroke: var(--tk-surface, #fff); stroke-width: 2; cursor: pointer; }
+      .b2d-port:hover, .b2d-port:focus-visible { stroke: var(--tk-ink, #1b2129); outline: none; }
+      .b2d-port.armed { stroke: var(--tk-accent, #2e5fe6); stroke-width: 3.5; }
+      .b2d-port.ok { stroke: var(--tk-success, #1f9d5b); stroke-width: 3; }
+      .b2d-port.bad { opacity: 0.35; }
+      .b2d-cable { stroke: var(--tk-cable, #2a2f3a); stroke-width: 3; stroke-linecap: round; cursor: pointer; }
+      .b2d-cable:hover { stroke: var(--tk-error, #d93a47); }
+      .board2d-toggle {
+        position: absolute; top: var(--tk-space-lg, 20px); right: var(--tk-space-lg, 20px);
+        background: var(--tk-surface, #fff); border: 1px solid var(--tk-surface-border, #e6e8ee);
+        border-radius: var(--tk-radius-sm, 7px); color: var(--tk-ink, #1b2129);
+        font: inherit; font-size: var(--tk-text-sm, 12.5px); font-weight: var(--tk-weight-medium, 550);
+        padding: 7px 12px; cursor: pointer;
+      }
+      .board2d-toggle:hover { border-color: var(--tk-accent, #2e5fe6); }
+      .board2d-toggle:focus-visible { outline: 2px solid var(--tk-accent, #2e5fe6); outline-offset: 2px; }
       #hud { position: fixed; inset: 0; pointer-events: none; color: var(--tk-ink, #1b2129); }
       #hud button, #hud a { pointer-events: auto; }
 
@@ -389,6 +411,7 @@
   </head>
   <body>
     <canvas id="renderCanvas"></canvas>
+    <div id="board2d" hidden></div>
     <div id="hud"></div>
     <div id="dashboard" hidden></div>
     <script type="module" src="/src/main.ts"></script>
