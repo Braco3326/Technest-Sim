@@ -66,3 +66,44 @@
 - 90 vitest + 17 e2e verts (3 e2e sandbox : palette guidee, spawn->cablage->toast->store, save rig).
 
 **Reste (voir docs/prompts/) :** CHARGEMENT d'un rig (exige removeInstance/reset -> P2), signal positif "rig propre" vers la readiness, drag&drop physique depuis l'etagere (v1 = clic-pour-poser).
+
+---
+
+# BRIEFING DE PASSATION (fin du run - 2026-07-17 ~04h)
+
+## Fait cette nuit (5/5 taches, chacune commitee+pushee, tests verts a chaque commit)
+1. DA BLANCHE - tokens (src/design/tokens.ts), HUD + scene galerie blanche, ombres de contact, design-system.md.
+2. READINESS + DASHBOARD - mapping referentiel (content/readiness.json, ADR-0003), ProgressStore v2 (migration), recommandeur "1 action", streak-pardon, radar/barres/chips sur "/".
+3. MODE EXAMEN - chrono, zero hint, note /20 transparente, rapport (ADR-light dans le bareme exam.ts), entree via chip "Examen".
+4. ENVIRONNEMENTS DATA - content/environments/{plateau,radio,studio}.json + layouts dans les levels ; stubs perimes nettoyes.
+5. SANDBOX v1 - etageres catalog, spawn dynamique (ADR-0004, addInstance teste), gating par maitrise, regles live, erreurs->readiness, rigs nommes.
+
+Etat final : 90 vitest + 17 e2e verts - build OK - engine intact sauf addInstance (ADR-0004).
+ADRs pris cette nuit : 0003 (readiness, Accepted - mapping a relire), 0004 (sandbox, Accepted).
+En attente de decision Oscar : ADR-0002 (patchbay, Proposed depuis le run domaine).
+
+## ATTEND TA RELECTURE (jugements de la nuit)
+- PEDAGOGIE : mapping rules->BC/epreuves + tips (content/readiness.json) ; bareme examen (60/40, -0.5/erreur, src/ui/exam.ts) ; textes du rapport d'examen ; gating sandbox a 15%.
+- DESIGN : accent bleu vs vert, ombres 0.20, cartels de ports (docs/design-system.md section "A relire").
+- Les 4 niveaux + dashboard + examen + sandbox se testent sur http://localhost:3001 (serveur detache) ou npm run dev.
+
+## URGENT (toi uniquement - autre compte Vercel)
+www.teknest.fr repond MAIS sert un bundle vieux de 2 jours (pre-dashboard, titre "Audio Sim") :
+le projet Vercel ne rebuild PAS sur les push GitHub. Dashboard Vercel -> projet du domaine
+teknest.fr -> Settings/Git : reconnecter Braco3326/Technest-Sim, branche main, puis redeployer.
+(teknest-simu.vercel.app est mort en 404 - probablement l'ancien projet supprime/renomme.)
+Ensuite la regle no-drift du vendredi redevient automatique.
+
+## SI FABLE DISPARAIT CE WEEK-END (prompts prets-a-coller, docs/prompts/)
+- 01-sandbox-rig-load.md : chargement de rig + removeInstance/clear (ADR-0005) + signal "rig propre".
+- 02-sample-rate-enum-controls.md : R8 complet via controls enum (ADR-0006).
+- 03-patchbay-normalling.md : implementation ADR-0002 (APRES ton OK).
+- 04-design-review-fixes.md : pass design post-relecture (labels hover, spawn origin, micro-motion).
+Chaque prompt est autonome (contexte, fichiers, contraintes, gates) - calibre pour un modele plus faible.
+Ordre conseille : Vercel d'abord (toi), puis 04 (visible), puis 01, 02, 03.
+
+## Dettes conscientes (ni bloquantes ni cachees)
+- Le 1er spawn sandbox peut apparaitre derriere le panneau etageres (fix dans le prompt 04).
+- tools/gate5-proof.ts et gate6-proof.ts pointent encore :3000 (historiques, sans valeur CI).
+- Vignettes etageres aux cadrages heterogenes (prompt 04).
+- Mode Learn / coach contextuel / onboarding : pas commences (P1 vision, gros morceaux).
