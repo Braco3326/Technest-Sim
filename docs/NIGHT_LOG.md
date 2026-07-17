@@ -144,3 +144,10 @@ Ordre conseille : Vercel d'abord (toi), puis 04 (visible), puis 01, 02, 03.
 - ACCESSIBILITE : prefers-reduced-motion tue tout le motion CSS (media query) ET les animations 3D (motionEnabled() cote Babylon).
 - Fixes design objectifs (du prompt 04) : origine de spawn sandbox centree (plus sous le panneau), vignettes etageres object-fit contain.
 - Piege retrouve : display:flex bat [hidden] -> #hud-shelf vide visible partout - regle desormais notee 2x (win screen, shelf). 110 vitest + 20 e2e verts.
+
+## Tache 4 - ENVIRONNEMENTS SUPPLEMENTAIRES OK (Beat 3)
+
+**Livre :**
+- 3 nouveaux presets data : theatre (chaud, 20x16), plein-air (froid clair, 30x20, camera large), reportage/ENG (compact 10x8, camera serree). Total : 6 pieces, toutes data-only.
+- BONUS utilisabilite immediate : la sandbox accepte ?env=<preset> + une rangee de "pieces" cliquables dans le panneau etageres ("she picks the theatre just to try" - Beat 3 mot pour mot).
+- Validateur etendu aux 6 presets. 110 vitest + 20 e2e verts.

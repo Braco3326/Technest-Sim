@@ -1,0 +1,22 @@
+{
+  "id": "theatre",
+  "name": "Théâtre",
+  "backdrop": {
+    "clearColor": "#F6F4F2",
+    "floorColor": "#FBF9F6",
+    "floorSize": [
+      20,
+      16
+    ]
+  },
+  "camera": {
+    "alpha": -1.5708,
+    "beta": 0.85,
+    "radius": 10.0,
+    "target": [
+      0,
+      0.5,
+      0.6
+    ]
+  }
+}

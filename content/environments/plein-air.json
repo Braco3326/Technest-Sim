@@ -1,0 +1,22 @@
+{
+  "id": "plein-air",
+  "name": "Plein-air / concert",
+  "backdrop": {
+    "clearColor": "#F2F5F8",
+    "floorColor": "#F9FBFC",
+    "floorSize": [
+      30,
+      20
+    ]
+  },
+  "camera": {
+    "alpha": -1.5708,
+    "beta": 0.9,
+    "radius": 12.0,
+    "target": [
+      0,
+      0.5,
+      0.8
+    ]
+  }
+}

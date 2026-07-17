@@ -251,6 +251,12 @@
       #hud-shelf[hidden] { display: none; }
       #hud-shelf h2 { font-size: var(--tk-text-xs, 11px); font-weight: var(--tk-weight-medium, 550); color: var(--tk-ink-faint, #8b93a3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: var(--tk-space-sm, 8px); }
       .shelf-brief { font-size: var(--tk-text-xs, 11px); color: var(--tk-ink-muted, #5a6372); margin-bottom: var(--tk-space-sm, 8px); line-height: 1.45; }
+      .shelf-rooms { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: var(--tk-space-sm, 8px); }
+      .shelf-rooms a {
+        font-size: 10px; text-decoration: none; color: var(--tk-ink-muted, #5a6372);
+        border: 1px solid var(--tk-surface-border, #e6e8ee); border-radius: 999px; padding: 2px 8px;
+      }
+      .shelf-rooms a.current { background: var(--tk-ink, #1b2129); border-color: var(--tk-ink, #1b2129); color: #fff; }
       .shelf-scroll { overflow-y: auto; flex: 1; }
       .shelf-cat h3 { font-size: var(--tk-text-xs, 11px); color: var(--tk-ink-muted, #5a6372); margin: var(--tk-space-sm, 8px) 0 4px; text-transform: capitalize; }
       .shelf-item {

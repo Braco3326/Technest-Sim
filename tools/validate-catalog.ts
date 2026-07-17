@@ -167,7 +167,7 @@ for (const lvl of levels) {
 }
 
 // ── environments (content/environments/*.json — scene presets are DATA) ────
-const ENV_IDS = ['plateau', 'radio', 'studio'] as const
+const ENV_IDS = ['plateau', 'radio', 'studio', 'theatre', 'plein-air', 'reportage'] as const
 const environments = new Map(
   ENV_IDS.map((id) => [id, parseOrDie(Environment, read(`content/environments/${id}.json`), `content/environments/${id}.json`)]),
 )

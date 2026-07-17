@@ -61,12 +61,18 @@ declare global {
 import plateauJson from '../content/environments/plateau.json'
 import radioJson from '../content/environments/radio.json'
 import studioJson from '../content/environments/studio.json'
+import theatreJson from '../content/environments/theatre.json'
+import pleinAirJson from '../content/environments/plein-air.json'
+import reportageJson from '../content/environments/reportage.json'
 import { Environment, type EnvironmentT } from '../tools/schemas'
 
 const ENVIRONMENTS: Record<string, unknown> = {
   plateau: plateauJson,
   radio: radioJson,
   studio: studioJson,
+  theatre: theatreJson,
+  'plein-air': pleinAirJson,
+  reportage: reportageJson,
 }
 
 function loadEnvironment(id: string | undefined): EnvironmentT {
@@ -98,7 +104,12 @@ export function bootGame(registry: Registry, rawLevel: unknown, opts: BootOption
   const runner = new LevelRunner(level, evaluator)
 
   // ── scene (white gallery — env preset + design tokens, VISION §3/§6) ─────
-  const env = loadEnvironment(level.environment)
+  // Sandbox room picker: ?env=<preset> overrides the default (rooms are data,
+  // trying them costs nothing — Beat 3 "she picks the théâtre just to try").
+  const envOverride = sandboxMode
+    ? (new URLSearchParams(location.search).get('env') ?? undefined)
+    : undefined
+  const env = loadEnvironment(envOverride ?? level.environment)
   const canvas = document.getElementById('renderCanvas') as HTMLCanvasElement
   const babylon = new Engine(canvas, true)
   const scene = new Scene(babylon)
@@ -337,6 +348,8 @@ export function bootGame(registry: Registry, rawLevel: unknown, opts: BootOption
           controls: Object.fromEntries(snap.instances.map((i) => [i.instanceId, i.controls])),
         })
       },
+      Object.keys(ENVIRONMENTS),
+      env.id,
     )
   }
 

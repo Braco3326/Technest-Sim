@@ -1,0 +1,22 @@
+{
+  "id": "reportage",
+  "name": "Reportage extérieur (ENG)",
+  "backdrop": {
+    "clearColor": "#F5F5F4",
+    "floorColor": "#FCFBFA",
+    "floorSize": [
+      10,
+      8
+    ]
+  },
+  "camera": {
+    "alpha": -1.5708,
+    "beta": 0.82,
+    "radius": 6.0,
+    "target": [
+      0,
+      0.4,
+      0.2
+    ]
+  }
+}

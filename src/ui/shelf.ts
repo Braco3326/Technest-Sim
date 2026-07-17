@@ -22,6 +22,8 @@ export class Shelf {
     guided: boolean,
     dispatch: (intent: Intent) => void,
     onSaveRig: (name: string) => void,
+    environments: readonly string[] = [],
+    currentEnv = '',
   ) {
     const devices = [...registry.deviceById.values()].filter((d) => d.ports.length > 0)
     const pool = guided ? devices.filter((d) => GUIDED_PALETTE.includes(d.id)) : devices
@@ -47,8 +49,18 @@ export class Shelf {
       )
       .join('')
 
+    const rooms = environments.length
+      ? `<nav class="shelf-rooms">${environments
+          .map(
+            (id) =>
+              `<a href="?level=sandbox&env=${id}" class="${id === currentEnv ? 'current' : ''}">${esc(id)}</a>`,
+          )
+          .join('')}</nav>`
+      : ''
+
     root.innerHTML = `
       <h2>Étagères${guided ? ' · palette guidée' : ''}</h2>
+      ${rooms}
       ${guided ? `<p class="shelf-brief">${GUIDED_BRIEF}</p>` : ''}
       <div class="shelf-scroll">${sections}</div>
       <div class="shelf-save">
