@@ -3,8 +3,8 @@
   "version": 1,
   "domain": "radio",
   "title": "B1 — Radio studio: mic, monitors, ON-AIR",
-  "brief": "Wire the presenter's RE20 into the Axia iQ, the control-room monitors, and the GPIO-driven ON-AIR light. Open the fader: the light must come on and the monitors must mute.",
-  "objective": "Presenter on air with tally light working and no feedback path.",
+  "brief": "Wire a radio studio in two lessons. SIGNAL PATH: the presenter's RE20 into the Axia iQ, the control-room Genelecs off the monitor bus, the playout automation onto the console over AoIP. BROADCAST DISCIPLINE: drive the ON-AIR light from the console GPIO, and mute the control-room monitors while the mic is open. Open the fader — the red light must come on (R5) and the monitors must mute (R6), or you are not safely on air.",
+  "objective": "Presenter on air: signal path complete, tally light lit, no feedback path.",
   "devices": [
     {
       "instanceId": "re20-1",
@@ -91,7 +91,8 @@
     "R5",
     "R6"
   ],
-  "successMessage": "Fader open: the red light is on and the monitors are muted. That's broadcast discipline.",
+  "successMessage": "Fader open: the red light is on and the monitors are muted. Signal path plus broadcast discipline — that's a studio ready to go live.",
+  "notes": "Two-lesson build on the REAL catalog. Stage 1 (signal): RE20→console mic 1, console monitor L/R→Genelecs, playout AoIP→console livewire. Stage 2 (discipline, both device-state gated): R5 needs the console GPIO wired to the litt ON-AIR light while the mic fader is open; R6 needs the CR monitors muted while that open mic is live in the room. The fader-in-mic-1 control starts OPEN (a studio goes on-air by default), so both lessons are live from the first cable. B1 is already near the simplified-catalog ceiling — the iQ models one mic input and one pro line input, and the only pro-line source here is the console itself, so no extra required cable is honest to add without new catalog ports (see docs/REVIEW-ME.md §6).",
   "examSeconds": 300,
   "environment": "radio",
   "layout": {

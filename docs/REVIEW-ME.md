@@ -47,3 +47,36 @@ engine n'affiche jamais plus d'un message à la fois).
 - **A decider** : modele (defaut claude-opus-4-8, qualite max ; claude-haiku-4-5 = ~5x
   moins cher si le volume devient un sujet — change VITE_AI_COACH_MODEL, rien d'autre) ;
   et provider Gemini/Ollama si tu preferes (docs/prompts/05-ai-coach.md, pret a coller).
+
+## 6. Run enrichissement contenu (2026-07-17) — SUBSTANCE des niveaux
+
+### Ce qui a été fait (pur content/, gates verts)
+- **c1** (le vrai maillon mince : 4 connexions / 1 règle) → **duplex 4 étapes, 6 connexions** :
+  captation terrain (RE50B→Scoopy+) · lien IP (codec↔codec) · retour studio (Scoop5→console)
+  · **monitoring régie ajouté** (bus monitor console→2 Genelec). R7 (N-1 echo) reste l'étoile.
+  Genelec 8030C ajouté à la salle radio (levels ["b1","c1","d1"]) — réutilisation d'un device
+  existant, aucun fait inventé.
+- **b1 / d1** : brief/objectif/successMessage réécrits pour rendre EXPLICITE leur structure
+  multi-étapes réelle (b1 = signal path + discipline broadcast R5/R6 ; d1 = 3 sous-chaînes
+  parallèles + 2 verrous d'état R4/R8). Pas de câble fabriqué : voir blocage ci-dessous.
+- 2 nouveaux e2e multi-étapes (arc « partiel → violation → fix → win » joué en séquence).
+
+### [À VÉRIFIER PAR OSCAR] — choix pédagogiques non tranchés en silence
+- **c1 monitoring** : j'ai routé le bus monitor de la console vers les Genelec pour que
+  l'opérateur entende l'échange. Confirme que c'est le bon point d'écoute (vs un aux dédié /
+  un casque régie). Si tu préfères, on retire les 2 Genelec et c1 revient à 4 connexions.
+
+### BLOCAGES rencontrés (skip + log, comme convenu)
+1. **« Ajouter des niveaux » ≠ content-only.** La liste des niveaux est codée en dur à 3
+   endroits (src/main.ts imports+LEVELS, src/ui/hud.ts nav, tools/validate-catalog.ts
+   LEVEL_IDS). Un niveau data-seul est donc INJOIGNABLE et NON validé. C'est une dette qui
+   contredit la promesse CLAUDE.md « nouveau niveau = data ». → **docs/prompts/06** lève ça
+   (registry dynamique `import.meta.glob`) PUIS ajoute a2/b2/c2 (variantes d'environnement).
+   Je n'ai PAS écrit de fichiers de niveaux morts (contenu non validé = anti-source-de-vérité).
+2. **Profondeur multi-étapes de b1/d1 plafonnée par le catalog simplifié.** b1 : l'iQ ne
+   modélise qu'une entrée micro + une entrée ligne pro, et la seule source ligne-pro de la
+   salle est la console elle-même → aucun câble requis honnête à ajouter. d1 : le chemin
+   d'enregistrement (préampli XLR-out → interface DB25-in) et le patchbay bay-1 ne sont pas
+   câblables (pas de loom XLR→DB25 fan-in, pas de normalling patchbay modélisé). Fermer ce
+   trou = soit un device catalog (loom XLR→DB25), soit ADR-0002 (normalling) — hors périmètre
+   d'un run content-only. bay-1 reste sur le bureau comme promesse visible.

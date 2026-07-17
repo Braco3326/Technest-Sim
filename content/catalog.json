@@ -229,11 +229,11 @@
     {
       "id": "genelec-8030c",
       "label": "Genelec 8030C",
-      "levels": ["b1", "d1"],
+      "levels": ["b1", "c1", "d1"],
       "realWorld": {
         "brand": "Genelec", "model": "8030C", "category": "studio-monitor",
         "typicalUse": "Ubiquitous active nearfield monitor (radio studios, post rooms)",
-        "notes": "Reused in B1 and D1 — one model, two rooms, like real life."
+        "notes": "Reused in B1, C1 and D1 — one model, three rooms, like real life."
       },
       "ports": [
         { "portId": "in-analog", "dir": "in", "connector": "xlr3-f",  "signal": "line-level-pro" },

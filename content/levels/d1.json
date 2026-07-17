@@ -3,8 +3,8 @@
   "version": 1,
   "domain": "post",
   "title": "D1 — Post room: voice-over chain with house clock",
-  "brief": "Wire a voice-over rig: U 87 through the ISA One preamp into the HD I/O, workstation on DigiLink, monitoring through the loom to the m905 and Genelecs, and slave the interface to the OCX HD master clock.",
-  "objective": "Record-ready VO chain, monitors fed, one clock master, everything locked.",
+  "brief": "Wire a post room in three parallel sub-chains, then set two device-state gates. CAPTURE: U 87 into the ISA One preamp (a condenser — it needs +48 V). WORKSTATION: Pro Tools on DigiLink into the HD I/O, slaved to the OCX HD house clock. MONITORING: HD I/O analog out through the Mogami loom to the m905 controller and the Genelecs. Then arm it: switch on the ISA One's +48 V (R4) — the interface locks to the master clock the moment its word-clock input is fed (R8).",
+  "objective": "Record-ready VO chain: mic powered, workstation clocked, monitors fed, one clock master, everything locked.",
   "devices": [
     {
       "instanceId": "u87-1",
@@ -133,8 +133,8 @@
     "R4",
     "R8"
   ],
-  "successMessage": "Locked to house clock, +48 V up, VO chain armed. (Full version will route the mic path through the patchbay — bay-1 is on the desk waiting.)",
-  "notes": "R4 is ACTIVE in the stub: the U 87 (requiresPhantom) must reach the ISA One's mic input with its '+48V' control toggled ON — wiring it with phantom off triggers the R4 teaching toast (see docs/adr/0001, device state). ISA One → HD I/O analog-in runs through the patchbay in the full level; stub keeps the chain minimal.",
+  "successMessage": "Locked to house clock, +48 V up, VO chain armed. (Full version will route the record path through the patchbay — bay-1 is on the desk waiting.)",
+  "notes": "Eight-cable, two-gate build. R4 (phantom): the U 87 (requiresPhantom) reaches the ISA One mic input, but the ISA's +48 V control is OFF by default — wiring it silent triggers R4 until the player switches +48 V on (ADR-0001, device state). R8 (clock): the HD I/O carries digital audio on DigiLink and has an isClockSlave word-clock input; leaving that input open triggers R8 until the OCX HD master is wired to it — the last required cable. KNOWN DEPTH GAP (docs/REVIEW-ME.md §6): the record path (preamp OUT → interface analog IN) and the patchbay bay-1 are NOT wired in this level, because with the simplified catalog ports there is no valid connector route (the ISA is XLR-out, the HD I/O analog-in is DB25, and no XLR→DB25 fan-in loom or patchbay normalling is modeled). Closing that gap needs either a catalog device (an XLR→DB25 loom) or ADR-0002 patchbay normalling — an engine/content change out of scope for a content-only run. bay-1 stays on the desk as the visible promise.",
   "examSeconds": 420,
   "environment": "studio",
   "layout": {

@@ -201,3 +201,29 @@ Objectif : couche COACH IA temps-reel (Beats 2/4), distincte des Conseils d'Osca
 - Tests : 17 nouveaux vitest (ancrage, degradation, silence examen, prompt structurel).
 Etat : 130 vitest + 21 e2e verts, build OK. Suites -> docs/prompts/05-ai-coach.md
 (Gemini, Ollama, lazy-load SDK, anti-spam, readiness dans le pack, e2e mocke).
+
+## Run enrichissement contenu (2026-07-17, apres-midi #2) — SUBSTANCE des niveaux
+
+Objectif : enrichir b1/c1/d1 en scenarios multi-etapes, +niveaux env-variants, en editant
+UNIQUEMENT content/ (ZERO changement engine). Cite les Beats 3 (profondeur) et 1-5 (regles).
+
+Fait (pur content/, gates verts) :
+- c1 : le vrai maillon mince (4 conn / R7) -> DUPLEX 4 ETAPES / 6 conn. Ajout du monitoring
+  regie (bus monitor console -> 2 Genelec). Genelec passe en levels ["b1","c1","d1"].
+  R7 (N-1 echo) reste l'etoile ; aucun fait pedagogique invente (tout du catalog/regles).
+- b1 / d1 : deja au plafond du catalog simplifie -> brief/objectif/successMessage/notes
+  reecrits pour rendre EXPLICITE la structure multi-etapes reelle (b1 signal+discipline
+  R5/R6 ; d1 3 sous-chaines + verrous R4/R8). Aucun cable fabrique.
+- e2e : c1 chain 4->6 ; +2 tests multi-etapes joues en SEQUENCE (partiel -> violation ->
+  fix -> win) : b1 (R5 tally puis R6 feedback) et c1 (N-1 send ferme -> echo -> mix-minus).
+
+Blocages (skip+log) :
+- "Ajouter des niveaux" n'est PAS content-only : la liste des niveaux est codee en dur
+  dans main.ts + hud.ts + validate-catalog.ts. Un niveau data-seul est injoignable/non
+  valide. Pas de fichiers morts ecrits. -> docs/prompts/06 (registry dynamique glob +
+  variantes a2/b2/c2) leve le blocage dans un run ou l'engine est autorise.
+- Profondeur b1/d1 plafonnee par le catalog 2-of-N ports + pas de loom XLR->DB25 ni de
+  normalling patchbay -> aucun cable requis honnete a ajouter. Detail docs/REVIEW-ME.md §6.
+
+Etat : validate:catalog VERT · 130 vitest VERT · 23 e2e VERT (2 nouveaux) · build OK.
+ADR du run : aucun (pur data). Relecture : docs/REVIEW-ME.md §6 ([A VERIFIER] c1 monitoring).
