@@ -9,7 +9,7 @@ import { expect, test } from '@playwright/test'
 type Ref = { instance: string; port: string }
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/?level=a1')
   await page.waitForFunction(() => !!window.__audioSim)
   await page.evaluate(() => window.localStorage.clear())
   await page.reload()

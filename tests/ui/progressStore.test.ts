@@ -18,7 +18,38 @@ const fakeStorage = (initial: Record<string, string> = {}): StorageLike & { dump
 describe('LocalStorageProgressStore', () => {
   it('fresh storage → empty data, no reset notice', () => {
     const store = new LocalStorageProgressStore(fakeStorage())
-    expect(store.load()).toEqual({ data: { version: PROGRESS_VERSION, levels: {} }, wasReset: false })
+    expect(store.load()).toEqual({
+      data: { version: PROGRESS_VERSION, levels: {}, activity: [] },
+      wasReset: false,
+    })
+  })
+
+  it('v1 payload MIGRATES to v2 (no reset — history is precious, ADR-0003)', () => {
+    const storage = fakeStorage({
+      'audio-sim/progress': JSON.stringify({
+        version: 1,
+        levels: { a1: { completedAt: '2026-07-01T10:00:00Z', mistakes: [{ ruleId: 'R2', at: 'x' }] } },
+      }),
+    })
+    const { data, wasReset } = new LocalStorageProgressStore(storage).load()
+    expect(wasReset).toBe(false)
+    expect(data.version).toBe(PROGRESS_VERSION)
+    expect(data.levels.a1).toEqual({
+      completedAt: '2026-07-01T10:00:00Z',
+      wins: 1,
+      mistakes: [{ ruleId: 'R2', at: 'x' }],
+    })
+    expect(data.activity).toEqual([])
+  })
+
+  it('recordWin counts wins and touches the activity day', () => {
+    const store = new LocalStorageProgressStore(fakeStorage())
+    store.recordWin('a1')
+    const data = store.recordWin('a1')
+    expect(data.levels.a1?.wins).toBe(2)
+    expect(data.levels.a1?.completedAt).toBeTruthy()
+    expect(data.activity).toHaveLength(1)
+    expect(data.activity[0]).toMatch(/^\d{4}-\d{2}-\d{2}$/)
   })
 
   it('save/load roundtrip', () => {

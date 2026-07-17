@@ -22,9 +22,11 @@ export class Hud {
     private registry: Registry,
     private level: LevelT,
   ) {
-    const nav = ['a1', 'b1', 'c1', 'd1']
-      .map((id) => `<a href="?level=${id}" class="${id === level.id ? 'current' : ''}">${id.toUpperCase()}</a>`)
-      .join('')
+    const nav =
+      `<a href="${location.pathname}" title="Retour au tableau de bord">←</a>` +
+      ['a1', 'b1', 'c1', 'd1']
+        .map((id) => `<a href="?level=${id}" class="${id === level.id ? 'current' : ''}">${id.toUpperCase()}</a>`)
+        .join('')
     root.innerHTML = `
       <section class="hud-panel" id="hud-objectives">
         <nav id="hud-levels">${nav}</nav>

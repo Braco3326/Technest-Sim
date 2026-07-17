@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "note": "Mapping pedagogique rules R1-R8 -> referentiel BTS (docs/db_blocs_competences.csv, db_epreuves_coefficients.csv). JUGEMENT PEDAGOGIQUE DE LA NUIT - a relire par Oscar (ADR-0003). Les tips sont des placeholders a reecrire dans sa voix.",
+  "competencies": {
+    "BC01": { "label": "Mise en place d'un projet", "inGame": false },
+    "BC02": { "label": "Savoir-faire des métiers du son", "inGame": true },
+    "BC03": { "label": "Participation à une production", "inGame": true },
+    "BC04": { "label": "Analyse de situation professionnelle", "inGame": false }
+  },
+  "epreuves": {
+    "E3": { "label": "Physique et technique (PTES)", "coefficient": 4 },
+    "E4": { "label": "Techniques et mise en œuvre", "coefficient": 4 },
+    "E51": { "label": "Projet industriel", "coefficient": 4 }
+  },
+  "rules": {
+    "R1": {
+      "bc": ["BC02"], "epreuves": ["E4"],
+      "tip": "Regarde le connecteur avant de tirer le câble : s'il ne rentre pas physiquement, ce n'est pas le bon câble. Jamais forcer."
+    },
+    "R2": {
+      "bc": ["BC02"], "epreuves": ["E3", "E4"],
+      "tip": "Niveau micro ≠ niveau ligne : 40 dB d'écart. C'est LA question piège de l'écrit ET la panne classique du plateau."
+    },
+    "R3": {
+      "bc": ["BC02"], "epreuves": ["E4"],
+      "tip": "Le signal sort d'une source et entre dans une destination. Out → In, toujours. Deux sorties face à face ne font rien de bon."
+    },
+    "R4": {
+      "bc": ["BC02"], "epreuves": ["E3", "E4"],
+      "tip": "Un statique muet = pense +48V. Le fantôme, c'est le piège classique — vérifie le switch avant de chercher plus loin."
+    },
+    "R5": {
+      "bc": ["BC02", "BC03"], "epreuves": ["E4"],
+      "tip": "Fader ouvert = lampe rouge allumée. Le tally n'est pas un gadget : c'est le contrat de sécurité du studio."
+    },
+    "R6": {
+      "bc": ["BC02", "BC03"], "epreuves": ["E4"],
+      "tip": "Micro ouvert + enceintes dans la même pièce = larsen. La console coupe les monitors quand ton fader s'ouvre — vérifie ce circuit."
+    },
+    "R7": {
+      "bc": ["BC02", "BC03"], "epreuves": ["E4", "E51"],
+      "tip": "Le N-1 : envoie au distant TOUT SAUF lui-même. S'il s'entend en retard, ton départ contient son retour. Question d'examen garantie."
+    },
+    "R8": {
+      "bc": ["BC02"], "epreuves": ["E3", "E4"],
+      "tip": "Un seul maître d'horloge, tout le reste esclave. Clics et drops = cherche le wordclock avant de changer les câbles."
+    }
+  }
+}

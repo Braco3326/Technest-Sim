@@ -21,7 +21,7 @@ import { readFileSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { z } from 'zod'
-import { Catalog, Level } from './schemas'
+import { Catalog, Level, Readiness } from './schemas'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const read = (p: string) => JSON.parse(readFileSync(resolve(root, p), 'utf8'))
@@ -166,6 +166,19 @@ for (const lvl of levels) {
   }
 }
 
+// ── readiness mapping (content/readiness.json, ADR-0003) ───────────────────
+const readiness = parseOrDie(Readiness, read('content/readiness.json'), 'content/readiness.json')
+for (const r of catalog.rules)
+  if (!readiness.rules[r.id])
+    fail(`content/readiness.json: rule "${r.id}" has no referential mapping (every catalog rule must map to BC/épreuves)`)
+for (const [ruleId, def] of Object.entries(readiness.rules)) {
+  if (!ruleById.has(ruleId)) fail(`content/readiness.json: rules["${ruleId}"] → unknown catalog rule`)
+  for (const bc of def.bc)
+    if (!readiness.competencies[bc]) fail(`content/readiness.json: rules["${ruleId}"].bc → unknown competency "${bc}"`)
+  for (const ep of def.epreuves)
+    if (!readiness.epreuves[ep]) fail(`content/readiness.json: rules["${ruleId}"].epreuves → unknown épreuve "${ep}"`)
+}
+
 // ── report ──────────────────────────────────────────────────────────────────
 if (errors.length) {
   console.error(`✗ catalog INVALID — ${errors.length} error(s):\n`)
@@ -180,5 +193,6 @@ console.log(`  connectorTypes : ${catalog.connectorTypes.length} (matesWith symm
 console.log(`  signalTypes    : ${catalog.signalTypes.length}`)
 console.log(`  devices        : ${catalog.devices.length} (${totalPorts} ports, ${totalControls} control(s), all refs resolve)`)
 console.log(`  rules          : ${catalog.rules.length} (R1–R8; engine invariants barred from logicChecks)`)
+console.log(`  readiness      : ${Object.keys(readiness.rules).length} rules mapped → ${Object.keys(readiness.competencies).length} BC / ${Object.keys(readiness.epreuves).length} épreuves`)
 for (const lvl of levels)
   console.log(`  level ${lvl.id}       : ${lvl.devices.length} instances, ${lvl.requiredChain.length} required connections, logicChecks [${lvl.logicChecks.join(', ') || '—'}] — chain solvable (R1/R2/R3 clean)`)

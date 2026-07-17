@@ -93,5 +93,20 @@ export const Level = z.object({
   successMessage: z.string().min(1),
 }).passthrough()
 
+/** Referential mapping rules → BC/épreuves (content/readiness.json, ADR-0003). */
+export const Readiness = z.object({
+  version: z.number(),
+  competencies: z.record(z.object({ label: z.string().min(1), inGame: z.boolean() })),
+  epreuves: z.record(z.object({ label: z.string().min(1), coefficient: z.number().positive() })),
+  rules: z.record(
+    z.object({
+      bc: z.array(z.string().min(1)).min(1),
+      epreuves: z.array(z.string().min(1)).min(1),
+      tip: z.string().min(1),
+    }),
+  ),
+}).passthrough()
+
 export type CatalogT = z.infer<typeof Catalog>
 export type LevelT = z.infer<typeof Level>
+export type ReadinessT = z.infer<typeof Readiness>

@@ -143,11 +143,78 @@
         cursor: pointer; transition: filter var(--tk-motion-fast, 140ms) var(--tk-motion-ease, ease);
       }
       .win-card button:hover { filter: brightness(1.08); }
+
+      /* ── Dashboard (home) ─────────────────────────────────────────────── */
+      #dashboard {
+        position: fixed; inset: 0; overflow-y: auto; display: flex;
+        align-items: flex-start; justify-content: center;
+        background: var(--tk-bg, #f5f6f8); padding: 6vh 20px 40px;
+      }
+      #dashboard[hidden] { display: none; }
+      .db-card {
+        width: 720px; max-width: 100%;
+        background: var(--tk-surface, #fff); border: 1px solid var(--tk-surface-border, #e6e8ee);
+        border-radius: var(--tk-radius-lg, 18px); box-shadow: var(--tk-elev-card);
+        padding: var(--tk-space-xl, 32px);
+        animation: toast-in var(--tk-motion-slow, 420ms) var(--tk-motion-ease, ease);
+      }
+      .db-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--tk-space-lg, 20px); }
+      .db-head h1 { font-size: var(--tk-text-xl, 21px); letter-spacing: -0.02em; }
+      .db-sub { font-size: var(--tk-text-sm, 12.5px); color: var(--tk-ink-muted, #5a6372); margin-top: 2px; }
+      .db-streak { text-align: right; }
+      .db-streak-n { font-size: 28px; font-weight: var(--tk-weight-bold, 650); color: var(--tk-accent, #2e5fe6); }
+      .db-streak-label { display: block; font-size: var(--tk-text-xs, 11px); color: var(--tk-ink-faint, #8b93a3); }
+      .db-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--tk-space-lg, 20px); margin-bottom: var(--tk-space-lg, 20px); }
+      .db-block h2, .db-action h2 {
+        font-size: var(--tk-text-xs, 11px); font-weight: var(--tk-weight-medium, 550);
+        color: var(--tk-ink-faint, #8b93a3); text-transform: uppercase; letter-spacing: 0.06em;
+        margin-bottom: var(--tk-space-sm, 8px);
+      }
+      .db-radar { width: 100%; }
+      .db-radar-grid { fill: none; stroke: var(--tk-surface-border, #e6e8ee); }
+      .db-radar-value { fill: rgba(46, 95, 230, 0.15); stroke: var(--tk-accent, #2e5fe6); stroke-width: 1.5; }
+      .db-radar-label { font-size: 10px; fill: var(--tk-ink-muted, #5a6372); text-anchor: middle; }
+      .db-radar-label.off { fill: var(--tk-ink-faint, #8b93a3); font-style: italic; }
+      .db-ep { display: grid; grid-template-columns: 30px 1fr 38px; gap: 8px; align-items: center; margin-bottom: 10px; }
+      .db-ep-name { font-size: var(--tk-text-sm, 12.5px); font-weight: var(--tk-weight-medium, 550); }
+      .db-ep-track { height: 6px; border-radius: 3px; background: var(--tk-surface-border, #e6e8ee); overflow: hidden; }
+      .db-ep-fill { display: block; height: 100%; background: var(--tk-accent, #2e5fe6); border-radius: 3px; transition: width var(--tk-motion-slow, 420ms) var(--tk-motion-ease, ease); }
+      .db-ep-pct { font-size: var(--tk-text-xs, 11px); color: var(--tk-ink-muted, #5a6372); text-align: right; }
+      .db-ep-label { grid-column: 1 / -1; font-size: var(--tk-text-xs, 11px); color: var(--tk-ink-faint, #8b93a3); margin-top: -6px; }
+      .db-global { font-size: var(--tk-text-sm, 12.5px); color: var(--tk-ink-muted, #5a6372); margin: var(--tk-space-sm, 8px) 0; }
+      .db-global strong { color: var(--tk-ink, #1b2129); }
+      .db-rules { display: flex; flex-wrap: wrap; gap: 5px; }
+      .db-rule { font-size: 10.5px; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--tk-surface-border, #e6e8ee); color: var(--tk-ink-muted, #5a6372); }
+      .db-rule-strong { border-color: var(--tk-success, #1f9d5b); color: var(--tk-success, #1f9d5b); }
+      .db-rule-todo { border-style: dashed; }
+      .db-action { border-top: 1px solid var(--tk-surface-border, #e6e8ee); padding-top: var(--tk-space-lg, 20px); }
+      .db-reason { font-size: var(--tk-text-md, 14px); margin-bottom: var(--tk-space-md, 14px); }
+      .db-cta {
+        display: inline-block; padding: 10px 28px; border-radius: var(--tk-radius-sm, 7px);
+        background: var(--tk-accent, #2e5fe6); color: var(--tk-accent-ink, #fff);
+        font-size: var(--tk-text-md, 14px); font-weight: var(--tk-weight-medium, 550);
+        text-decoration: none; transition: filter var(--tk-motion-fast, 140ms) var(--tk-motion-ease, ease);
+      }
+      .db-cta:hover { filter: brightness(1.08); }
+      .db-tip {
+        margin-top: var(--tk-space-md, 14px); padding: 10px 14px;
+        background: var(--tk-bg, #f5f6f8); border-radius: var(--tk-radius-sm, 7px);
+        font-size: var(--tk-text-sm, 12.5px); color: var(--tk-ink-muted, #5a6372); line-height: 1.5;
+      }
+      .db-tip strong { display: block; font-size: var(--tk-text-xs, 11px); text-transform: uppercase; letter-spacing: 0.05em; color: var(--tk-ink-faint, #8b93a3); margin-bottom: 2px; }
+      .db-levels { display: flex; gap: 8px; flex-wrap: wrap; margin-top: var(--tk-space-lg, 20px); }
+      .db-levels a {
+        font-size: var(--tk-text-xs, 11px); color: var(--tk-ink-muted, #5a6372); text-decoration: none;
+        border: 1px solid var(--tk-surface-border, #e6e8ee); border-radius: 999px; padding: 4px 12px;
+        transition: border-color var(--tk-motion-fast, 140ms) var(--tk-motion-ease, ease);
+      }
+      .db-levels a:hover { border-color: var(--tk-ink-faint, #8b93a3); }
     </style>
   </head>
   <body>
     <canvas id="renderCanvas"></canvas>
     <div id="hud"></div>
+    <div id="dashboard" hidden></div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
