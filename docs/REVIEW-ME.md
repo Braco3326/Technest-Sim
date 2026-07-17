@@ -111,3 +111,47 @@ Couvre les niveaux gradués a1–d1 (le cœur). **Sandbox reste 3D** (pas de spa
 Petit défaut cosmétique : les labels des appareils à gauche passent sous le panneau objectifs.
 game2d.ts duplique la boucle de game.ts (~120 l) — candidat à une extraction « GameSession »
 partagée (docs/prompts/07).
+
+## 8. Cohérence datasheet ↔ catalog (run référence assets, 2026-07-17)
+
+Contrôle des I/O de chaque device (fiche technique réelle) contre `content/catalog.json`.
+**Le catalog n'a PAS été modifié** — décision à toi. Détail modeleur : `assets-source/<cat>/<id>/notes.md`.
+
+### 8.1 VRAI FLAG à trancher (potentielle correction de fidélité)
+- **`yamaha-ql1` port `dante-primary` : catalog `rj45` — réel = `ethercon`.** Le Rio3224-D2
+  utilise déjà `ethercon` (correct) ; les ports Dante du vrai QL1 sont aussi etherCON.
+  **Impact gameplay = nul** : dans le type-system, `rj45` matesWith `ethercon` (et inversement),
+  donc rio→ql1 se connecte quoi qu'il arrive. C'est une correction de FIDÉLITÉ, pas de jouabilité.
+  → Option A : passer ql1 `dante-primary` en `ethercon` (cohérent avec le Rio). Option B : garder
+  `rj45` (déjà jouable). Mon avis : A (fidélité + cohérence inter-devices). **Ton OK requis.**
+
+### 8.2 Simplifications ASSUMÉES (catalog « 2 des N ports » — pour info, aucune action sauf si tu veux plus de fidélité)
+| device | réel | catalog | note |
+|---|---|---|---|
+| yamaha-ql1 | 16 XLR in / 8 out + Dante secondaire | 2 mic-in / 3 out / 1 Dante | + le flag etherCON ci-dessus |
+| yamaha-rio3224-d2 | 32 in / 16 analog out + 8 AES (« 3224 ») | 2 mic-in / 2 line-out | Dante etherCON déjà correct |
+| axia-iq | surface AoIP SANS jacks analos — l'I/O vit dans le moteur QOR/xNodes | 1 device qui fusionne surface+moteur | composite conceptuel ; Livewire RJ45 + AES-XLR corrects |
+| avid-hd-io | `digilink` = Mini-DigiLink ×2 ; + Loop Sync BNC (≠ wordclock) | 1 digilink, pas de Loop Sync | DB25 analog/AES corrects |
+| avid-protools-hdx | carte HDX = 2 Mini-DigiLink | 1 digilink | composite ; même type catalog `digilink` → mate OK |
+| focusrite-isa-one | + DI façade, line-in arrière, inserts, cue TRS, carte num. option | mic-in / line-out / IEC | mic-in/line-out/IEC corrects |
+| antelope-ocx-hd | 10× WC out BNC + 2 WC in + réf vidéo/atomic + 4 AES | 2 WC out | — |
+| grace-m905 | multi-num (2×AES, SPDIF, TOSLINK, ADAT, USB, RCA) + 3 sorties HP ; **2 boîtiers** (télécommande + mainframe 2U) | 1 analog + 1 AES + main + HP | modéliser l'arrière du MAINFRAME pour l'I/O |
+| qsc-k12-2 | 2 combo XLR/TRS in + aux 3.5mm ; 2 loop-thru + 1 mix out | 1 XLR-F in / 1 XLR-M thru | entrées = jacks COMBO (modeleur) |
+| yamaha-dbr12 | CH1/CH2 combo + RCA ×2 ; 1 XLR-M mix/link | 1 XLR-F in / 1 XLR-M | entrées combo |
+| aeta-scoop5-s | 2 in / 2 out + AES + ISDN + GPIO | 1 in / 1 out / RJ45 / IEC | 1U 480×44×252 |
+| aeta-scoopy-plus-s | **3** XLR-F mic/line in (48V) + AES + 2 line out + 2 HP | 1 mic-in / 1 HP / RJ45 | 3 entrées (pas 2) ; HP 6.35 correct |
+| switchcraft-9625 | 96 TT (2×48) + **12** DB25 arrière | 2 TT + 2 DB25 | (le chiffre « 8 DB25 » = modèle 6425, pas le 9625) |
+| mogami-gold-db25-xlrm | 1 DB25 → **8** XLR-M | 1 DB25 → 2 XLR-M | snake 8 canaux |
+| yellowtec-litt | pilotage GPIO/contact sec (2.4–24 VDC) — **correct** ; + alim 9–24 VDC séparée + USB (config only) | in-gpio | GPIO confirmé ; alim/USB-config non modélisés |
+
+### 8.3 Fidèles (aucune divergence)
+genelec-8030c (parfait : 1 XLR-F + IEC) · les 5 micros (1 XLR-M chacun) · km-210-9 & yellowtec-mika
+(props sans ports) · avid-protools-hdx (composite attendu) · playout-pc (générique attendu).
+
+### 8.4 Notes connecteur pour le modeleur (pas des erreurs, neutres gameplay)
+- Avid : **Mini-DigiLink** (pas DigiLink pleine taille) sur hdx ET hd-io — même type catalog, mate OK.
+- QSC/Yamaha : entrées = **jacks combo XLR/TRS** (le catalog modélise XLR-F ; le jeu utilise l'XLR).
+
+### 8.5 Bloqué / à récupérer à la main (datasheets)
+u87-ai (file-finder JS Neumann) · axia-iq (pas de PDF propre) · antelope-ocx-hd (pas de PDF propre) ·
+grace-m905 (manuel proprio seul) · mogami (pas de datasheet d'assemblage). URLs dans les notes.md.
