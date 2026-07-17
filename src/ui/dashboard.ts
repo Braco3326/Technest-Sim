@@ -15,6 +15,7 @@ import {
   ruleScores,
   type ReadinessMap,
 } from './readiness'
+import { detectComeback, detectLowMoment, tipFor, type CoachFile } from './coach'
 
 const esc = (s: string): string => s.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`)
 
@@ -23,13 +24,31 @@ export function renderDashboard(
   data: ProgressData,
   levels: LevelT[],
   map: ReadinessMap,
+  coach?: CoachFile,
 ): void {
   const scores = ruleScores(data, levels, map)
   const bcs = bcScores(scores, map)
   const eps = epreuveScores(scores, map)
   const global = globalReadiness(eps, map)
   const rec = recommend(data, levels, map)
-  const streak = computeStreak(data.activity, new Date().toISOString().slice(0, 10))
+  const today = new Date().toISOString().slice(0, 10)
+  const streak = computeStreak(data.activity, today)
+
+  // Coach on the dashboard (Beat 4): ONE message max, timed to the moment —
+  // forgiveness > comeback > low-moment. Never a wall of text.
+  let coachBlock = ''
+  if (coach) {
+    const noSeen = new Set<string>() // dashboard messages are moment-driven, not session-deduped
+    const tip = streak.forgivenessUsed
+      ? tipFor(coach, { kind: 'forgiveness' }, noSeen)
+      : detectComeback(data, today)
+        ? tipFor(coach, { kind: 'comeback' }, noSeen)
+        : detectLowMoment(data, today)
+          ? tipFor(coach, { kind: 'low-moment' }, noSeen)
+          : null
+    if (tip)
+      coachBlock = `<aside class="db-coach"><strong>Conseil d’Oscar</strong>${esc(tip.text)}</aside>`
+  }
 
   const epBars = Object.entries(map.epreuves)
     .map(([ep, def]) => {
@@ -74,6 +93,8 @@ export function renderDashboard(
           <div class="db-rules">${ruleChips}</div>
         </div>
       </section>
+
+      ${coachBlock}
 
       <section class="db-action">
         <h2>Prochaine action</h2>

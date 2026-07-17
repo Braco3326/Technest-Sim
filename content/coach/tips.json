@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "note": "TOUS les textes sont des PLACEHOLDERS marques [A REMPLACER PAR OSCAR] - la voix du mentor doit etre la sienne (VISION par.11 : authentique, premiere personne, irremplacable). Liste de relecture : docs/REVIEW-ME.md. Aucun fait pedagogique invente n'est presente comme vrai.",
+  "tips": [
+    {
+      "id": "coach-r1",
+      "trigger": { "kind": "rule", "ruleId": "R1" },
+      "text": "[À REMPLACER PAR OSCAR — anecdote perso sur un mauvais câble en TP : le réflexe de regarder le connecteur avant de forcer.]"
+    },
+    {
+      "id": "coach-r2",
+      "trigger": { "kind": "rule", "ruleId": "R2" },
+      "text": "[À REMPLACER PAR OSCAR — ton souvenir mic/line : comment tu as retenu la différence de 40 dB.]"
+    },
+    {
+      "id": "coach-r3",
+      "trigger": { "kind": "rule", "ruleId": "R3" },
+      "text": "[À REMPLACER PAR OSCAR — ta façon de visualiser le sens du signal (source → destination).]"
+    },
+    {
+      "id": "coach-r4",
+      "trigger": { "kind": "rule", "ruleId": "R4" },
+      "text": "[À REMPLACER PAR OSCAR — « le fantôme, c'est le piège classique — je l'ai oublié en TP la première fois aussi » (Beat 2 du StudentJourney, à raconter avec tes mots).]"
+    },
+    {
+      "id": "coach-r5",
+      "trigger": { "kind": "rule", "ruleId": "R5" },
+      "text": "[À REMPLACER PAR OSCAR — une histoire de studio où le tally a sauvé (ou pas) une prise d'antenne.]"
+    },
+    {
+      "id": "coach-r6",
+      "trigger": { "kind": "rule", "ruleId": "R6" },
+      "text": "[À REMPLACER PAR OSCAR — ton premier larsen : ce que ça fait et le réflexe anti-larsen.]"
+    },
+    {
+      "id": "coach-r7",
+      "trigger": { "kind": "rule", "ruleId": "R7" },
+      "text": "[À REMPLACER PAR OSCAR — le N-1 expliqué comme tu l'aurais voulu en 1re année ; pourquoi c'est LA question d'exam.]"
+    },
+    {
+      "id": "coach-r8",
+      "trigger": { "kind": "rule", "ruleId": "R8" },
+      "text": "[À REMPLACER PAR OSCAR — clics/drops : la fois où c'était juste le wordclock.]"
+    },
+    {
+      "id": "coach-low-moment",
+      "trigger": { "kind": "low-moment" },
+      "text": "[À REMPLACER PAR OSCAR — Beat 4 : « à un mois de l'exam j'étais persuadé d'échouer — voilà ce qui m'a aidé à tenir ». Le message des soirs difficiles.]"
+    },
+    {
+      "id": "coach-comeback",
+      "trigger": { "kind": "comeback" },
+      "text": "[À REMPLACER PAR OSCAR — message de retour après quelques jours d'absence : zéro culpabilité, on reprend petit.]"
+    },
+    {
+      "id": "coach-forgiveness",
+      "trigger": { "kind": "forgiveness" },
+      "text": "[À REMPLACER PAR OSCAR — « la régularité compte, pas la perfection » dit avec tes mots.]"
+    },
+    {
+      "id": "coach-exam-low",
+      "trigger": { "kind": "exam-low" },
+      "text": "[À REMPLACER PAR OSCAR — après un score d'exam décevant : le score est une carte, pas un verdict. Ton vécu du premier blanc raté.]"
+    },
+    {
+      "id": "coach-first-win",
+      "trigger": { "kind": "first-win" },
+      "text": "[À REMPLACER PAR OSCAR — après la toute première victoire : « tu viens de faire une vraie prise de son propre » (Beat 1).]"
+    }
+  ]
+}

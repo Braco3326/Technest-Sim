@@ -39,6 +39,8 @@ import { ControlsPanel } from './ui/controlsPanel'
 import { LocalStorageProgressStore } from './ui/ProgressStore'
 import { ExamController } from './ui/exam'
 import { Shelf, saveRig } from './ui/shelf'
+import { SeenTips, tipFor, type CoachFile } from './ui/coach'
+import coachJson from '../content/coach/tips.json'
 
 declare global {
   interface Window {
@@ -173,6 +175,18 @@ export function bootGame(registry: Registry, rawLevel: unknown, opts: BootOption
   let won = false
   const activeViolations = new Set<string>()
 
+  // Coach (Beat 2): the mentor voice fires on the exact topic, once per
+  // session, never during an exam (no hints there — including human ones).
+  const coachTips = coachJson as CoachFile
+  const seenTips = new SeenTips()
+  const coachOnRule = (ruleId: string | undefined): void => {
+    if (examMode || !ruleId) return
+    const tip = tipFor(coachTips, { kind: 'rule', ruleId }, seenTips.set)
+    if (!tip) return
+    seenTips.mark(tip.id)
+    hud.toast('coach', 'Conseil d’Oscar', tip.text)
+  }
+
   const refresh = (): LevelState => {
     const state = runner.check(graph)
     hud.update(state)
@@ -188,6 +202,7 @@ export function bootGame(registry: Registry, rawLevel: unknown, opts: BootOption
       if (!examMode) hud.toast(v.severity, v.title, v.teach)
       sessionMistakes += 1
       mistakes = progress.recordMistake(level.id, v.ruleId).levels[level.id]!.mistakes
+      coachOnRule(v.ruleId)
     }
     for (const id of [...activeViolations])
       if (!state.violations.some((v) => v.ruleId === id)) activeViolations.delete(id)
@@ -195,9 +210,19 @@ export function bootGame(registry: Registry, rawLevel: unknown, opts: BootOption
     if (state.won && !won && !sandboxMode) {
       // Sandbox has no requiredChain — "won" is meaningless there (ADR-0004).
       won = true
+      const firstEver = Object.values(progress.load().data.levels).every((l) => l.wins === 0)
       progress.recordWin(level.id) // feeds the readiness model (ADR-0003)
       if (exam) exam.finish()
-      else hud.showWin(mistakes)
+      else {
+        hud.showWin(mistakes)
+        if (firstEver) {
+          const tip = tipFor(coachTips, { kind: 'first-win' }, seenTips.set)
+          if (tip) {
+            seenTips.mark(tip.id)
+            hud.toast('coach', 'Conseil d’Oscar', tip.text)
+          }
+        }
+      }
     }
     return state
   }
@@ -211,6 +236,7 @@ export function bootGame(registry: Registry, rawLevel: unknown, opts: BootOption
     }
     sessionMistakes += 1
     mistakes = progress.recordMistake(level.id, e.ruleId ?? e.code).levels[level.id]!.mistakes
+    coachOnRule(e.ruleId)
     console.warn(`[rejected ${e.code}${e.ruleId ? ` ${e.ruleId}` : ''}] ${e.message}`)
   }
 

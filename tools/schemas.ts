@@ -130,7 +130,27 @@ export const Readiness = z.object({
   ),
 }).passthrough()
 
+/** Coach tips (content/coach/tips.json) — the mentor voice, contextual triggers. */
+export const Coach = z.object({
+  version: z.number(),
+  tips: z.array(
+    z.object({
+      id: z.string().min(1),
+      trigger: z.discriminatedUnion('kind', [
+        z.object({ kind: z.literal('rule'), ruleId: z.string().regex(/^R[1-8]$/) }),
+        z.object({ kind: z.literal('low-moment') }),
+        z.object({ kind: z.literal('comeback') }),
+        z.object({ kind: z.literal('forgiveness') }),
+        z.object({ kind: z.literal('exam-low') }),
+        z.object({ kind: z.literal('first-win') }),
+      ]),
+      text: z.string().min(1),
+    }),
+  ),
+}).passthrough()
+
 export type CatalogT = z.infer<typeof Catalog>
 export type LevelT = z.infer<typeof Level>
 export type ReadinessT = z.infer<typeof Readiness>
 export type EnvironmentT = z.infer<typeof Environment>
+export type CoachT = z.infer<typeof Coach>

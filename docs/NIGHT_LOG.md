@@ -107,3 +107,18 @@ Ordre conseille : Vercel d'abord (toi), puis 04 (visible), puis 01, 02, 03.
 - tools/gate5-proof.ts et gate6-proof.ts pointent encore :3000 (historiques, sans valeur CI).
 - Vignettes etageres aux cadrages heterogenes (prompt 04).
 - Mode Learn / coach contextuel / onboarding : pas commences (P1 vision, gros morceaux).
+
+---
+# RUN DE NUIT n.2 - 2026-07-17 (suite)
+
+## Tache 1 - COACH / CONSEILS D'OSCAR OK (Beats 4 + 2)
+
+**Livre :**
+- content/coach/tips.json : 13 tips PLACEHOLDER "[A REMPLACER PAR OSCAR]" (8 par rule + low-moment/comeback/forgiveness/exam-low/first-win). AUCUN fait pedagogique invente - chaque texte decrit ce qu'Oscar doit y raconter. Liste de relecture : docs/REVIEW-ME.md.
+- src/ui/coach.ts (pur) : detectLowMoment (>=3 jours actifs PUIS >=2 jours de silence), detectComeback (retour apres trou), tipFor + dedupe session (SeenTips).
+- Tone engine = contrat applique : 1 message coach max par moment, 1x/session par tip, JAMAIS pendant un examen, moments bas uniquement sur le dashboard (pas d'interruption culpabilisante en jeu).
+- Livraison contextuelle : violation R? -> tip de LA rule (toast "Conseil d'Oscar" stylise a part) ; premiere victoire -> first-win ; dashboard -> forgiveness > comeback > low-moment.
+- Validateur : chaque rule du catalog DOIT avoir son tip coach ; ids uniques ; triggers resolus.
+- 100 vitest (10 nouveaux coach) + 17 e2e verts.
+
+**A relire (docs/REVIEW-ME.md) :** les 13 textes + les fenetres de detection (3 jours/2 jours).

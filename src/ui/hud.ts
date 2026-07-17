@@ -75,7 +75,7 @@ export class Hud {
         : `${state.connectedRequired}/${state.totalRequired} connexions requises`
   }
 
-  toast(severity: 'error' | 'warning' | 'info', title: string, body: string): void {
+  toast(severity: 'error' | 'warning' | 'info' | 'coach', title: string, body: string): void {
     const el = document.createElement('div')
     el.className = `toast toast-${severity}`
     el.innerHTML = `<strong></strong><span></span>`

@@ -21,7 +21,7 @@ import { readFileSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { z } from 'zod'
-import { Catalog, Environment, Level, Readiness } from './schemas'
+import { Catalog, Coach, Environment, Level, Readiness } from './schemas'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const read = (p: string) => JSON.parse(readFileSync(resolve(root, p), 'utf8'))
@@ -192,6 +192,16 @@ for (const [ruleId, def] of Object.entries(readiness.rules)) {
   for (const ep of def.epreuves)
     if (!readiness.epreuves[ep]) fail(`content/readiness.json: rules["${ruleId}"].epreuves → unknown épreuve "${ep}"`)
 }
+
+// ── coach tips (content/coach/tips.json) ────────────────────────────────────
+const coach = parseOrDie(Coach, read('content/coach/tips.json'), 'content/coach/tips.json')
+assertUnique(coach.tips.map((t) => t.id), 'coach tips.id')
+for (const tip of coach.tips)
+  if (tip.trigger.kind === 'rule' && !ruleById.has(tip.trigger.ruleId))
+    fail(`content/coach/tips.json: tips["${tip.id}"] → unknown rule "${tip.trigger.ruleId}"`)
+for (const r of catalog.rules)
+  if (!coach.tips.some((t) => t.trigger.kind === 'rule' && t.trigger.ruleId === r.id))
+    fail(`content/coach/tips.json: rule "${r.id}" has no contextual coach tip`)
 
 // ── report ──────────────────────────────────────────────────────────────────
 if (errors.length) {

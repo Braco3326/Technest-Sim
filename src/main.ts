@@ -8,6 +8,8 @@ import b1Json from '../content/levels/b1.json'
 import c1Json from '../content/levels/c1.json'
 import d1Json from '../content/levels/d1.json'
 import readinessJson from '../content/readiness.json'
+import coachJson from '../content/coach/tips.json'
+import type { CoachFile } from './ui/coach'
 
 import { injectTokens } from './design/tokens'
 import { loadCatalog, loadLevel } from './engine/CatalogLoader'
@@ -60,7 +62,7 @@ if (levelParam === 'sandbox') {
   const dashboard = document.getElementById('dashboard')!
   const { data } = new LocalStorageProgressStore(window.localStorage).load()
   const levels = Object.values(LEVELS).map((raw) => loadLevel(raw))
-  renderDashboard(dashboard, data, levels, readinessJson as ReadinessMap)
+  renderDashboard(dashboard, data, levels, readinessJson as ReadinessMap, coachJson as CoachFile)
   dashboard.hidden = false
   document.getElementById('renderCanvas')!.style.display = 'none'
 }
