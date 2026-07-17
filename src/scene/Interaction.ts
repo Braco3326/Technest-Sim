@@ -22,6 +22,8 @@ export interface InteractionDeps {
   /** Dry-run verdict — ConnectionGraph.canConnect, injected by the bootstrap. */
   canConnect(a: PortRef, b: PortRef): ConnectResult
   dispatch(intent: Intent): void
+  /** Exam mode (Beat 5): the drag never reveals green/red — that preview IS a hint. */
+  neutralDrag?: boolean
 }
 
 interface DragState {
@@ -98,7 +100,7 @@ export class Interaction {
       this.drag.candidateOk = this.deps.canConnect(this.drag.from.ref, candidate.ref).ok
       this.cables.updateDrag(
         new Vector3(candidate.x, candidate.y, candidate.z),
-        this.drag.candidateOk ? 'ok' : 'bad',
+        this.deps.neutralDrag ? 'neutral' : this.drag.candidateOk ? 'ok' : 'bad',
       )
     } else {
       this.drag.candidateOk = false

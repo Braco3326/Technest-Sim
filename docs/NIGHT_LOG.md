@@ -31,3 +31,15 @@
 - Tests : 81 vitest (16 nouveaux readiness/streak/migration) + 11 e2e (3 nouveaux dashboard).
 
 **A relire par Oscar (pedagogie) :** le mapping BC/epreuves de readiness.json (mes jugements : R5/R6/R7 -> aussi BC03 ; E3 pour R2/R4/R8 ; E51 pour R7) et les textes des tips (a reecrire dans ta voix).
+
+## Tache 3 - MODE TESTS / EXAMEN OK (Beat 5)
+
+**Livre :**
+- src/ui/exam.ts : examScore PURE (/20 : 60% cablage + 40% checks domaine - 0.5pt/erreur, arrondi au demi-point, jamais <0) + ExamController (chrono, rapport final, gel des intents apres fin).
+- ?level=X&mode=exam : AUCUN hint - drag toujours neutre (pas de vert/rouge), toasts sans texte pedagogique ("Connexion refusee"), violations non toastees mais TOUJOURS enregistrees (play = assessment).
+- examSeconds par level (data : a1 240s, b1/c1 300s, d1 420s) ; timer HUD (rouge < 30s) ; timeout => rapport avec l'etat reel.
+- Rapport : note /20, detail transparent (completion, checks, erreurs, temps), ton anti-honte ("une mesure, pas un jugement"), CTA vers la readiness.
+- Entree : chip "Examen" dans la nav du HUD. Reutilise 100% l'engine (zero refonte).
+- Tests : 6 unit (bareme) + 3 e2e (pas de fuite du teach text, rapport /20, win screen remplace, intents geles).
+
+**Jugement a relire :** le bareme (60/40, -0.5pt) et les textes du rapport.

@@ -7,28 +7,134 @@
   "brief": "Wire a voice-over rig: U 87 through the ISA One preamp into the HD I/O, workstation on DigiLink, monitoring through the loom to the m905 and Genelecs, and slave the interface to the OCX HD master clock.",
   "objective": "Record-ready VO chain, monitors fed, one clock master, everything locked.",
   "devices": [
-    { "instanceId": "u87-1",   "deviceId": "neumann-u87-ai" },
-    { "instanceId": "isa-1",   "deviceId": "focusrite-isa-one" },
-    { "instanceId": "hdio-1",  "deviceId": "avid-hd-io" },
-    { "instanceId": "hdx-1",   "deviceId": "avid-protools-hdx" },
-    { "instanceId": "loom-1",  "deviceId": "mogami-gold-db25-xlrm" },
-    { "instanceId": "m905-1",  "deviceId": "grace-m905" },
-    { "instanceId": "gen-l",   "deviceId": "genelec-8030c" },
-    { "instanceId": "gen-r",   "deviceId": "genelec-8030c" },
-    { "instanceId": "clock-1", "deviceId": "antelope-ocx-hd" },
-    { "instanceId": "bay-1",   "deviceId": "switchcraft-studiopatch-9625" }
+    {
+      "instanceId": "u87-1",
+      "deviceId": "neumann-u87-ai"
+    },
+    {
+      "instanceId": "isa-1",
+      "deviceId": "focusrite-isa-one"
+    },
+    {
+      "instanceId": "hdio-1",
+      "deviceId": "avid-hd-io"
+    },
+    {
+      "instanceId": "hdx-1",
+      "deviceId": "avid-protools-hdx"
+    },
+    {
+      "instanceId": "loom-1",
+      "deviceId": "mogami-gold-db25-xlrm"
+    },
+    {
+      "instanceId": "m905-1",
+      "deviceId": "grace-m905"
+    },
+    {
+      "instanceId": "gen-l",
+      "deviceId": "genelec-8030c"
+    },
+    {
+      "instanceId": "gen-r",
+      "deviceId": "genelec-8030c"
+    },
+    {
+      "instanceId": "clock-1",
+      "deviceId": "antelope-ocx-hd"
+    },
+    {
+      "instanceId": "bay-1",
+      "deviceId": "switchcraft-studiopatch-9625"
+    }
   ],
   "requiredChain": [
-    { "from": { "instance": "u87-1",   "port": "out-xlr" },         "to": { "instance": "isa-1",  "port": "in-mic" } },
-    { "from": { "instance": "hdx-1",   "port": "digilink" },        "to": { "instance": "hdio-1", "port": "digilink" } },
-    { "from": { "instance": "hdio-1",  "port": "analog-out-db25" }, "to": { "instance": "loom-1", "port": "in-db25" } },
-    { "from": { "instance": "loom-1",  "port": "out-xlr-1" },       "to": { "instance": "m905-1", "port": "in-analog-l" } },
-    { "from": { "instance": "loom-1",  "port": "out-xlr-2" },       "to": { "instance": "m905-1", "port": "in-analog-r" } },
-    { "from": { "instance": "m905-1",  "port": "out-main-l" },      "to": { "instance": "gen-l",  "port": "in-analog" } },
-    { "from": { "instance": "m905-1",  "port": "out-main-r" },      "to": { "instance": "gen-r",  "port": "in-analog" } },
-    { "from": { "instance": "clock-1", "port": "wordclock-out-1" }, "to": { "instance": "hdio-1", "port": "wordclock-in" } }
+    {
+      "from": {
+        "instance": "u87-1",
+        "port": "out-xlr"
+      },
+      "to": {
+        "instance": "isa-1",
+        "port": "in-mic"
+      }
+    },
+    {
+      "from": {
+        "instance": "hdx-1",
+        "port": "digilink"
+      },
+      "to": {
+        "instance": "hdio-1",
+        "port": "digilink"
+      }
+    },
+    {
+      "from": {
+        "instance": "hdio-1",
+        "port": "analog-out-db25"
+      },
+      "to": {
+        "instance": "loom-1",
+        "port": "in-db25"
+      }
+    },
+    {
+      "from": {
+        "instance": "loom-1",
+        "port": "out-xlr-1"
+      },
+      "to": {
+        "instance": "m905-1",
+        "port": "in-analog-l"
+      }
+    },
+    {
+      "from": {
+        "instance": "loom-1",
+        "port": "out-xlr-2"
+      },
+      "to": {
+        "instance": "m905-1",
+        "port": "in-analog-r"
+      }
+    },
+    {
+      "from": {
+        "instance": "m905-1",
+        "port": "out-main-l"
+      },
+      "to": {
+        "instance": "gen-l",
+        "port": "in-analog"
+      }
+    },
+    {
+      "from": {
+        "instance": "m905-1",
+        "port": "out-main-r"
+      },
+      "to": {
+        "instance": "gen-r",
+        "port": "in-analog"
+      }
+    },
+    {
+      "from": {
+        "instance": "clock-1",
+        "port": "wordclock-out-1"
+      },
+      "to": {
+        "instance": "hdio-1",
+        "port": "wordclock-in"
+      }
+    }
   ],
-  "logicChecks": ["R4", "R8"],
+  "logicChecks": [
+    "R4",
+    "R8"
+  ],
   "successMessage": "Locked to house clock, +48 V up, VO chain armed. (Full version will route the mic path through the patchbay — bay-1 is on the desk waiting.)",
-  "notes": "R4 is ACTIVE in the stub: the U 87 (requiresPhantom) must reach the ISA One's mic input with its '+48V' control toggled ON — wiring it with phantom off triggers the R4 teaching toast (see docs/adr/0001, device state). ISA One → HD I/O analog-in runs through the patchbay in the full level; stub keeps the chain minimal."
+  "notes": "R4 is ACTIVE in the stub: the U 87 (requiresPhantom) must reach the ISA One's mic input with its '+48V' control toggled ON — wiring it with phantom off triggers the R4 teaching toast (see docs/adr/0001, device state). ISA One → HD I/O analog-in runs through the patchbay in the full level; stub keeps the chain minimal.",
+  "examSeconds": 420
 }

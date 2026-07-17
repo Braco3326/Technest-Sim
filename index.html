@@ -43,6 +43,8 @@
         color: var(--tk-accent-ink, #fff); background: var(--tk-accent, #2e5fe6);
         border-color: var(--tk-accent, #2e5fe6);
       }
+      #hud-levels a.hud-exam { margin-left: auto; border-style: dashed; }
+      #hud-levels a.hud-exam.current { border-style: solid; background: var(--tk-ink, #1b2129); border-color: var(--tk-ink, #1b2129); color: #fff; }
 
       .hud-brief { font-size: var(--tk-text-sm, 12.5px); color: var(--tk-ink-muted, #5a6372); margin-bottom: var(--tk-space-md, 14px); line-height: 1.45; }
 
@@ -209,6 +211,33 @@
         transition: border-color var(--tk-motion-fast, 140ms) var(--tk-motion-ease, ease);
       }
       .db-levels a:hover { border-color: var(--tk-ink-faint, #8b93a3); }
+
+      /* ── Exam mode ────────────────────────────────────────────────────── */
+      #exam-timer {
+        position: absolute; top: var(--tk-space-lg, 20px); right: var(--tk-space-lg, 20px);
+        background: var(--tk-surface, #fff); border: 1px solid var(--tk-surface-border, #e6e8ee);
+        border-radius: var(--tk-radius-md, 12px); box-shadow: var(--tk-elev-card);
+        padding: 10px 18px; font-size: var(--tk-text-xl, 21px);
+        font-weight: var(--tk-weight-bold, 650); font-variant-numeric: tabular-nums;
+        color: var(--tk-ink, #1b2129);
+      }
+      #exam-timer.exam-late { color: var(--tk-error, #d93a47); border-color: var(--tk-error, #d93a47); }
+      #exam-report {
+        position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+        background: var(--tk-overlay, rgba(24,28,38,0.32)); pointer-events: auto;
+        backdrop-filter: blur(3px);
+      }
+      .exam-card {
+        background: var(--tk-surface, #fff); border: 1px solid var(--tk-surface-border, #e6e8ee);
+        border-radius: var(--tk-radius-lg, 18px); box-shadow: var(--tk-elev-raised);
+        padding: var(--tk-space-xl, 32px) 40px; max-width: 480px; text-align: center;
+        animation: toast-in var(--tk-motion-slow, 420ms) var(--tk-motion-ease, ease);
+      }
+      .exam-card h2 { font-size: 40px; letter-spacing: -0.02em; margin-bottom: 6px; }
+      .exam-verdict { color: var(--tk-ink-muted, #5a6372); font-size: var(--tk-text-sm, 12.5px); margin-bottom: var(--tk-space-md, 14px); line-height: 1.5; }
+      .exam-card ul { list-style: none; text-align: left; font-size: var(--tk-text-sm, 12.5px); color: var(--tk-ink, #1b2129); margin-bottom: var(--tk-space-lg, 20px); }
+      .exam-card li { padding: 4px 0; border-bottom: 1px solid var(--tk-surface-border, #e6e8ee); }
+      .exam-retry { display: block; margin-top: var(--tk-space-md, 14px); font-size: var(--tk-text-sm, 12.5px); color: var(--tk-ink-muted, #5a6372); }
     </style>
   </head>
   <body>

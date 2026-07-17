@@ -22,11 +22,13 @@ export class Hud {
     private registry: Registry,
     private level: LevelT,
   ) {
+    const examMode = new URLSearchParams(location.search).get('mode') === 'exam'
     const nav =
       `<a href="${location.pathname}" title="Retour au tableau de bord">←</a>` +
       ['a1', 'b1', 'c1', 'd1']
         .map((id) => `<a href="?level=${id}" class="${id === level.id ? 'current' : ''}">${id.toUpperCase()}</a>`)
-        .join('')
+        .join('') +
+      `<a href="?level=${level.id}&mode=exam" class="hud-exam ${examMode ? 'current' : ''}" title="Mode examen : chrono, sans aides, note /20">Examen</a>`
     root.innerHTML = `
       <section class="hud-panel" id="hud-objectives">
         <nav id="hud-levels">${nav}</nav>

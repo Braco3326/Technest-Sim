@@ -91,6 +91,8 @@ export const Level = z.object({
   requiredChain: z.array(z.object({ from: PortRef, to: PortRef })),
   logicChecks: z.array(z.string()),
   successMessage: z.string().min(1),
+  /** Time budget for exam mode (Beat 5); default applied by the game when absent. */
+  examSeconds: z.number().positive().optional(),
 }).passthrough()
 
 /** Referential mapping rules → BC/épreuves (content/readiness.json, ADR-0003). */

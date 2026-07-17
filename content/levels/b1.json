@@ -7,21 +7,91 @@
   "brief": "Wire the presenter's RE20 into the Axia iQ, the control-room monitors, and the GPIO-driven ON-AIR light. Open the fader: the light must come on and the monitors must mute.",
   "objective": "Presenter on air with tally light working and no feedback path.",
   "devices": [
-    { "instanceId": "re20-1",    "deviceId": "ev-re20" },
-    { "instanceId": "iq-1",      "deviceId": "axia-iq" },
-    { "instanceId": "litt-1",    "deviceId": "yellowtec-litt" },
-    { "instanceId": "gen-l",     "deviceId": "genelec-8030c" },
-    { "instanceId": "gen-r",     "deviceId": "genelec-8030c" },
-    { "instanceId": "playout-1", "deviceId": "playout-pc" },
-    { "instanceId": "mika-1",    "deviceId": "yellowtec-mika" }
+    {
+      "instanceId": "re20-1",
+      "deviceId": "ev-re20"
+    },
+    {
+      "instanceId": "iq-1",
+      "deviceId": "axia-iq"
+    },
+    {
+      "instanceId": "litt-1",
+      "deviceId": "yellowtec-litt"
+    },
+    {
+      "instanceId": "gen-l",
+      "deviceId": "genelec-8030c"
+    },
+    {
+      "instanceId": "gen-r",
+      "deviceId": "genelec-8030c"
+    },
+    {
+      "instanceId": "playout-1",
+      "deviceId": "playout-pc"
+    },
+    {
+      "instanceId": "mika-1",
+      "deviceId": "yellowtec-mika"
+    }
   ],
   "requiredChain": [
-    { "from": { "instance": "re20-1",    "port": "out-xlr" },       "to": { "instance": "iq-1",  "port": "in-mic-1" } },
-    { "from": { "instance": "iq-1",      "port": "out-monitor-l" }, "to": { "instance": "gen-l", "port": "in-analog" } },
-    { "from": { "instance": "iq-1",      "port": "out-monitor-r" }, "to": { "instance": "gen-r", "port": "in-analog" } },
-    { "from": { "instance": "iq-1",      "port": "gpio" },          "to": { "instance": "litt-1", "port": "in-gpio" } },
-    { "from": { "instance": "playout-1", "port": "aoip" },          "to": { "instance": "iq-1",  "port": "livewire" } }
+    {
+      "from": {
+        "instance": "re20-1",
+        "port": "out-xlr"
+      },
+      "to": {
+        "instance": "iq-1",
+        "port": "in-mic-1"
+      }
+    },
+    {
+      "from": {
+        "instance": "iq-1",
+        "port": "out-monitor-l"
+      },
+      "to": {
+        "instance": "gen-l",
+        "port": "in-analog"
+      }
+    },
+    {
+      "from": {
+        "instance": "iq-1",
+        "port": "out-monitor-r"
+      },
+      "to": {
+        "instance": "gen-r",
+        "port": "in-analog"
+      }
+    },
+    {
+      "from": {
+        "instance": "iq-1",
+        "port": "gpio"
+      },
+      "to": {
+        "instance": "litt-1",
+        "port": "in-gpio"
+      }
+    },
+    {
+      "from": {
+        "instance": "playout-1",
+        "port": "aoip"
+      },
+      "to": {
+        "instance": "iq-1",
+        "port": "livewire"
+      }
+    }
   ],
-  "logicChecks": ["R5", "R6"],
-  "successMessage": "Fader open: the red light is on and the monitors are muted. That's broadcast discipline."
+  "logicChecks": [
+    "R5",
+    "R6"
+  ],
+  "successMessage": "Fader open: the red light is on and the monitors are muted. That's broadcast discipline.",
+  "examSeconds": 300
 }

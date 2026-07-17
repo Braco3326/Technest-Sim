@@ -39,6 +39,7 @@ import type { Intent } from './ui/intents'
 import { Hud } from './ui/hud'
 import { ControlsPanel } from './ui/controlsPanel'
 import { LocalStorageProgressStore } from './ui/ProgressStore'
+import { ExamController } from './ui/exam'
 
 declare global {
   interface Window {
@@ -96,6 +97,8 @@ const LAYOUTS: Record<string, Record<string, Vector3>> = {
 
 export function bootGame(registry: Registry, rawLevel: unknown): void {
   const level = loadLevel(rawLevel)
+  // Exam mode (Beat 5): same engine, no hints, a clock, a /20 report.
+  const examMode = new URLSearchParams(location.search).get('mode') === 'exam'
 
   // ── engine ────────────────────────────────────────────────────────────────
   const graph = new ConnectionGraph(registry, level.devices)
@@ -171,6 +174,7 @@ export function bootGame(registry: Registry, rawLevel: unknown): void {
   if (wasReset)
     hud.toast('info', 'Progression réinitialisée', 'Sauvegarde incompatible avec cette version — repart de zéro.')
   let mistakes = [...(progressData.levels[level.id]?.mistakes ?? [])]
+  let sessionMistakes = 0
 
   let won = false
   const activeViolations = new Set<string>()
@@ -182,11 +186,13 @@ export function bootGame(registry: Registry, rawLevel: unknown): void {
     console.info(
       `[${level.id}] ${state.connectedRequired}/${state.totalRequired} required — ${state.won ? 'WIN' : 'in progress'}`,
     )
-    // Toast NEW logic violations (R4–R8 sweeps); clear ones that got fixed.
+    // Logic violations (R4–R8 sweeps) — recorded ALWAYS (play = assessment),
+    // but taught (toasted) only outside exam mode.
     for (const v of state.violations) {
       if (activeViolations.has(v.ruleId)) continue
       activeViolations.add(v.ruleId)
-      hud.toast(v.severity, v.title, v.teach)
+      if (!examMode) hud.toast(v.severity, v.title, v.teach)
+      sessionMistakes += 1
       mistakes = progress.recordMistake(level.id, v.ruleId).levels[level.id]!.mistakes
     }
     for (const id of [...activeViolations])
@@ -195,19 +201,26 @@ export function bootGame(registry: Registry, rawLevel: unknown): void {
     if (state.won && !won) {
       won = true
       progress.recordWin(level.id) // feeds the readiness model (ADR-0003)
-      hud.showWin(mistakes)
+      if (exam) exam.finish()
+      else hud.showWin(mistakes)
     }
     return state
   }
 
   const onRejected = (e: TypedError): void => {
-    const rule = e.ruleId ? registry.ruleById.get(e.ruleId) : undefined
-    hud.toast('error', rule?.title ?? 'Connexion impossible', rule?.teach ?? e.message)
+    const rule = !examMode && e.ruleId ? registry.ruleById.get(e.ruleId) : undefined
+    if (examMode) {
+      hud.toast('error', 'Connexion refusée', 'Pas d’explication en mode examen — analyse et corrige.')
+    } else {
+      hud.toast('error', rule?.title ?? 'Connexion impossible', rule?.teach ?? e.message)
+    }
+    sessionMistakes += 1
     mistakes = progress.recordMistake(level.id, e.ruleId ?? e.code).levels[level.id]!.mistakes
     console.warn(`[rejected ${e.code}${e.ruleId ? ` ${e.ruleId}` : ''}] ${e.message}`)
   }
 
   const dispatch = (intent: Intent): void => {
+    if (exam?.isFinished) return // the exam is over — the report owns the screen
     switch (intent.type) {
       case 'CONNECT': {
         const r = graph.connect(intent.a, intent.b)
@@ -236,7 +249,18 @@ export function bootGame(registry: Registry, rawLevel: unknown): void {
   const interaction = new Interaction(scene, camera, cables, portPoints, {
     canConnect: (a, b) => graph.canConnect(a, b),
     dispatch,
+    neutralDrag: examMode,
   })
+
+  const exam = examMode
+    ? new ExamController(document.getElementById('hud')!, level.examSeconds ?? 300, {
+        getState: () => runner.check(graph),
+        getMistakes: () => sessionMistakes,
+        // The report overlay takes the screen; the dispatch guard freezes intents.
+        onFinished: () => undefined,
+      })
+    : null
+  void interaction
 
   // Debug/e2e hook (Playwright drives the same intents a pointer would, and
   // portScreen() lets it aim REAL pointer drags at port markers).

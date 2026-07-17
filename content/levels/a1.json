@@ -6,22 +6,89 @@
   "brief": "Wire a small live rig: two dynamic mics into the Dante stagebox on stage, the stagebox to the QL1 at front of house, the main mix to the PA top and a monitor mix to the singer's wedge.",
   "objective": "Singer heard in the PA, guitar amp miked, singer hears herself in the wedge.",
   "devices": [
-    { "instanceId": "sm58-1",  "deviceId": "shure-sm58" },
-    { "instanceId": "sm57-1",  "deviceId": "shure-sm57" },
-    { "instanceId": "rio-1",   "deviceId": "yamaha-rio3224-d2" },
-    { "instanceId": "ql1-1",   "deviceId": "yamaha-ql1" },
-    { "instanceId": "k12-1",   "deviceId": "qsc-k12-2" },
-    { "instanceId": "dbr12-1", "deviceId": "yamaha-dbr12" },
-    { "instanceId": "stand-1", "deviceId": "km-210-9" }
+    {
+      "instanceId": "sm58-1",
+      "deviceId": "shure-sm58"
+    },
+    {
+      "instanceId": "sm57-1",
+      "deviceId": "shure-sm57"
+    },
+    {
+      "instanceId": "rio-1",
+      "deviceId": "yamaha-rio3224-d2"
+    },
+    {
+      "instanceId": "ql1-1",
+      "deviceId": "yamaha-ql1"
+    },
+    {
+      "instanceId": "k12-1",
+      "deviceId": "qsc-k12-2"
+    },
+    {
+      "instanceId": "dbr12-1",
+      "deviceId": "yamaha-dbr12"
+    },
+    {
+      "instanceId": "stand-1",
+      "deviceId": "km-210-9"
+    }
   ],
   "requiredChain": [
-    { "from": { "instance": "sm58-1", "port": "out-xlr" },        "to": { "instance": "rio-1",   "port": "in-mic-1" } },
-    { "from": { "instance": "sm57-1", "port": "out-xlr" },        "to": { "instance": "rio-1",   "port": "in-mic-2" } },
-    { "from": { "instance": "rio-1",  "port": "dante-primary" },  "to": { "instance": "ql1-1",   "port": "dante-primary" } },
-    { "from": { "instance": "ql1-1",  "port": "out-main-l" },     "to": { "instance": "k12-1",   "port": "in-line-a" } },
-    { "from": { "instance": "ql1-1",  "port": "out-mix-1" },      "to": { "instance": "dbr12-1", "port": "in-line" } }
+    {
+      "from": {
+        "instance": "sm58-1",
+        "port": "out-xlr"
+      },
+      "to": {
+        "instance": "rio-1",
+        "port": "in-mic-1"
+      }
+    },
+    {
+      "from": {
+        "instance": "sm57-1",
+        "port": "out-xlr"
+      },
+      "to": {
+        "instance": "rio-1",
+        "port": "in-mic-2"
+      }
+    },
+    {
+      "from": {
+        "instance": "rio-1",
+        "port": "dante-primary"
+      },
+      "to": {
+        "instance": "ql1-1",
+        "port": "dante-primary"
+      }
+    },
+    {
+      "from": {
+        "instance": "ql1-1",
+        "port": "out-main-l"
+      },
+      "to": {
+        "instance": "k12-1",
+        "port": "in-line-a"
+      }
+    },
+    {
+      "from": {
+        "instance": "ql1-1",
+        "port": "out-mix-1"
+      },
+      "to": {
+        "instance": "dbr12-1",
+        "port": "in-line"
+      }
+    }
   ],
   "logicChecks": [],
   "successMessage": "Soundcheck passed — the vocal is in the PA, the amp is miked, and the wedge is live. Welcome to FOH.",
-  "notes": "R1–R3 are ENGINE INVARIANTS, always active in every level via ConnectionGraph.connect() — logicChecks only declares domain modules (R4–R8), none needed here. No condenser in this level, so R4 is not active. Power connections exist on devices for exploration but are not part of the required chain in v1."
+  "notes": "R1–R3 are ENGINE INVARIANTS, always active in every level via ConnectionGraph.connect() — logicChecks only declares domain modules (R4–R8), none needed here. No condenser in this level, so R4 is not active. Power connections exist on devices for exploration but are not part of the required chain in v1.",
+  "examSeconds": 240
 }
