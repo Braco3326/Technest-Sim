@@ -2,7 +2,6 @@
   "id": "d1",
   "version": 1,
   "domain": "post",
-  "status": "stub — expand after A1 ships",
   "title": "D1 — Post room: voice-over chain with house clock",
   "brief": "Wire a voice-over rig: U 87 through the ISA One preamp into the HD I/O, workstation on DigiLink, monitoring through the loom to the m905 and Genelecs, and slave the interface to the OCX HD master clock.",
   "objective": "Record-ready VO chain, monitors fed, one clock master, everything locked.",
@@ -136,5 +135,58 @@
   ],
   "successMessage": "Locked to house clock, +48 V up, VO chain armed. (Full version will route the mic path through the patchbay — bay-1 is on the desk waiting.)",
   "notes": "R4 is ACTIVE in the stub: the U 87 (requiresPhantom) must reach the ISA One's mic input with its '+48V' control toggled ON — wiring it with phantom off triggers the R4 teaching toast (see docs/adr/0001, device state). ISA One → HD I/O analog-in runs through the patchbay in the full level; stub keeps the chain minimal.",
-  "examSeconds": 420
+  "examSeconds": 420,
+  "environment": "studio",
+  "layout": {
+    "u87-1": [
+      -3,
+      0,
+      1.4
+    ],
+    "isa-1": [
+      -2,
+      0,
+      0.3
+    ],
+    "bay-1": [
+      -1,
+      0,
+      -0.8
+    ],
+    "hdio-1": [
+      0.3,
+      0,
+      -0.8
+    ],
+    "hdx-1": [
+      1.7,
+      0,
+      -1.6
+    ],
+    "loom-1": [
+      0,
+      0,
+      0.9
+    ],
+    "m905-1": [
+      1.3,
+      0,
+      0.6
+    ],
+    "gen-l": [
+      -1,
+      0,
+      2.8
+    ],
+    "gen-r": [
+      1.5,
+      0,
+      2.8
+    ],
+    "clock-1": [
+      2.7,
+      0,
+      -0.2
+    ]
+  }
 }

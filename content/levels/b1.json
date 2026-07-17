@@ -2,7 +2,6 @@
   "id": "b1",
   "version": 1,
   "domain": "radio",
-  "status": "stub — expand after A1 ships",
   "title": "B1 — Radio studio: mic, monitors, ON-AIR",
   "brief": "Wire the presenter's RE20 into the Axia iQ, the control-room monitors, and the GPIO-driven ON-AIR light. Open the fader: the light must come on and the monitors must mute.",
   "objective": "Presenter on air with tally light working and no feedback path.",
@@ -93,5 +92,43 @@
     "R6"
   ],
   "successMessage": "Fader open: the red light is on and the monitors are muted. That's broadcast discipline.",
-  "examSeconds": 300
+  "examSeconds": 300,
+  "environment": "radio",
+  "layout": {
+    "re20-1": [
+      -1.4,
+      0,
+      1
+    ],
+    "mika-1": [
+      -1.7,
+      0,
+      1
+    ],
+    "iq-1": [
+      0,
+      0,
+      -1.4
+    ],
+    "litt-1": [
+      1.6,
+      0,
+      0.6
+    ],
+    "gen-l": [
+      -1.4,
+      0,
+      2.6
+    ],
+    "gen-r": [
+      1.4,
+      0,
+      2.6
+    ],
+    "playout-1": [
+      2.6,
+      0,
+      -0.8
+    ]
+  }
 }

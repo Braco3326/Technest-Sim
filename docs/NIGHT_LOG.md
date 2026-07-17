@@ -43,3 +43,13 @@
 - Tests : 6 unit (bareme) + 3 e2e (pas de fuite du teach text, rapport /20, win screen remplace, intents geles).
 
 **Jugement a relire :** le bareme (60/40, -0.5pt) et les textes du rapport.
+
+## Tache 4 - ENVIRONNEMENTS EN PRESETS DATA OK (Beat 3)
+
+**Livre :**
+- content/environments/{plateau,radio,studio}.json : backdrop (couleurs, taille de sol) + camera par piece. Une nouvelle piece = un JSON, jamais de code engine (VISION par.3).
+- Les layouts sortent de game.ts vers les levels (data) : levels/*.json gagnent "environment" + "layout" {instanceId: [x,y,z]}.
+- Mapping : a1->plateau, b1->radio, c1->radio, d1->studio. Teintes blanches subtiles par piece (radio legerement chaude, studio legerement froide).
+- Schemas zod Environment + Level etendus ; validateur : preset existant + chaque layout pointe une instance reelle du level.
+- Champs "status":"stub" perimes retires de b1/c1/d1 (ils sont jouables et testes depuis le run domaine).
+- 87 unit + 14 e2e verts, build OK.

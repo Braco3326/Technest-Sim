@@ -18,8 +18,6 @@ import {
   StandardMaterial,
   Vector3,
 } from '@babylonjs/core'
-import { TOKENS } from './design/tokens'
-
 import { loadCatalog, loadLevel, type Registry } from './engine/CatalogLoader'
 import { ConnectionGraph } from './engine/ConnectionGraph'
 import { RuleEvaluator } from './engine/RuleEvaluator'
@@ -54,45 +52,24 @@ declare global {
   }
 }
 
-// Per-level stage layouts (meters). Any instance not listed falls back to a grid.
-// NOTE: night-run task 4 moves these into content/environments/*.json presets.
-const LAYOUTS: Record<string, Record<string, Vector3>> = {
-  a1: {
-    'sm58-1': new Vector3(-1.6, 0, 2.2),
-    'sm57-1': new Vector3(1.6, 0, 2.2),
-    'stand-1': new Vector3(-1.9, 0, 2.2),
-    'rio-1': new Vector3(0, 0, 3.2),
-    'ql1-1': new Vector3(0, 0, -2.6),
-    'k12-1': new Vector3(-3.2, 0, 1.2),
-    'dbr12-1': new Vector3(3.2, 0, 1.8),
-  },
-  b1: {
-    're20-1': new Vector3(-1.4, 0, 1),
-    'mika-1': new Vector3(-1.7, 0, 1),
-    'iq-1': new Vector3(0, 0, -1.4),
-    'litt-1': new Vector3(1.6, 0, 0.6),
-    'gen-l': new Vector3(-1.4, 0, 2.6),
-    'gen-r': new Vector3(1.4, 0, 2.6),
-    'playout-1': new Vector3(2.6, 0, -0.8),
-  },
-  c1: {
-    're50-1': new Vector3(-2.8, 0, 1.6),
-    'scoopy-1': new Vector3(-1.4, 0, 0.6),
-    'scoop5-1': new Vector3(0.6, 0, 0.6),
-    'iq-1': new Vector3(2.2, 0, -1.2),
-  },
-  d1: {
-    'u87-1': new Vector3(-3, 0, 1.4),
-    'isa-1': new Vector3(-2, 0, 0.3),
-    'bay-1': new Vector3(-1, 0, -0.8),
-    'hdio-1': new Vector3(0.3, 0, -0.8),
-    'hdx-1': new Vector3(1.7, 0, -1.6),
-    'loom-1': new Vector3(0, 0, 0.9),
-    'm905-1': new Vector3(1.3, 0, 0.6),
-    'gen-l': new Vector3(-1, 0, 2.8),
-    'gen-r': new Vector3(1.5, 0, 2.8),
-    'clock-1': new Vector3(2.7, 0, -0.2),
-  },
+// Environments are DATA (VISION §3): a backdrop + a camera per room preset.
+// New rooms = new JSON, never new engine code.
+import plateauJson from '../content/environments/plateau.json'
+import radioJson from '../content/environments/radio.json'
+import studioJson from '../content/environments/studio.json'
+import { Environment, type EnvironmentT } from '../tools/schemas'
+
+const ENVIRONMENTS: Record<string, unknown> = {
+  plateau: plateauJson,
+  radio: radioJson,
+  studio: studioJson,
+}
+
+function loadEnvironment(id: string | undefined): EnvironmentT {
+  const raw = ENVIRONMENTS[id ?? 'plateau'] ?? ENVIRONMENTS.plateau
+  const parsed = Environment.safeParse(raw)
+  if (!parsed.success) throw new Error(`environment preset invalid: ${parsed.error.issues[0]?.message}`)
+  return parsed.data
 }
 
 export function bootGame(registry: Registry, rawLevel: unknown): void {
@@ -110,14 +87,22 @@ export function bootGame(registry: Registry, rawLevel: unknown): void {
   })
   const runner = new LevelRunner(level, evaluator)
 
-  // ── scene (white gallery — design tokens, VISION §6) ─────────────────────
+  // ── scene (white gallery — env preset + design tokens, VISION §3/§6) ─────
+  const env = loadEnvironment(level.environment)
   const canvas = document.getElementById('renderCanvas') as HTMLCanvasElement
   const babylon = new Engine(canvas, true)
   const scene = new Scene(babylon)
-  const bg = Color3.FromHexString(TOKENS.color.bg)
+  const bg = Color3.FromHexString(env.backdrop.clearColor)
   scene.clearColor = new Color4(bg.r, bg.g, bg.b, 1)
 
-  const camera = new ArcRotateCamera('cam', -Math.PI / 2, Math.PI / 3.6, 8.5, new Vector3(0, 0.4, 0.4), scene)
+  const camera = new ArcRotateCamera(
+    'cam',
+    env.camera.alpha,
+    env.camera.beta,
+    env.camera.radius,
+    Vector3.FromArray(env.camera.target),
+    scene,
+  )
   camera.attachControl(true)
   camera.lowerRadiusLimit = 2
   camera.upperRadiusLimit = 40
@@ -129,22 +114,24 @@ export function bootGame(registry: Registry, rawLevel: unknown): void {
   const key = new DirectionalLight('key', new Vector3(-0.35, -1, 0.25), scene)
   key.intensity = 0.35
 
-  const ground = MeshBuilder.CreateGround('stage', { width: 24, height: 14 }, scene)
+  const [floorW, floorD] = env.backdrop.floorSize
+  const ground = MeshBuilder.CreateGround('stage', { width: floorW, height: floorD }, scene)
   const groundMat = new StandardMaterial('mat:stage', scene)
-  groundMat.diffuseColor = Color3.FromHexString(TOKENS.color.floor)
+  groundMat.diffuseColor = Color3.FromHexString(env.backdrop.floorColor)
   groundMat.specularColor = Color3.Black()
   ground.material = groundMat
   ground.isPickable = false
 
-  const LAYOUT = LAYOUTS[level.id] ?? {}
+  const layout = level.layout ?? {}
   const spawner = new DeviceSpawner(scene, registry)
-  const instances = level.devices.map((d, i) =>
-    spawner.spawn(
+  const instances = level.devices.map((d, i) => {
+    const pos = layout[d.instanceId]
+    return spawner.spawn(
       d.deviceId,
-      LAYOUT[d.instanceId] ?? new Vector3((i % 4) * 1.5 - 2.25, 0, Math.floor(i / 4) * 1.5),
+      pos ? Vector3.FromArray(pos) : new Vector3((i % 4) * 1.5 - 2.25, 0, Math.floor(i / 4) * 1.5),
       d.instanceId,
-    ),
-  )
+    )
+  })
 
   // World-space port points for snapping + cable anchoring.
   scene.render() // one pass so absolute positions are computed

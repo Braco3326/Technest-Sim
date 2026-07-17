@@ -90,5 +90,43 @@
   "logicChecks": [],
   "successMessage": "Soundcheck passed — the vocal is in the PA, the amp is miked, and the wedge is live. Welcome to FOH.",
   "notes": "R1–R3 are ENGINE INVARIANTS, always active in every level via ConnectionGraph.connect() — logicChecks only declares domain modules (R4–R8), none needed here. No condenser in this level, so R4 is not active. Power connections exist on devices for exploration but are not part of the required chain in v1.",
-  "examSeconds": 240
+  "examSeconds": 240,
+  "environment": "plateau",
+  "layout": {
+    "sm58-1": [
+      -1.6,
+      0,
+      2.2
+    ],
+    "sm57-1": [
+      1.6,
+      0,
+      2.2
+    ],
+    "stand-1": [
+      -1.9,
+      0,
+      2.2
+    ],
+    "rio-1": [
+      0,
+      0,
+      3.2
+    ],
+    "ql1-1": [
+      0,
+      0,
+      -2.6
+    ],
+    "k12-1": [
+      -3.2,
+      0,
+      1.2
+    ],
+    "dbr12-1": [
+      3.2,
+      0,
+      1.8
+    ]
+  }
 }

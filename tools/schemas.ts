@@ -93,6 +93,27 @@ export const Level = z.object({
   successMessage: z.string().min(1),
   /** Time budget for exam mode (Beat 5); default applied by the game when absent. */
   examSeconds: z.number().positive().optional(),
+  /** Scene preset id (content/environments/<id>.json). */
+  environment: z.string().min(1).optional(),
+  /** Stage positions per instanceId, meters [x, y, z]. Missing instances fall back to a grid. */
+  layout: z.record(z.tuple([z.number(), z.number(), z.number()])).optional(),
+}).passthrough()
+
+/** Scene preset — a backdrop + camera, NEVER engine code (VISION §3: environments are data). */
+export const Environment = z.object({
+  id: z.string().min(1),
+  name: z.string().min(1),
+  backdrop: z.object({
+    clearColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+    floorColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+    floorSize: z.tuple([z.number().positive(), z.number().positive()]),
+  }),
+  camera: z.object({
+    alpha: z.number(),
+    beta: z.number(),
+    radius: z.number().positive(),
+    target: z.tuple([z.number(), z.number(), z.number()]),
+  }),
 }).passthrough()
 
 /** Referential mapping rules → BC/épreuves (content/readiness.json, ADR-0003). */
@@ -112,3 +133,4 @@ export const Readiness = z.object({
 export type CatalogT = z.infer<typeof Catalog>
 export type LevelT = z.infer<typeof Level>
 export type ReadinessT = z.infer<typeof Readiness>
+export type EnvironmentT = z.infer<typeof Environment>

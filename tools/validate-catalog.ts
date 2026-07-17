@@ -21,7 +21,7 @@ import { readFileSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { z } from 'zod'
-import { Catalog, Level, Readiness } from './schemas'
+import { Catalog, Environment, Level, Readiness } from './schemas'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const read = (p: string) => JSON.parse(readFileSync(resolve(root, p), 'utf8'))
@@ -164,6 +164,20 @@ for (const lvl of levels) {
     if (rule.module === 'engine')
       fail(`${file}: logicChecks lists "${rc}" — engine invariants (R1/R2/R3) are ALWAYS active in ConnectionGraph.connect() and must not be declared; logicChecks is for domain modules (R4–R8) only`)
   }
+}
+
+// ── environments (content/environments/*.json — scene presets are DATA) ────
+const ENV_IDS = ['plateau', 'radio', 'studio'] as const
+const environments = new Map(
+  ENV_IDS.map((id) => [id, parseOrDie(Environment, read(`content/environments/${id}.json`), `content/environments/${id}.json`)]),
+)
+for (const lvl of levels) {
+  const file = `content/levels/${lvl.id}.json`
+  if (lvl.environment && !environments.has(lvl.environment as (typeof ENV_IDS)[number]))
+    fail(`${file}: environment → unknown preset "${lvl.environment}"`)
+  for (const instanceId of Object.keys(lvl.layout ?? {}))
+    if (!lvl.devices.some((d) => d.instanceId === instanceId))
+      fail(`${file}: layout["${instanceId}"] → no such instance in this level`)
 }
 
 // ── readiness mapping (content/readiness.json, ADR-0003) ───────────────────

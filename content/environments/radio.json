@@ -1,0 +1,22 @@
+{
+  "id": "radio",
+  "name": "Studio radio (self-op)",
+  "backdrop": {
+    "clearColor": "#F6F5F3",
+    "floorColor": "#FDFCFA",
+    "floorSize": [
+      16,
+      10
+    ]
+  },
+  "camera": {
+    "alpha": -1.5708,
+    "beta": 0.8727,
+    "radius": 7.0,
+    "target": [
+      0,
+      0.4,
+      0.3
+    ]
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "id": "studio",
+  "name": "Studio son / post-production",
+  "backdrop": {
+    "clearColor": "#F4F5F8",
+    "floorColor": "#FBFCFD",
+    "floorSize": [
+      18,
+      12
+    ]
+  },
+  "camera": {
+    "alpha": -1.5708,
+    "beta": 0.8727,
+    "radius": 8.0,
+    "target": [
+      0,
+      0.4,
+      0.4
+    ]
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "id": "plateau",
+  "name": "Plateau / scene live",
+  "backdrop": {
+    "clearColor": "#F5F6F8",
+    "floorColor": "#FCFCFD",
+    "floorSize": [
+      24,
+      14
+    ]
+  },
+  "camera": {
+    "alpha": -1.5708,
+    "beta": 0.8727,
+    "radius": 8.5,
+    "target": [
+      0,
+      0.4,
+      0.4
+    ]
+  }
+}

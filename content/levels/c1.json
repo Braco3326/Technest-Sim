@@ -2,7 +2,6 @@
   "id": "c1",
   "version": 1,
   "domain": "duplex",
-  "status": "stub — expand after A1 ships",
   "title": "C1 — Remote duplex: reporter on N-1",
   "brief": "A reporter in the field talks to the studio over an IP codec pair. Wire the field kit (RE50B → Scoopy+ S) and the studio side (Scoop5 S ↔ console), and feed the codec send from the N-1 bus — not the full program.",
   "objective": "Two-way conversation with no echo in the reporter's ears.",
@@ -70,5 +69,28 @@
     "R7"
   ],
   "successMessage": "Clean duplex — the reporter hears the studio, not herself. N-1 understood.",
-  "examSeconds": 300
+  "examSeconds": 300,
+  "environment": "radio",
+  "layout": {
+    "re50-1": [
+      -2.8,
+      0,
+      1.6
+    ],
+    "scoopy-1": [
+      -1.4,
+      0,
+      0.6
+    ],
+    "scoop5-1": [
+      0.6,
+      0,
+      0.6
+    ],
+    "iq-1": [
+      2.2,
+      0,
+      -1.2
+    ]
+  }
 }
