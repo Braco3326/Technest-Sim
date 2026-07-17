@@ -133,3 +133,14 @@ Ordre conseille : Vercel d'abord (toi), puis 04 (visible), puis 01, 02, 03.
 - 107 vitest (7 nouveaux) + 20 e2e verts (3 nouveaux onboarding ; dashboard.spec adapte pour seeder l'onboarding).
 
 **A relire :** textes des questions/options (REVIEW-ME.md), groupes de rules par option.
+
+## Tache 3 - 2D MOTION OK (Beats 1/3, polish)
+
+**Livre :**
+- Pulses de signal-flow : point accent qui parcourt chaque cable commite out->in (pointAlong arc-length pur + teste), periode 2.4s, cap 12 cables (perf), phase decalee par cable.
+- Feedback de snap : le marqueur du port candidat "respire" (scale 1.35) pendant le drag (hook onCandidate de l'Interaction).
+- Meter de chaine facon VU dans le HUD : segments remplis = connexions requises posees, le dernier pose rebondit UNE fois (motion lie a un evenement reel, jamais oisif) ; VU celebratoire dans le win screen.
+- Transitions douces : stagger d'entree du dashboard, transitions token partout.
+- ACCESSIBILITE : prefers-reduced-motion tue tout le motion CSS (media query) ET les animations 3D (motionEnabled() cote Babylon).
+- Fixes design objectifs (du prompt 04) : origine de spawn sandbox centree (plus sous le panneau), vignettes etageres object-fit contain.
+- Piege retrouve : display:flex bat [hidden] -> #hud-shelf vide visible partout - regle desormais notee 2x (win screen, shelf). 110 vitest + 20 e2e verts.

@@ -13,9 +13,11 @@ const TOAST_MS = 6000
 export class Hud {
   private checklist: HTMLElement
   private counter: HTMLElement
+  private meter: HTMLElement
   private toasts: HTMLElement
   private win: HTMLElement
   private items: HTMLElement[] = []
+  private lastConnected = 0
 
   constructor(
     root: HTMLElement,
@@ -39,6 +41,7 @@ export class Hud {
         <h1>${level.title}</h1>
         <p class="hud-brief">${level.brief}</p>
         <ol id="hud-checklist"></ol>
+        <div id="hud-meter" role="img" aria-label="Progression de la chaîne"></div>
         <p id="hud-counter"></p>
       </section>
       <aside class="hud-panel" id="hud-controls" hidden></aside>
@@ -47,6 +50,7 @@ export class Hud {
       <div id="hud-win" hidden></div>`
     this.checklist = root.querySelector('#hud-checklist')!
     this.counter = root.querySelector('#hud-counter')!
+    this.meter = root.querySelector('#hud-meter')!
     this.toasts = root.querySelector('#hud-toasts')!
     this.win = root.querySelector('#hud-win')!
 
@@ -73,6 +77,18 @@ export class Hud {
       state.totalRequired === 0
         ? 'Jeu libre — les règles veillent sur chaque connexion.'
         : `${state.connectedRequired}/${state.totalRequired} connexions requises`
+
+    // Chain meter (VU-style feedback): fills as the required chain lands; the
+    // newest segment bounces once — motion tied to a real event, never idle.
+    if (state.totalRequired > 0) {
+      const grew = state.connectedRequired > this.lastConnected
+      this.meter.innerHTML = Array.from({ length: state.totalRequired }, (_, i) => {
+        const filled = i < state.connectedRequired
+        const fresh = grew && i === state.connectedRequired - 1
+        return `<span class="${filled ? 'on' : ''}${fresh ? ' fresh' : ''}"></span>`
+      }).join('')
+      this.lastConnected = state.connectedRequired
+    }
   }
 
   toast(severity: 'error' | 'warning' | 'info' | 'coach', title: string, body: string): void {
@@ -92,6 +108,7 @@ export class Hud {
       : '<p>Zéro erreur — run parfait.</p>'
     this.win.innerHTML = `
       <div class="win-card">
+        <div class="win-vu" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
         <h2>✓ Objectif atteint</h2>
         <p>${escapeHtml(this.level.successMessage)}</p>
         <h3>Erreurs de la session</h3>

@@ -247,6 +247,8 @@
         width: 300px; max-height: 52vh; display: flex; flex-direction: column;
         pointer-events: auto;
       }
+      /* author display:flex beats the UA's [hidden] — the win-screen lesson, again */
+      #hud-shelf[hidden] { display: none; }
       #hud-shelf h2 { font-size: var(--tk-text-xs, 11px); font-weight: var(--tk-weight-medium, 550); color: var(--tk-ink-faint, #8b93a3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: var(--tk-space-sm, 8px); }
       .shelf-brief { font-size: var(--tk-text-xs, 11px); color: var(--tk-ink-muted, #5a6372); margin-bottom: var(--tk-space-sm, 8px); line-height: 1.45; }
       .shelf-scroll { overflow-y: auto; flex: 1; }
@@ -300,6 +302,48 @@
       #ob-go { margin-top: var(--tk-space-lg, 20px); border: 0; cursor: pointer; }
       .ob-skip { margin-top: var(--tk-space-sm, 8px); font-size: var(--tk-text-xs, 11px); }
       .ob-skip a { color: var(--tk-ink-faint, #8b93a3); }
+
+      /* ── Motion (pedagogical feedback — VISION §6) ────────────────────── */
+      #hud-meter { display: flex; gap: 3px; margin-top: var(--tk-space-sm, 8px); }
+      #hud-meter span {
+        flex: 1; height: 6px; border-radius: 3px; background: var(--tk-surface-border, #e6e8ee);
+        transition: background var(--tk-motion-base, 240ms) var(--tk-motion-ease, ease);
+      }
+      #hud-meter span.on { background: var(--tk-accent, #2e5fe6); }
+      #hud-meter span.fresh { animation: vu-land var(--tk-motion-slow, 420ms) var(--tk-motion-ease, ease); }
+      @keyframes vu-land {
+        0% { transform: scaleY(1); background: var(--tk-success, #1f9d5b); }
+        45% { transform: scaleY(2.2); background: var(--tk-success, #1f9d5b); }
+        100% { transform: scaleY(1); }
+      }
+      .win-vu { display: flex; gap: 4px; justify-content: center; height: 26px; align-items: flex-end; margin-bottom: 10px; }
+      .win-vu i {
+        width: 6px; border-radius: 3px; background: var(--tk-success, #1f9d5b);
+        animation: vu-dance 900ms var(--tk-motion-ease, ease) infinite alternate;
+      }
+      .win-vu i:nth-child(1) { height: 30%; animation-delay: 0ms; }
+      .win-vu i:nth-child(2) { height: 70%; animation-delay: 120ms; }
+      .win-vu i:nth-child(3) { height: 100%; animation-delay: 240ms; }
+      .win-vu i:nth-child(4) { height: 60%; animation-delay: 360ms; }
+      .win-vu i:nth-child(5) { height: 40%; animation-delay: 480ms; }
+      @keyframes vu-dance { from { transform: scaleY(0.55); } to { transform: scaleY(1); } }
+      .db-card > * { animation: db-in var(--tk-motion-slow, 420ms) var(--tk-motion-ease, ease) backwards; }
+      .db-card > *:nth-child(2) { animation-delay: 60ms; }
+      .db-card > *:nth-child(3) { animation-delay: 120ms; }
+      .db-card > *:nth-child(4) { animation-delay: 180ms; }
+      .db-card > *:nth-child(5) { animation-delay: 240ms; }
+      @keyframes db-in { from { opacity: 0; transform: translateY(6px); } }
+      .shelf-item img { object-fit: contain; background: var(--tk-bg, #f5f6f8); }
+
+      /* Accessibility: kill ALL motion under prefers-reduced-motion (the 3D
+         pulses/scales check motionEnabled() on the JS side). */
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
     </style>
   </head>
   <body>

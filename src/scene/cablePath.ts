@@ -31,6 +31,38 @@ export function catenaryPoints(a: P3, b: P3, segments: number): P3[] {
   return pts
 }
 
+/**
+ * Point at parametric position t (0..1) along a polyline, arc-length accurate.
+ * Drives the signal-flow pulses (motion = pedagogical feedback: the signal
+ * VISIBLY travels out → in along live cables).
+ */
+export function pointAlong(points: readonly P3[], t: number): P3 {
+  if (points.length === 0) return { x: 0, y: 0, z: 0 }
+  if (points.length === 1 || t <= 0) return { ...points[0] }
+  const lengths: number[] = []
+  let total = 0
+  for (let i = 1; i < points.length; i++) {
+    const a = points[i - 1]
+    const b = points[i]
+    const l = Math.hypot(b.x - a.x, b.y - a.y, b.z - a.z)
+    lengths.push(l)
+    total += l
+  }
+  if (total === 0 || t >= 1) return { ...points[points.length - 1] }
+  let target = t * total
+  for (let i = 0; i < lengths.length; i++) {
+    if (target > lengths[i]) {
+      target -= lengths[i]
+      continue
+    }
+    const a = points[i]
+    const b = points[i + 1]
+    const k = lengths[i] === 0 ? 0 : target / lengths[i]
+    return { x: a.x + (b.x - a.x) * k, y: a.y + (b.y - a.y) * k, z: a.z + (b.z - a.z) * k }
+  }
+  return { ...points[points.length - 1] }
+}
+
 export class CableBudget {
   private granted = new Map<string, number>()
 

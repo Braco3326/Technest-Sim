@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { CableBudget, catenaryPoints, SEGMENTS_FULL } from '../../src/scene/cablePath'
+import { CableBudget, catenaryPoints, pointAlong, SEGMENTS_FULL } from '../../src/scene/cablePath'
 
 describe('catenaryPoints', () => {
   it('produces segments+1 points from a to b with downward sag in the middle', () => {
@@ -19,6 +19,24 @@ describe('catenaryPoints', () => {
     expect(pts).toHaveLength(2)
     expect(pts[0].y).toBe(1)
     expect(pts[1].y).toBe(1) // no sag on straight lines
+  })
+})
+
+describe('pointAlong — signal pulse position (arc-length accurate)', () => {
+  it('midpoint of a straight line', () => {
+    const p = pointAlong([{ x: 0, y: 1, z: 0 }, { x: 2, y: 1, z: 0 }], 0.5)
+    expect(p).toEqual({ x: 1, y: 1, z: 0 })
+  })
+  it('clamps at both ends', () => {
+    const pts = [{ x: 0, y: 0, z: 0 }, { x: 1, y: 0, z: 0 }]
+    expect(pointAlong(pts, -0.5)).toEqual(pts[0])
+    expect(pointAlong(pts, 1.5)).toEqual(pts[1])
+  })
+  it('weights segments by LENGTH, not by index', () => {
+    // 3 points, first segment 9 long, second 1 long → t=0.5 sits inside segment 1
+    const pts = [{ x: 0, y: 0, z: 0 }, { x: 9, y: 0, z: 0 }, { x: 10, y: 0, z: 0 }]
+    expect(pointAlong(pts, 0.5).x).toBeCloseTo(5)
+    expect(pointAlong(pts, 0.95).x).toBeCloseTo(9.5)
   })
 })
 

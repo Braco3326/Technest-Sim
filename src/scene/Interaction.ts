@@ -24,6 +24,8 @@ export interface InteractionDeps {
   dispatch(intent: Intent): void
   /** Exam mode (Beat 5): the drag never reveals green/red — that preview IS a hint. */
   neutralDrag?: boolean
+  /** Snap feedback (motion): fired when the snap candidate changes (null = none). */
+  onCandidate?(ref: PortRef | null): void
 }
 
 interface DragState {
@@ -94,6 +96,9 @@ export class Interaction {
     let candidate = this.pickPort()
     // Candidate 2 — geometric fallback for near-misses at similar depth.
     if (!candidate) candidate = nearestPort(this.ports, point, this.drag.from.ref)
+    const prevKey = this.drag.candidate ? `${this.drag.candidate.ref.instance} ${this.drag.candidate.ref.port}` : ''
+    const nextKey = candidate ? `${candidate.ref.instance} ${candidate.ref.port}` : ''
+    if (prevKey !== nextKey) this.deps.onCandidate?.(candidate?.ref ?? null)
     this.drag.candidate = candidate
     if (candidate) {
       // Dry-run through the ENGINE — single source of validation truth.
@@ -112,6 +117,7 @@ export class Interaction {
     if (!this.drag) return
     const { from, candidate } = this.drag
     this.drag = null
+    this.deps.onCandidate?.(null)
     this.camera.attachControl(true)
     this.cables.endDrag()
 

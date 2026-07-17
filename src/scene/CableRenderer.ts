@@ -6,8 +6,8 @@
  * frames drop (CLAUDE.md).
  */
 import { Color3, Mesh, MeshBuilder, Scene, StandardMaterial, Vector3 } from '@babylonjs/core'
-import { CableBudget, catenaryPoints, SEGMENTS_FULL, type P3 } from './cablePath'
-import { TOKENS } from '../design/tokens'
+import { CableBudget, catenaryPoints, pointAlong, SEGMENTS_FULL, type P3 } from './cablePath'
+import { motionEnabled, TOKENS } from '../design/tokens'
 
 export type DragTint = 'neutral' | 'ok' | 'bad'
 
@@ -59,14 +59,21 @@ export class CableRenderer {
     this.drag = null
   }
 
-  // ── committed cables ───────────────────────────────────────────────────────
+  // ── committed cables + signal-flow pulses ──────────────────────────────────
+
+  private pulses = new Map<string, { mesh: Mesh; path: P3[]; phase: number }>()
+  private pulseObserverOn = false
+  private static readonly PULSE_PERIOD_MS = 2400
+  private static readonly PULSE_CAP = 12 // perf guard: no pulse swarm on huge rigs
 
   addCable(connectionId: string, a: Vector3, b: Vector3): void {
     this.removeCable(connectionId)
     const segments = this.budget.grant(connectionId) // straight line once over budget
-    const mesh = this.buildTube(`cable:${connectionId}`, a, b, segments)
+    const path = catenaryPoints(a, b, segments)
+    const mesh = this.buildTubeFromPath(`cable:${connectionId}`, path)
     mesh.material = this.mats.committed
     this.committed.set(connectionId, mesh)
+    this.addPulse(connectionId, path)
   }
 
   removeCable(connectionId: string): void {
@@ -75,13 +82,56 @@ export class CableRenderer {
     mesh.dispose()
     this.committed.delete(connectionId)
     this.budget.release(connectionId)
+    const pulse = this.pulses.get(connectionId)
+    if (pulse) {
+      pulse.mesh.dispose()
+      this.pulses.delete(connectionId)
+    }
+  }
+
+  /**
+   * A small accent dot travelling out→in along the cable: the signal flow made
+   * visible (pedagogical motion, VISION §6). Skipped entirely under
+   * prefers-reduced-motion and beyond the pulse cap.
+   */
+  private addPulse(connectionId: string, path: P3[]): void {
+    if (!motionEnabled() || this.pulses.size >= CableRenderer.PULSE_CAP) return
+    const dot = MeshBuilder.CreateSphere(`pulse:${connectionId}`, { diameter: 0.024, segments: 8 }, this.scene)
+    dot.material = this.pulseMat()
+    dot.isPickable = false
+    this.pulses.set(connectionId, { mesh: dot, path, phase: this.pulses.size * 0.17 })
+    if (!this.pulseObserverOn) {
+      this.pulseObserverOn = true
+      this.scene.onBeforeRenderObservable.add(() => {
+        const now = performance.now()
+        for (const p of this.pulses.values()) {
+          const t = (now / CableRenderer.PULSE_PERIOD_MS + p.phase) % 1
+          const pos = pointAlong(p.path, t)
+          p.mesh.position.set(pos.x, pos.y, pos.z)
+        }
+      })
+    }
+  }
+
+  private pulseMaterial?: StandardMaterial
+  private pulseMat(): StandardMaterial {
+    if (!this.pulseMaterial) {
+      this.pulseMaterial = new StandardMaterial('cable:pulse', this.scene)
+      const c = Color3.FromHexString(TOKENS.color.accent)
+      this.pulseMaterial.diffuseColor = c
+      this.pulseMaterial.emissiveColor = c.scale(0.8)
+    }
+    return this.pulseMaterial
   }
 
   private buildTube(name: string, a: Vector3, b: Vector3, segments: number): Mesh {
-    const path = catenaryPoints(a, b, segments).map(toVec)
+    return this.buildTubeFromPath(name, catenaryPoints(a, b, segments))
+  }
+
+  private buildTubeFromPath(name: string, path: P3[]): Mesh {
     const mesh = MeshBuilder.CreateTube(
       name,
-      { path, radius: CABLE_RADIUS, tessellation: 8, updatable: true },
+      { path: path.map(toVec), radius: CABLE_RADIUS, tessellation: 8, updatable: true },
       this.scene,
     )
     mesh.isPickable = false

@@ -41,6 +41,7 @@ import { ExamController } from './ui/exam'
 import { Shelf, saveRig } from './ui/shelf'
 import { SeenTips, tipFor, type CoachFile } from './ui/coach'
 import coachJson from '../content/coach/tips.json'
+import { motionEnabled } from './design/tokens'
 
 declare global {
   interface Window {
@@ -250,8 +251,10 @@ export function bootGame(registry: Registry, rawLevel: unknown, opts: BootOption
       return
     }
     const n = level.devices.length + spawnCount - 1
-    const pos = new Vector3(-3 + (n % 5) * 1.6, 0, -1.2 - Math.floor(n / 5) * 1.6)
+    // Centered rows, clear of the shelf panel (design review fix).
+    const pos = new Vector3(((n % 5) - 2) * 1.6, 0, -1.2 - Math.floor(n / 5) * 1.6)
     const inst = spawner.spawn(deviceId, pos, instanceId)
+    instances.push(inst)
     scene.render() // compute absolute positions for the new markers
     for (const [portId, marker] of inst.portMarkers) {
       const p = marker.getAbsolutePosition()
@@ -291,10 +294,20 @@ export function bootGame(registry: Registry, rawLevel: unknown, opts: BootOption
     }
   }
 
+  // Snap feedback (motion = pedagogy): the candidate port breathes while the
+  // cable hovers it. Marker meshes are looked up lazily (sandbox spawns late).
+  const markerScale = (ref: PortRef | null): void => {
+    if (!motionEnabled()) return
+    for (const inst of instances)
+      for (const [portId, marker] of inst.portMarkers)
+        marker.scaling.setAll(ref && ref.instance === inst.instanceId && ref.port === portId ? 1.35 : 1)
+  }
+
   const interaction = new Interaction(scene, camera, cables, portPoints, {
     canConnect: (a, b) => graph.canConnect(a, b),
     dispatch,
     neutralDrag: examMode,
+    onCandidate: markerScale,
   })
 
   const exam = examMode
