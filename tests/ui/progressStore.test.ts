@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   LocalStorageProgressStore,
+  MISTAKE_CAP,
   PROGRESS_VERSION,
   type StorageLike,
 } from '../../src/ui/ProgressStore'
@@ -80,6 +81,28 @@ describe('LocalStorageProgressStore', () => {
     const data = store.recordMistake('a1', 'R2')
     expect(data.levels.a1?.mistakes.map((m) => m.ruleId)).toEqual(['R2', 'R2'])
     expect(data.levels.a1?.mistakes[0]?.at).toMatch(/^\d{4}-\d{2}-\d{2}T/)
+  })
+
+  it(`caps the mistake history at ${MISTAKE_CAP} (bounded payload, keeps the most recent)`, () => {
+    const store = new LocalStorageProgressStore(fakeStorage())
+    let data
+    for (let i = 0; i < MISTAKE_CAP + 20; i++) data = store.recordMistake('a1', `R${(i % 8) + 1}`)
+    expect(data!.levels.a1?.mistakes.length).toBe(MISTAKE_CAP)
+    // the LAST recorded mistake survives (slice keeps the tail)
+    expect(data!.levels.a1?.mistakes.at(-1)?.ruleId).toBe(`R${((MISTAKE_CAP + 19) % 8) + 1}`)
+  })
+
+  it('a write failure (quota/blocked storage) degrades gracefully — no throw', () => {
+    const throwing: StorageLike = {
+      getItem: () => null,
+      setItem: () => {
+        throw new DOMException('QuotaExceededError')
+      },
+      removeItem: () => undefined,
+    }
+    const store = new LocalStorageProgressStore(throwing)
+    expect(() => store.recordWin('a1')).not.toThrow()
+    expect(() => store.recordMistake('a1', 'R2')).not.toThrow()
   })
 
   it('markCompleted is idempotent (first completion date wins)', () => {

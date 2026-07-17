@@ -9,6 +9,13 @@
 
 export const PROGRESS_VERSION = 2
 
+/**
+ * Per-level mistake history is bounded (deep-scan): the readiness model only
+ * ever reads `mistakes.length`, so keeping the most recent N is lossless for
+ * scoring and stops the payload growing without limit over long free-play.
+ */
+export const MISTAKE_CAP = 50
+
 export interface MistakeRecord {
   ruleId: string // R1–R8, or an ErrorCode for non-rule gameplay errors
   at: string // ISO timestamp
@@ -95,13 +102,20 @@ export class LocalStorageProgressStore implements IProgressStore {
   }
 
   save(data: ProgressData): void {
-    this.storage.setItem(this.key, JSON.stringify(data))
+    // Writes must never throw into the hot path (QuotaExceededError, private-mode
+    // Safari, blocked storage): losing a write degrades gracefully to in-memory.
+    try {
+      this.storage.setItem(this.key, JSON.stringify(data))
+    } catch (err) {
+      console.warn('[progress] could not persist (storage full or blocked)', err)
+    }
   }
 
   recordMistake(levelId: string, ruleId: string): ProgressData {
     const { data } = this.load()
     const level = (data.levels[levelId] ??= { wins: 0, mistakes: [] })
     level.mistakes.push({ ruleId, at: new Date().toISOString() })
+    if (level.mistakes.length > MISTAKE_CAP) level.mistakes = level.mistakes.slice(-MISTAKE_CAP)
     this.touch(data)
     this.save(data)
     return data

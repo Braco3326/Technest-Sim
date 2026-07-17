@@ -145,5 +145,10 @@ export function saveRig(storage: Pick<Storage, 'getItem' | 'setItem'>, rig: Save
     // corrupt file → start fresh (rigs are conveniences, not learning history)
   }
   file.rigs = [...file.rigs.filter((r) => r.name !== rig.name), rig]
-  storage.setItem(RIGS_KEY, JSON.stringify(file))
+  try {
+    storage.setItem(RIGS_KEY, JSON.stringify(file))
+  } catch (err) {
+    // Storage full/blocked must not throw into the save-rig click handler.
+    console.warn('[rigs] could not persist saved rig (storage full or blocked)', err)
+  }
 }

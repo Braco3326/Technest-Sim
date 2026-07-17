@@ -192,6 +192,12 @@ export class Hud {
     this.win.hidden = false
     this.win.querySelector('#hud-replay')!.addEventListener('click', () => location.reload())
   }
+
+  /** Retract the win card when a completed level regresses (a required cable pulled). */
+  hideWin(): void {
+    this.win.hidden = true
+    this.win.innerHTML = ''
+  }
 }
 
 const escapeHtml = (s: string): string =>

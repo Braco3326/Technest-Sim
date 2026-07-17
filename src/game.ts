@@ -90,6 +90,9 @@ export interface BootOptions {
   sandboxGuided?: boolean
 }
 
+/** Perf budget: max device bodies on the sandbox stage before spawn is refused. */
+const MAX_SANDBOX_DEVICES = 24
+
 export function bootGame(registry: Registry, rawLevel: unknown, opts: BootOptions = {}): void {
   const level = loadLevel(rawLevel)
   const sandboxMode = level.id === 'sandbox'
@@ -256,6 +259,10 @@ export function bootGame(registry: Registry, rawLevel: unknown, opts: BootOption
           }
         }
       }
+    } else if (!state.won && won && !sandboxMode) {
+      // Regressed out of a win (a required cable was pulled): retract the card.
+      won = false
+      hud.hideWin()
     }
     return state
   }
@@ -297,6 +304,12 @@ export function bootGame(registry: Registry, rawLevel: unknown, opts: BootOption
     return true
   }
   const spawnDevice = (deviceId: string): void => {
+    // Perf budget: sandbox spawn is uncapped input — a low-end PC degrades fast
+    // past a couple dozen placeholder bodies + markers + shadows.
+    if (instances.length >= MAX_SANDBOX_DEVICES) {
+      hud.toast('warning', 'Rack plein', `Maximum ${MAX_SANDBOX_DEVICES} appareils sur le plateau — retire-en pour en ajouter.`)
+      return
+    }
     const instanceId = `${deviceId}-s${++spawnCount}`
     if (spawnExact(instanceId, deviceId, level.devices.length + spawnCount - 1)) refresh()
   }
@@ -362,12 +375,18 @@ export function bootGame(registry: Registry, rawLevel: unknown, opts: BootOption
   }
 
   // Snap feedback (motion = pedagogy): the candidate port breathes while the
-  // cable hovers it. Marker meshes are looked up lazily (sandbox spawns late).
+  // cable hovers it. Touch only the two markers involved (was O(instances×ports)
+  // per pointer move — costly on big sandbox rigs).
+  let scaledMarker: { scaling: { setAll(v: number): void } } | undefined
   const markerScale = (ref: PortRef | null): void => {
     if (!motionEnabled()) return
-    for (const inst of instances)
-      for (const [portId, marker] of inst.portMarkers)
-        marker.scaling.setAll(ref && ref.instance === inst.instanceId && ref.port === portId ? 1.35 : 1)
+    const next = ref
+      ? instances.find((i) => i.instanceId === ref.instance)?.portMarkers.get(ref.port)
+      : undefined
+    if (next === scaledMarker) return
+    scaledMarker?.scaling.setAll(1)
+    next?.scaling.setAll(1.35)
+    scaledMarker = next
   }
 
   const interaction = new Interaction(scene, camera, cables, portPoints, {
