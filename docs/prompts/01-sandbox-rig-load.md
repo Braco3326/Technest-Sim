@@ -1,3 +1,6 @@
+> ✅ EXÉCUTÉ (run de nuit n°2, 2026-07-17) — conservé pour référence.
+> Voir ADR-0005 ; seule variante : le crédit readiness se limite à R1/R2/R3 (radar honnête).
+
 # PROMPT — Sandbox : chargement de rig + signal "rig propre" (suite ADR-0004)
 
 Colle ce prompt tel quel dans une session Claude Code ouverte dans D:\teknest\tekpractice.

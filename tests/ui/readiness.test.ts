@@ -47,6 +47,18 @@ describe('ruleScores', () => {
     expect(two.R4.score).toBe(0) // a1 does not exercise R4
   })
 
+  it('clean sandbox rigs credit the wiring invariants ONLY (ADR-0005, honest radar)', () => {
+    const scores = ruleScores(
+      withData({ sandbox: { wins: 2, mistakes: [] } }),
+      levels,
+      map,
+    )
+    expect(scores.R1.score).toBe(1)
+    expect(scores.R3.score).toBe(1)
+    expect(scores.R4.score).toBe(0) // domain lessons are NOT credited by free play
+    expect(scores.R7.score).toBe(0)
+  })
+
   it('sandbox mistakes count too — play is assessment (ADR-0004)', () => {
     const scores = ruleScores(
       withData({

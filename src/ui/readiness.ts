@@ -42,6 +42,11 @@ export function ruleScores(
       const lp = data.levels[level.id]
       if (lp && rulesOfLevel(level).includes(ruleId)) wins += lp.wins
     }
+    // Sandbox wins ("clean rig", ADR-0005) credit the WIRING invariants only:
+    // a clean free rig proves R1/R2/R3 mastery, not domain lessons it may
+    // never have touched (honest radar — never over-credit).
+    if (ruleId === 'R1' || ruleId === 'R2' || ruleId === 'R3')
+      wins += data.levels['sandbox']?.wins ?? 0
     // Errors count from EVERY store entry — including the sandbox: free play
     // feeds the same assessment (ADR-0004 "play = assessment").
     for (const lp of Object.values(data.levels))

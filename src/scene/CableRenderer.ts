@@ -76,6 +76,11 @@ export class CableRenderer {
     this.addPulse(connectionId, path)
   }
 
+  /** Drop every committed cable + pulse (rig reload, ADR-0005). */
+  clear(): void {
+    for (const id of [...this.committed.keys()]) this.removeCable(id)
+  }
+
   removeCable(connectionId: string): void {
     const mesh = this.committed.get(connectionId)
     if (!mesh) return

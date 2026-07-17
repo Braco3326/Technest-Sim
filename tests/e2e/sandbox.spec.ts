@@ -60,3 +60,45 @@ test('a named rig can be saved', async ({ page }) => {
   expect(rigs.rigs[0].name).toBe('Mon premier rig')
   expect(rigs.rigs[0].instances[0].deviceId).toBe('shure-sm58')
 })
+
+test('a saved rig reloads: instances, cables and readiness credit (ADR-0005)', async ({ page }) => {
+  // build a 2-connection clean rig
+  for (const id of ['shure-sm58', 'yamaha-rio3224-d2', 'yamaha-ql1'])
+    await page.locator(`.shelf-item[data-device="${id}"]`).click()
+  await page.evaluate(() => {
+    const sim = window.__audioSim!
+    sim.dispatch({
+      type: 'CONNECT',
+      a: { instance: 'shure-sm58-s1', port: 'out-xlr' },
+      b: { instance: 'yamaha-rio3224-d2-s2', port: 'in-mic-1' },
+    })
+    sim.dispatch({
+      type: 'CONNECT',
+      a: { instance: 'yamaha-rio3224-d2-s2', port: 'dante-primary' },
+      b: { instance: 'yamaha-ql1-s3', port: 'dante-primary' },
+    })
+  })
+  await page.locator('#rig-name').fill('Plateau simple')
+  await page.locator('#rig-save').click()
+  await expect(page.locator('.toast-info')).toContainText('Rig propre')
+  const wins = await page.evaluate(
+    () => JSON.parse(window.localStorage.getItem('audio-sim/progress')!).levels.sandbox.wins,
+  )
+  expect(wins).toBe(1)
+
+  // fresh page → the rig list shows it → load → the wiring is back
+  await page.reload()
+  await page.waitForFunction(() => !!window.__audioSim)
+  await page.locator('.shelf-rig', { hasText: 'Plateau simple' }).click()
+  await expect
+    .poll(async () =>
+      page.evaluate(() => {
+        const r = window.__audioSim!.canConnect(
+          { instance: 'yamaha-ql1-s3', port: 'dante-primary' },
+          { instance: 'yamaha-rio3224-d2-s2', port: 'dante-primary' },
+        )
+        return r.ok ? 'free' : (r as { code: string }).code
+      }),
+    )
+    .toBe('PORT_OCCUPIED') // the reloaded cable occupies the port again
+})

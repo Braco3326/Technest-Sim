@@ -151,3 +151,36 @@ Ordre conseille : Vercel d'abord (toi), puis 04 (visible), puis 01, 02, 03.
 - 3 nouveaux presets data : theatre (chaud, 20x16), plein-air (froid clair, 30x20, camera large), reportage/ENG (compact 10x8, camera serree). Total : 6 pieces, toutes data-only.
 - BONUS utilisabilite immediate : la sandbox accepte ?env=<preset> + une rangee de "pieces" cliquables dans le panneau etageres ("she picks the theatre just to try" - Beat 3 mot pour mot).
 - Validateur etendu aux 6 presets. 110 vitest + 20 e2e verts.
+
+## Tache 5 - LEFTOVERS : prompt 01 EXECUTE, 02 en passation, 03 SKIP
+
+**Fait (prompt 01, ADR-0005 Accepted) :**
+- Engine : removeInstance (deconnecte via disconnect(), jamais de chirurgie de maps) + clear(). 3 tests unit.
+- LOAD_RIG intent : clear -> respawn ids EXACTS -> recable -> controls -> refresh ; appareil disparu du catalog => toast, pas de crash. Liste des rigs dans le panneau (Charger).
+- Signal "rig propre" : >=2 connexions + 0 violation a la sauvegarde => recordWin('sandbox'), credite dans ruleScores R1/R2/R3 UNIQUEMENT (correction en cours de route : crediter toutes les rules sur-creditait le radar - 2 rigs de 2 cables auraient rempli R4-R8. Radar honnete > genereux). Rig sale : se sauvegarde sans credit ni punition.
+- 113 vitest + 21 e2e verts (e2e complet : build->save propre->reload page->Charger->cable restaure via PORT_OCCUPIED).
+
+**Skips assumes :**
+- Prompt 02 (controls enum + R8 sample-rate) : NON lance - extension d'interface engine en fin de tres longue session = risque de qualite ; le prompt docs/prompts/02 est autonome et pret.
+- Prompt 03 (patchbay) : ADR-0002 toujours Proposed, pas de GO d'Oscar dans l'historique -> skip conforme a la consigne.
+- Prompt 04 : les fixes objectifs (spawn centre, vignettes, [hidden] shelf) faits en tache 3 ; le reste attend les decisions design d'Oscar.
+
+---
+
+# BRIEFING DE PASSATION - RUN n.2 (2026-07-17, ~apres-midi)
+
+## Score du run : 5/5 taches traitees (4 livrees + leftovers 1/3 livre, 2 skips justifies)
+1. COACH (Beats 4+2) - 13 tips placeholder [A REMPLACER PAR OSCAR], detection moments bas/comeback, tone engine (1 msg max, 1x/session, jamais en examen).
+2. ONBOARDING (Beat 1) - date + 2 questions -> seed du recommandeur (ne surpasse JAMAIS une faiblesse mesuree) -> redirection directe en jeu ; J-XX au dashboard ; option "Passer".
+3. 2D MOTION (Beats 1/3) - pulses de signal sur cables (pointAlong pur), snap qui respire, meter VU de chaine, stagger dashboard, prefers-reduced-motion CSS+3D.
+4. ENVIRONNEMENTS (Beat 3) - theatre/plein-air/reportage + picker de piece dans la sandbox (?env=).
+5. LEFTOVERS - rig load complet (ADR-0005) ; 02 pret-a-coller ; 03 attend ton GO ADR-0002.
+
+Etat final : 113 vitest + 21 e2e verts, build OK. ADRs du run : 0005 (Accepted).
+Commits : night2: coach / onboarding / 2D motion / room presets / (rig load dans ce commit).
+
+## RESTE EN HAUT DE LA PILE
+1. VERCEL (toi) : www.teknest.fr sert toujours un bundle d'avant-hier - reconnecter le Git du projet (2 min) puis Redeploy. ~25 commits attendent en ligne.
+2. Tes textes coach (docs/REVIEW-ME.md - 13 placeholders + questions onboarding).
+3. docs/prompts/02 (R8 sample-rate) puis 03 (patchbay, apres ton GO).
+4. Mode Learn (micro-lecons Tekskol) : pas commence - le prochain gros morceau P1 de la vision.

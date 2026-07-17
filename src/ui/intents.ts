@@ -11,5 +11,7 @@ export type Intent =
   | { type: 'SET_CONTROL'; instance: string; control: string; value: boolean }
   /** Sandbox (ADR-0004): grab a device from the shelves, drop it on stage. */
   | { type: 'SPAWN'; deviceId: string }
+  /** Sandbox (ADR-0005): rebuild a saved rig — clear stage, respawn, rewire. */
+  | { type: 'LOAD_RIG'; name: string }
 
 export type IntentDispatcher = (intent: Intent) => void

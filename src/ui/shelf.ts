@@ -58,11 +58,22 @@ export class Shelf {
           .join('')}</nav>`
       : ''
 
+    const saved = loadRigs(window.localStorage)
+    const rigList = saved.length
+      ? `<div class="shelf-rigs">${saved
+          .map(
+            (r) =>
+              `<button class="shelf-rig" data-rig="${esc(r.name)}" title="${r.instances.length} appareil(s)">▶ ${esc(r.name)}</button>`,
+          )
+          .join('')}</div>`
+      : ''
+
     root.innerHTML = `
       <h2>Étagères${guided ? ' · palette guidée' : ''}</h2>
       ${rooms}
       ${guided ? `<p class="shelf-brief">${GUIDED_BRIEF}</p>` : ''}
       <div class="shelf-scroll">${sections}</div>
+      ${rigList}
       <div class="shelf-save">
         <input id="rig-name" type="text" placeholder="Nom du rig…" maxlength="40" />
         <button id="rig-save">Sauver</button>
@@ -74,6 +85,11 @@ export class Shelf {
       const item = (e.target as HTMLElement).closest<HTMLButtonElement>('.shelf-item')
       if (item) {
         dispatch({ type: 'SPAWN', deviceId: item.dataset.device! })
+        return
+      }
+      const rig = (e.target as HTMLElement).closest<HTMLButtonElement>('.shelf-rig')
+      if (rig) {
+        dispatch({ type: 'LOAD_RIG', name: rig.dataset.rig! })
         return
       }
       if ((e.target as HTMLElement).id === 'rig-save') {
@@ -105,6 +121,17 @@ interface RigFile {
 
 const RIGS_KEY = 'audio-sim/rigs'
 const RIGS_VERSION = 1
+
+export function loadRigs(storage: Pick<Storage, 'getItem'>): SavedRig[] {
+  try {
+    const raw = storage.getItem(RIGS_KEY)
+    if (!raw) return []
+    const parsed = JSON.parse(raw) as RigFile
+    return parsed.version === RIGS_VERSION && Array.isArray(parsed.rigs) ? parsed.rigs : []
+  } catch {
+    return []
+  }
+}
 
 export function saveRig(storage: Pick<Storage, 'getItem' | 'setItem'>, rig: SavedRig): void {
   let file: RigFile = { version: RIGS_VERSION, rigs: [] }

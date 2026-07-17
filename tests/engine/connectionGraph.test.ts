@@ -140,6 +140,26 @@ describe('dynamic spawn — ADR-0004 (sandbox)', () => {
     expect(g.addInstance('x', 'shure-sm57')).toMatchObject({ ok: false, code: 'DUPLICATE_INSTANCE' })
     expect(g.addInstance('y', 'no-such-device')).toMatchObject({ ok: false, code: 'UNKNOWN_DEVICE' })
   })
+
+  it('removeInstance frees its ports and cables (ADR-0005)', () => {
+    const g = new ConnectionGraph(registry, a1.devices)
+    g.connect({ instance: 'sm58-1', port: 'out-xlr' }, { instance: 'rio-1', port: 'in-mic-1' })
+    expect(g.removeInstance('sm58-1')).toMatchObject({ ok: true })
+    expect(g.getConnections()).toHaveLength(0)
+    // the rio port is free again
+    expect(
+      g.connect({ instance: 'sm57-1', port: 'out-xlr' }, { instance: 'rio-1', port: 'in-mic-1' }).ok,
+    ).toBe(true)
+    expect(g.removeInstance('ghost')).toMatchObject({ ok: false, code: 'UNKNOWN_INSTANCE' })
+  })
+
+  it('clear empties the rig', () => {
+    const g = new ConnectionGraph(registry, a1.devices)
+    g.connect({ instance: 'sm58-1', port: 'out-xlr' }, { instance: 'rio-1', port: 'in-mic-1' })
+    g.clear()
+    expect(g.snapshot().instances).toHaveLength(0)
+    expect(g.getConnections()).toHaveLength(0)
+  })
 })
 
 describe('device state — ADR-0001', () => {

@@ -38,7 +38,7 @@ import { Hud } from './ui/hud'
 import { ControlsPanel } from './ui/controlsPanel'
 import { LocalStorageProgressStore } from './ui/ProgressStore'
 import { ExamController } from './ui/exam'
-import { Shelf, saveRig } from './ui/shelf'
+import { loadRigs, Shelf, saveRig } from './ui/shelf'
 import { SeenTips, tipFor, type CoachFile } from './ui/coach'
 import coachJson from '../content/coach/tips.json'
 import { motionEnabled } from './design/tokens'
@@ -252,18 +252,15 @@ export function bootGame(registry: Registry, rawLevel: unknown, opts: BootOption
     console.warn(`[rejected ${e.code}${e.ruleId ? ` ${e.ruleId}` : ''}] ${e.message}`)
   }
 
-  // Sandbox spawns land on a simple grid rows-of-5, front of stage.
+  // Sandbox spawns land on a simple grid rows-of-5, centered, front of stage.
   let spawnCount = 0
-  const spawnDevice = (deviceId: string): void => {
-    const instanceId = `${deviceId}-s${++spawnCount}`
+  const spawnExact = (instanceId: string, deviceId: string, index: number): boolean => {
     const r = graph.addInstance(instanceId, deviceId)
     if (!r.ok) {
       hud.toast('error', 'Spawn impossible', r.message)
-      return
+      return false
     }
-    const n = level.devices.length + spawnCount - 1
-    // Centered rows, clear of the shelf panel (design review fix).
-    const pos = new Vector3(((n % 5) - 2) * 1.6, 0, -1.2 - Math.floor(n / 5) * 1.6)
+    const pos = new Vector3(((index % 5) - 2) * 1.6, 0, -1.2 - Math.floor(index / 5) * 1.6)
     const inst = spawner.spawn(deviceId, pos, instanceId)
     instances.push(inst)
     scene.render() // compute absolute positions for the new markers
@@ -271,6 +268,35 @@ export function bootGame(registry: Registry, rawLevel: unknown, opts: BootOption
       const p = marker.getAbsolutePosition()
       portPoints.push({ ref: { instance: instanceId, port: portId }, x: p.x, y: p.y, z: p.z })
     }
+    return true
+  }
+  const spawnDevice = (deviceId: string): void => {
+    const instanceId = `${deviceId}-s${++spawnCount}`
+    if (spawnExact(instanceId, deviceId, level.devices.length + spawnCount - 1)) refresh()
+  }
+
+  // Rig reload (ADR-0005): clear stage → respawn exact ids → rewire → restate.
+  const loadRigByName = (name: string): void => {
+    const rig = loadRigs(window.localStorage).find((r) => r.name === name)
+    if (!rig) return
+    graph.clear()
+    cables.clear()
+    for (const inst of instances) inst.dispose()
+    instances.length = 0
+    portPoints.length = 0
+    spawnCount = rig.instances.length
+    let allOk = true
+    rig.instances.forEach((s, i) => {
+      if (!spawnExact(s.instanceId, s.deviceId, i)) allOk = false
+    })
+    for (const c of rig.connections) {
+      const r = graph.connect(c.a, c.b)
+      if (r.ok && r.connectionId) cables.addCable(r.connectionId, portPos(c.a), portPos(c.b))
+    }
+    for (const [instId, ctrls] of Object.entries(rig.controls))
+      for (const [controlId, value] of Object.entries(ctrls)) graph.setControl(instId, controlId, value)
+    if (!allOk)
+      hud.toast('warning', 'Rig partiellement chargé', 'Un appareil de ce rig n’existe plus dans le catalog.')
     refresh()
   }
 
@@ -300,6 +326,10 @@ export function bootGame(registry: Registry, rawLevel: unknown, opts: BootOption
       }
       case 'SPAWN': {
         if (sandboxMode) spawnDevice(intent.deviceId)
+        break
+      }
+      case 'LOAD_RIG': {
+        if (sandboxMode) loadRigByName(intent.name)
         break
       }
     }
@@ -347,6 +377,13 @@ export function bootGame(registry: Registry, rawLevel: unknown, opts: BootOption
           connections: snap.connections,
           controls: Object.fromEntries(snap.instances.map((i) => [i.instanceId, i.controls])),
         })
+        // Clean rig = positive readiness signal (ADR-0005): ≥2 connections and
+        // zero violations. A messy rig still saves — no shame, just no credit.
+        const state = runner.check(graph)
+        if (snap.connections.length >= 2 && state.violations.length === 0) {
+          progress.recordWin('sandbox')
+          hud.toast('info', 'Rig propre', 'Deux connexions ou plus, zéro faute — ta readiness en profite.')
+        }
       },
       Object.keys(ENVIRONMENTS),
       env.id,
