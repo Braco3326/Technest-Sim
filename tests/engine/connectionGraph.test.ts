@@ -162,6 +162,42 @@ describe('dynamic spawn — ADR-0004 (sandbox)', () => {
   })
 })
 
+describe('enum controls — ADR-0007 (sample rate)', () => {
+  it('initializes to defaultOption and accepts only declared options', () => {
+    const g = new ConnectionGraph(registry, d1.devices)
+    expect(g.getControl('hdio-1', 'sample-rate')).toBe('48000') // catalog defaultOption
+    expect(g.setControl('hdio-1', 'sample-rate', '96000')).toMatchObject({ ok: true })
+    expect(g.getControl('hdio-1', 'sample-rate')).toBe('96000')
+  })
+
+  it('rejects a value outside the options with INVALID_CONTROL_VALUE', () => {
+    const g = new ConnectionGraph(registry, d1.devices)
+    expect(g.setControl('hdio-1', 'sample-rate', '22050')).toMatchObject({
+      ok: false,
+      code: 'INVALID_CONTROL_VALUE',
+    })
+    expect(g.getControl('hdio-1', 'sample-rate')).toBe('48000') // unchanged
+  })
+
+  it('type-guards the two control kinds: a string into a toggle, a boolean into an enum', () => {
+    const g = new ConnectionGraph(registry, d1.devices)
+    expect(g.setControl('isa-1', 'phantom-48v', 'on')).toMatchObject({
+      ok: false,
+      code: 'INVALID_CONTROL_VALUE',
+    })
+    expect(g.setControl('hdio-1', 'sample-rate', true)).toMatchObject({
+      ok: false,
+      code: 'INVALID_CONTROL_VALUE',
+    })
+  })
+
+  it('snapshot exposes enum values as strings alongside boolean toggles', () => {
+    const g = new ConnectionGraph(registry, d1.devices)
+    const controls = g.snapshot().instances.find((i) => i.instanceId === 'hdio-1')!.controls
+    expect(controls['sample-rate']).toBe('48000')
+  })
+})
+
 describe('device state — ADR-0001', () => {
   it('initializes controls to catalog defaults and toggles via setControl', () => {
     const g = new ConnectionGraph(registry, d1.devices)

@@ -20,14 +20,17 @@ export const Port = z.object({
 })
 
 /**
- * A physical switch/knob on the device (ADR-0001, device state).
- * `enables` gates a port flag on the runtime control value:
- * e.g. ISA One "+48V" toggle gates providesPhantom on in-mic —
- * the flag is only EFFECTIVE while the control is on.
+ * A physical switch/knob on the device (ADR-0001 toggles, ADR-0007 enums).
+ * Discriminated on `type`:
+ *  - toggle: boolean `default`; optional `enables` gates a port flag on the
+ *    runtime value (ISA One "+48V" gates providesPhantom on in-mic).
+ *  - enum: a picker (e.g. sample-rate) — `options` (≥2) with `defaultOption`.
+ *    Read directly by logic/* (no flag gating). validate-catalog asserts
+ *    defaultOption ∈ options.
  */
-export const Control = z.object({
+export const ToggleControl = z.object({
   id: z.string().min(1),
-  type: z.enum(['toggle']),
+  type: z.literal('toggle'),
   label: z.string().min(1),
   default: z.boolean(),
   enables: z.object({
@@ -35,6 +38,14 @@ export const Control = z.object({
     ports: z.array(z.string().min(1)).min(1),
   }).optional(),
 })
+export const EnumControl = z.object({
+  id: z.string().min(1),
+  type: z.literal('enum'),
+  label: z.string().min(1),
+  options: z.array(z.string().min(1)).min(2),
+  defaultOption: z.string().min(1),
+})
+export const Control = z.discriminatedUnion('type', [ToggleControl, EnumControl])
 
 export const Device = z.object({
   id: z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'device id must be a kebab-case slug'),

@@ -19,7 +19,8 @@ export const gpioCheck = (snapshot: RigSnapshot): ViolationDraft[] => {
   const violations: ViolationDraft[] = []
   for (const inst of snapshot.instances) {
     for (const [controlId, on] of Object.entries(inst.controls)) {
-      if (!controlId.startsWith('fader-') || !on) continue
+      // fader-* are toggles; guard the value type (enum controls also live here).
+      if (!controlId.startsWith('fader-') || typeof on !== 'boolean' || !on) continue
       const micPortId = controlId.slice('fader-'.length)
       const micPort = inst.ports.find((p) => p.portId === micPortId)
       if (!micPort?.flags.includes('isMicInput')) continue

@@ -313,6 +313,9 @@
       "ports": [
         { "portId": "digilink", "dir": "bidir", "connector": "digilink", "signal": "usb-audio" },
         { "portId": "power-in", "dir": "in",    "connector": "iec-c14",  "signal": "mains-power" }
+      ],
+      "controls": [
+        { "id": "sample-rate", "type": "enum", "label": "Sample rate", "options": ["44100", "48000", "96000"], "defaultOption": "48000" }
       ]
     },
     {
@@ -332,6 +335,9 @@
         { "portId": "wordclock-in",     "dir": "in",    "connector": "bnc",      "signal": "wordclock", "flags": ["isClockSlave"] },
         { "portId": "wordclock-out",    "dir": "out",   "connector": "bnc",      "signal": "wordclock", "flags": ["isClockMaster"] },
         { "portId": "power-in",         "dir": "in",    "connector": "iec-c14",  "signal": "mains-power" }
+      ],
+      "controls": [
+        { "id": "sample-rate", "type": "enum", "label": "Sample rate", "options": ["44100", "48000", "96000"], "defaultOption": "48000" }
       ]
     },
     {
@@ -419,6 +425,9 @@
         { "portId": "wordclock-out-1", "dir": "out", "connector": "bnc",     "signal": "wordclock", "flags": ["isClockMaster"] },
         { "portId": "wordclock-out-2", "dir": "out", "connector": "bnc",     "signal": "wordclock", "flags": ["isClockMaster"] },
         { "portId": "power-in",        "dir": "in",  "connector": "iec-c14", "signal": "mains-power" }
+      ],
+      "controls": [
+        { "id": "sample-rate", "type": "enum", "label": "Sample rate", "options": ["44100", "48000", "96000"], "defaultOption": "48000" }
       ]
     },
     {

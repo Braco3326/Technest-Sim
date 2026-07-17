@@ -10,16 +10,35 @@
  * stable catalog ids); wordclock itself doesn't count — the clock line is
  * the cure, not the disease.
  *
- * P2 (needs the enum-control extension from ADR-0001): sample-rate mismatch
- * and double-master detection across a clock distribution network.
+ * SAMPLE RATE (ADR-0007, enum controls): two digital devices on the same
+ * link, each carrying a `sample-rate` enum control set to a DIFFERENT value,
+ * is an R8 violation — one runs 44.1 kHz, the other 48 kHz, so the link ticks.
+ * Double-master detection stays P2 (needs a clock distribution hub — a single
+ * wordclock-in can only take one cable, so two masters aren't expressible yet).
  */
 import type { RigSnapshot, ViolationDraft } from '../engine/types'
-import { isConnected, sameRef } from './helpers'
+import { isConnected, portOf, sameRef } from './helpers'
 
 const DIGITAL_AUDIO = new Set(['aes3', 'spdif', 'madi', 'aoip', 'usb-audio'])
+const SAMPLE_RATE = 'sample-rate'
 
 export const clockCheck = (snapshot: RigSnapshot): ViolationDraft[] => {
   const violations: ViolationDraft[] = []
+  const rateOf = (instanceId: string): string | undefined => {
+    const v = snapshot.instances.find((i) => i.instanceId === instanceId)?.controls[SAMPLE_RATE]
+    return typeof v === 'string' ? v : undefined
+  }
+
+  // Sample-rate mismatch across a digital link (R2 guarantees both ends share a signal id).
+  for (const { a, b } of snapshot.connections) {
+    const port = portOf(snapshot, a)
+    if (!port || !DIGITAL_AUDIO.has(port.signal)) continue
+    const ra = rateOf(a.instance)
+    const rb = rateOf(b.instance)
+    if (ra !== undefined && rb !== undefined && ra !== rb)
+      violations.push({ ruleId: 'R8', subjects: [a, b] })
+  }
+
   for (const inst of snapshot.instances) {
     const slaveIns = inst.ports.filter((p) => p.flags.includes('isClockSlave'))
     if (slaveIns.length === 0) continue

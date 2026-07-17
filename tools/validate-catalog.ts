@@ -88,6 +88,10 @@ for (const d of catalog.devices) {
   if (d.controls) {
     assertUnique(d.controls.map((c) => c.id), `controls.id in ${d.id}`)
     for (const ctl of d.controls) {
+      // Enum controls (ADR-0007): defaultOption must be one of the options.
+      if (ctl.type === 'enum' && !ctl.options.includes(ctl.defaultOption))
+        fail(`devices["${d.id}"].controls["${ctl.id}"] → defaultOption "${ctl.defaultOption}" not in options [${ctl.options.join(', ')}]`)
+      if (ctl.type !== 'toggle') continue
       // Naming conventions consumed by logic/* modules (see equipment-catalog.md):
       //   fader-<portId>          → port must exist and be an isMicInput
       //   route-<srcPort>-to-<busPort> → both ports must exist (src=in, bus=out)

@@ -12,11 +12,18 @@ export type ErrorCode =
   | 'UNKNOWN_CONNECTION'
   | 'UNKNOWN_DEVICE' // addInstance (ADR-0004)
   | 'DUPLICATE_INSTANCE' // addInstance (ADR-0004)
+  | 'INVALID_CONTROL_VALUE' // setControl on an enum control (ADR-0007)
   | 'SELF_CONNECTION'
   | 'PORT_OCCUPIED'
   | 'DIRECTION_MISMATCH' // R3
   | 'CONNECTOR_MISMATCH' // R1
   | 'SIGNAL_MISMATCH' // R2
+
+/**
+ * A device-control value (ADR-0001 + ADR-0007): a toggle is a boolean, an enum
+ * control (e.g. sample-rate 44100/48000/96000) is one of its string options.
+ */
+export type ControlValue = boolean | string
 
 /** Engine-invariant rules enforced by ConnectionGraph.connect() in every level. */
 export type InvariantRuleId = 'R1' | 'R2' | 'R3'
@@ -44,7 +51,7 @@ export interface SnapshotInstance {
   instanceId: string
   deviceId: string
   ports: SnapshotPort[]
-  controls: Record<string, boolean>
+  controls: Record<string, ControlValue>
 }
 export interface SnapshotConnection {
   a: PortRef

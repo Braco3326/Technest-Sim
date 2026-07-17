@@ -112,7 +112,7 @@ export interface SavedRig {
   savedAt: string
   instances: { instanceId: string; deviceId: string }[]
   connections: { a: { instance: string; port: string }; b: { instance: string; port: string } }[]
-  controls: Record<string, Record<string, boolean>>
+  controls: Record<string, Record<string, import('../engine/types').ControlValue>>
 }
 interface RigFile {
   version: number

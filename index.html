@@ -89,6 +89,19 @@
       }
       .cp-toggle[aria-pressed='true'] i { background: var(--tk-success, #1f9d5b); }
       .cp-toggle[aria-pressed='true'] i::after { left: 14px; }
+      /* Enum control (ADR-0007, e.g. sample-rate) — label + native select. */
+      .cp-enum {
+        display: flex; align-items: center; justify-content: space-between; gap: var(--tk-space-sm, 8px);
+        font-size: var(--tk-text-sm, 12.5px); color: var(--tk-ink, #1b2129); margin-bottom: 5px; padding: 2px 0;
+      }
+      .cp-select {
+        font: inherit; font-size: var(--tk-text-sm, 12.5px); color: var(--tk-ink, #1b2129);
+        background: var(--tk-surface, #fff); border: 1px solid var(--tk-surface-border, #e6e8ee);
+        border-radius: var(--tk-radius-sm, 7px); padding: 5px 8px; cursor: pointer;
+        transition: border-color var(--tk-motion-fast, 140ms) var(--tk-motion-ease, ease);
+      }
+      .cp-select:hover { border-color: var(--tk-ink-faint, #8b93a3); }
+      .cp-select:focus-visible { outline: 2px solid var(--tk-accent, #2e5fe6); outline-offset: 1px; }
       .cp-matrix { border-collapse: collapse; font-size: var(--tk-text-xs, 11px); margin-top: 4px; }
       .cp-matrix th, .cp-matrix td { border: 1px solid var(--tk-surface-border, #e6e8ee); padding: 3px 7px; color: var(--tk-ink-muted, #5a6372); font-weight: var(--tk-weight-regular, 450); }
       .cp-cell {

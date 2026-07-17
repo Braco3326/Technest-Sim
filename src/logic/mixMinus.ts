@@ -21,7 +21,8 @@ export const mixMinusCheck = (snapshot: RigSnapshot): ViolationDraft[] => {
   for (const console_ of snapshot.instances) {
     for (const [controlId, on] of Object.entries(console_.controls)) {
       const match = ROUTE.exec(controlId)
-      if (!match || !on) continue
+      // route-* are toggles; guard the value type (enum controls also live here).
+      if (!match || typeof on !== 'boolean' || !on) continue
       const [, srcPortId, busPortId] = match
       const busFeeds = otherEnds(snapshot, { instance: console_.instanceId, port: busPortId })
       const srcFedBy = otherEnds(snapshot, { instance: console_.instanceId, port: srcPortId })
