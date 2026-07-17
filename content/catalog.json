@@ -64,7 +64,7 @@
       "realWorld": {
         "brand": "Yamaha", "model": "QL1", "category": "console",
         "typicalUse": "Compact digital FOH console for small venues, corporate and installs",
-        "notes": "Native Dante (RJ45 primary/secondary). Ports simplified: 2 of 16 local mic-ins modeled."
+        "notes": "Native Dante (etherCON primary/secondary). Ports simplified: 2 of 16 local mic-ins modeled."
       },
       "ports": [
         { "portId": "in-mic-1",      "dir": "in",    "connector": "xlr3-f",   "signal": "mic-level",      "flags": ["isMicInput", "providesPhantom"] },
@@ -72,7 +72,7 @@
         { "portId": "out-main-l",    "dir": "out",   "connector": "xlr3-m",   "signal": "line-level-pro" },
         { "portId": "out-main-r",    "dir": "out",   "connector": "xlr3-m",   "signal": "line-level-pro" },
         { "portId": "out-mix-1",     "dir": "out",   "connector": "xlr3-m",   "signal": "line-level-pro", "flags": ["isMonitorOut"] },
-        { "portId": "dante-primary", "dir": "bidir", "connector": "rj45",     "signal": "aoip",           "flags": ["isDantePrimary"] },
+        { "portId": "dante-primary", "dir": "bidir", "connector": "ethercon", "signal": "aoip",           "flags": ["isDantePrimary"] },
         { "portId": "power-in",      "dir": "in",    "connector": "iec-c14",  "signal": "mains-power" }
       ]
     },
