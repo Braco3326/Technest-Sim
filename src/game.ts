@@ -40,8 +40,11 @@ import { LocalStorageProgressStore } from './ui/ProgressStore'
 import { ExamController } from './ui/exam'
 import { loadRigs, Shelf, saveRig } from './ui/shelf'
 import { SeenTips, tipFor, type CoachFile } from './ui/coach'
+import type { ToastAction } from './ui/hud'
 import coachJson from '../content/coach/tips.json'
 import { motionEnabled } from './design/tokens'
+import { askCoach, createAiCoach } from './ai'
+import { buildGrounding } from './ai/grounding'
 
 declare global {
   interface Window {
@@ -187,6 +190,24 @@ export function bootGame(registry: Registry, rawLevel: unknown, opts: BootOption
   let won = false
   const activeViolations = new Set<string>()
 
+  // Coach IA (ADR-0006): on-demand "Pourquoi ?" layer, distinct from the
+  // authored Oscar tips. No key in .env → unconfigured → no button, no crash.
+  const aiCoach = createAiCoach(import.meta.env)
+  const whyAction = (
+    ruleId: string | undefined,
+    errorCode: string | undefined,
+    subjects: PortRef[],
+  ): ToastAction | undefined => {
+    if (examMode || aiCoach.status !== 'ready') return undefined
+    return {
+      label: 'Pourquoi ?',
+      onClick: (toastEl) => {
+        const grounding = buildGrounding(registry, graph.snapshot(), { ruleId, errorCode, subjects })
+        void hud.showCoachReply(toastEl, askCoach(aiCoach, grounding, { examMode }))
+      },
+    }
+  }
+
   // Coach (Beat 2): the mentor voice fires on the exact topic, once per
   // session, never during an exam (no hints there — including human ones).
   const coachTips = coachJson as CoachFile
@@ -211,7 +232,7 @@ export function bootGame(registry: Registry, rawLevel: unknown, opts: BootOption
     for (const v of state.violations) {
       if (activeViolations.has(v.ruleId)) continue
       activeViolations.add(v.ruleId)
-      if (!examMode) hud.toast(v.severity, v.title, v.teach)
+      if (!examMode) hud.toast(v.severity, v.title, v.teach, whyAction(v.ruleId, undefined, v.subjects))
       sessionMistakes += 1
       mistakes = progress.recordMistake(level.id, v.ruleId).levels[level.id]!.mistakes
       coachOnRule(v.ruleId)
@@ -239,12 +260,17 @@ export function bootGame(registry: Registry, rawLevel: unknown, opts: BootOption
     return state
   }
 
-  const onRejected = (e: TypedError): void => {
+  const onRejected = (e: TypedError, subjects: PortRef[]): void => {
     const rule = !examMode && e.ruleId ? registry.ruleById.get(e.ruleId) : undefined
     if (examMode) {
       hud.toast('error', 'Connexion refusée', 'Pas d’explication en mode examen — analyse et corrige.')
     } else {
-      hud.toast('error', rule?.title ?? 'Connexion impossible', rule?.teach ?? e.message)
+      hud.toast(
+        'error',
+        rule?.title ?? 'Connexion impossible',
+        rule?.teach ?? e.message,
+        whyAction(e.ruleId, e.code, subjects),
+      )
     }
     sessionMistakes += 1
     mistakes = progress.recordMistake(level.id, e.ruleId ?? e.code).levels[level.id]!.mistakes
@@ -309,7 +335,7 @@ export function bootGame(registry: Registry, rawLevel: unknown, opts: BootOption
           cables.addCable(r.connectionId, portPos(intent.a), portPos(intent.b))
           refresh()
         } else if (!r.ok) {
-          onRejected(r)
+          onRejected(r, [intent.a, intent.b])
         }
         break
       }

@@ -184,3 +184,20 @@ Commits : night2: coach / onboarding / 2D motion / room presets / (rig load dans
 2. Tes textes coach (docs/REVIEW-ME.md - 13 placeholders + questions onboarding).
 3. docs/prompts/02 (R8 sample-rate) puis 03 (patchbay, apres ton GO).
 4. Mode Learn (micro-lecons Tekskol) : pas commence - le prochain gros morceau P1 de la vision.
+
+## Run coach IA (2026-07-17, apres-midi) — ADR-0006
+
+Objectif : couche COACH IA temps-reel (Beats 2/4), distincte des Conseils d'Oscar authores.
+
+- src/ai/ : AiCoach (interface swappable) + AiProvider (bas niveau) + GroundedCoach
+  (ancrage strict + validation de sortie) + AnthropicProvider (SDK officiel, opus-4-8,
+  navigateur) + createAiCoach (cle .env DIFFEREE -> unconfigured propre, jamais de crash).
+- Ancrage RAG : buildGrounding()/validateReply() PURES — la reponse doit citer [Rn] ou
+  [catalog:id], toute regle inconnue / materiel hors montage => rejet, l'UI garde le teach.
+- Socratique : system prompt "teach don't cheat" (pourquoi + questions, jamais le geste exact).
+- Examen : silence par DOUBLE garde (askCoach court-circuite + game.ts ne cable pas le bouton).
+- UI : bouton "Pourquoi ?" sur les toasts d'erreur (rejections R1-R3 ET violations R4-R8),
+  reponse rendue dans le toast avec ligne Sources. CSS tokens uniquement.
+- Tests : 17 nouveaux vitest (ancrage, degradation, silence examen, prompt structurel).
+Etat : 130 vitest + 21 e2e verts, build OK. Suites -> docs/prompts/05-ai-coach.md
+(Gemini, Ollama, lazy-load SDK, anti-spam, readiness dans le pack, e2e mocke).

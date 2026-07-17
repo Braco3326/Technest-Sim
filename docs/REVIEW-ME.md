@@ -35,3 +35,15 @@ engine n'affiche jamais plus d'un message à la fois).
 
 - ADR-0002 (patchbay normalled/half-normalled) : Proposed — dis GO et le prompt
   docs/prompts/03 l'implémente.
+
+## 5. Coach IA (ADR-0006) — a activer et relire
+
+- **Pour l'activer** : copie `.env.example` en `.env` et mets ta cle Anthropic dans
+  VITE_AI_COACH_KEY (console.anthropic.com). Sans cle, le bouton "Pourquoi ?" n'existe
+  simplement pas — rien ne casse.
+- **A relire (ta voix, pas la mienne)** : le system prompt dans `src/ai/prompt.ts` —
+  ton, longueur (120 mots), et surtout la ligne socratique ("ne nomme jamais le port
+  exact"). C'est LE texte qui pilote la pedagogie IA.
+- **A decider** : modele (defaut claude-opus-4-8, qualite max ; claude-haiku-4-5 = ~5x
+  moins cher si le volume devient un sujet — change VITE_AI_COACH_MODEL, rien d'autre) ;
+  et provider Gemini/Ollama si tu preferes (docs/prompts/05-ai-coach.md, pret a coller).

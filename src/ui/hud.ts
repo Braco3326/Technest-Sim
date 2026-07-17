@@ -5,10 +5,25 @@
  */
 import type { LevelT, Registry } from '../engine/CatalogLoader'
 import type { LevelState } from '../engine/types'
+import type { CoachResult } from '../ai/AiCoach'
 import { chainLabel, mistakeSummary } from './format'
 import type { MistakeRecord } from './ProgressStore'
 
 const TOAST_MS = 6000
+const TOAST_AI_MS = 30000
+
+/** Bouton optionnel sur un toast (ex. « Pourquoi ? » du coach IA, ADR-0006). */
+export interface ToastAction {
+  label: string
+  onClick: (toastEl: HTMLElement) => void
+}
+
+const COACH_UNAVAILABLE: Record<Extract<CoachResult, { kind: 'unavailable' }>['reason'], string> = {
+  unconfigured: 'Coach IA non configuré (clé absente dans .env).',
+  exam: 'Pas d’aide en mode examen.',
+  error: 'Coach IA injoignable pour le moment — le conseil ci-dessus reste valable.',
+  rejected: 'Le coach n’a pas pu s’ancrer sur ton montage — le conseil ci-dessus reste valable.',
+}
 
 export class Hud {
   private checklist: HTMLElement
@@ -91,14 +106,73 @@ export class Hud {
     }
   }
 
-  toast(severity: 'error' | 'warning' | 'info' | 'coach', title: string, body: string): void {
+  private toastTimers = new WeakMap<HTMLElement, number>()
+
+  toast(
+    severity: 'error' | 'warning' | 'info' | 'coach',
+    title: string,
+    body: string,
+    action?: ToastAction,
+  ): HTMLElement {
     const el = document.createElement('div')
     el.className = `toast toast-${severity}`
-    el.innerHTML = `<strong></strong><span></span>`
-    ;(el.firstChild as HTMLElement).textContent = title
-    ;(el.lastChild as HTMLElement).textContent = body
+    const strong = document.createElement('strong')
+    strong.textContent = title
+    const span = document.createElement('span')
+    span.textContent = body
+    el.append(strong, span)
+    if (action) {
+      const btn = document.createElement('button')
+      btn.type = 'button'
+      btn.className = 'toast-action'
+      btn.textContent = action.label
+      btn.addEventListener(
+        'click',
+        () => {
+          btn.remove()
+          action.onClick(el)
+        },
+        { once: true },
+      )
+      el.appendChild(btn)
+    }
     this.toasts.appendChild(el)
-    setTimeout(() => el.remove(), TOAST_MS)
+    this.toastTimers.set(
+      el,
+      window.setTimeout(() => el.remove(), TOAST_MS),
+    )
+    return el
+  }
+
+  /** Rend la réponse du coach IA DANS le toast d'origine (ADR-0006). */
+  async showCoachReply(el: HTMLElement, pending: Promise<CoachResult>): Promise<void> {
+    const timer = this.toastTimers.get(el)
+    if (timer !== undefined) clearTimeout(timer)
+    el.classList.add('toast-ai')
+    const zone = document.createElement('div')
+    zone.className = 'toast-ai-zone'
+    zone.textContent = 'Le coach réfléchit…'
+    el.appendChild(zone)
+    const result = await pending
+    if (result.kind === 'answer') {
+      zone.textContent = result.text
+      const cite = document.createElement('small')
+      cite.className = 'toast-ai-cite'
+      cite.textContent = `Sources : ${result.citations.join(' ')}`
+      el.appendChild(cite)
+    } else {
+      zone.textContent = COACH_UNAVAILABLE[result.reason]
+    }
+    const close = document.createElement('button')
+    close.type = 'button'
+    close.className = 'toast-action'
+    close.textContent = 'Fermer'
+    close.addEventListener('click', () => el.remove(), { once: true })
+    el.appendChild(close)
+    this.toastTimers.set(
+      el,
+      window.setTimeout(() => el.remove(), TOAST_AI_MS),
+    )
   }
 
   showWin(mistakes: readonly MistakeRecord[]): void {

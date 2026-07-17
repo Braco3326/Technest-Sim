@@ -15,6 +15,7 @@
     "format": "prettier --write \"src/**/*.ts\" \"tools/**/*.ts\""
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.112.1",
     "@babylonjs/core": "^7.0.0",
     "@babylonjs/loaders": "^7.0.0",
     "zod": "^3.23.0"
