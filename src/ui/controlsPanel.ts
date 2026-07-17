@@ -50,7 +50,7 @@ export class ControlsPanel {
           for (const b of buses) {
             const ctl = routes.find((c) => c.id === `route-${s}-to-${b}`)
             html += ctl
-              ? `<td><button class="cp-cell" data-instance="${inst.instanceId}" data-control="${ctl.id}"></button></td>`
+              ? `<td><button class="cp-cell" data-instance="${inst.instanceId}" data-control="${ctl.id}" aria-label="Router ${s} vers ${b}"></button></td>`
               : '<td></td>'
           }
           html += '</tr>'

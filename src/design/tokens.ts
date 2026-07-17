@@ -27,8 +27,9 @@ export const TOKENS = {
     // Semantic (teaching feedback — calm, never neon)
     success: '#1F9D5B',
     successInk: '#0B3A21',
-    error: '#D93A47',
-    warning: '#D98324',
+    error: '#D93A47', // 4.5:1 on white — AA for text
+    warning: '#D98324', // decorative fill/border only (2.9:1 — NOT for text)
+    warningInk: '#A85A00', // 5.1:1 on white — the AA-safe warning TEXT colour
     info: '#2E5FE6',
 
     // Ports (direction coding, distinguishable on device bodies)

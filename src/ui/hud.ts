@@ -41,15 +41,19 @@ export class Hud {
   ) {
     const examMode = new URLSearchParams(location.search).get('mode') === 'exam'
     const sandbox = level.id === 'sandbox'
+    const cur = (on: boolean) => (on ? ' aria-current="page"' : '')
     const nav =
-      `<a href="${location.pathname}" title="Retour au tableau de bord">←</a>` +
+      `<a href="${location.pathname}" title="Retour au tableau de bord" aria-label="Retour au tableau de bord">←</a>` +
       ['a1', 'b1', 'c1', 'd1']
-        .map((id) => `<a href="?level=${id}" class="${id === level.id ? 'current' : ''}">${id.toUpperCase()}</a>`)
+        .map(
+          (id) =>
+            `<a href="?level=${id}" class="${id === level.id ? 'current' : ''}"${cur(id === level.id)}>${id.toUpperCase()}</a>`,
+        )
         .join('') +
-      `<a href="?level=sandbox" class="${sandbox ? 'current' : ''}">Sandbox</a>` +
+      `<a href="?level=sandbox" class="${sandbox ? 'current' : ''}"${cur(sandbox)}>Sandbox</a>` +
       (sandbox
         ? ''
-        : `<a href="?level=${level.id}&mode=exam" class="hud-exam ${examMode ? 'current' : ''}" title="Mode examen : chrono, sans aides, note /20">Examen</a>`)
+        : `<a href="?level=${level.id}&mode=exam" class="hud-exam ${examMode ? 'current' : ''}"${cur(examMode)} title="Mode examen : chrono, sans aides, note /20">Examen</a>`)
     root.innerHTML = `
       <section class="hud-panel" id="hud-objectives">
         <nav id="hud-levels">${nav}</nav>
@@ -61,7 +65,7 @@ export class Hud {
       </section>
       <aside class="hud-panel" id="hud-controls" hidden></aside>
       <aside class="hud-panel" id="hud-shelf" hidden></aside>
-      <div id="hud-toasts"></div>
+      <div id="hud-toasts" role="status" aria-live="polite" aria-atomic="false"></div>
       <div id="hud-win" hidden></div>`
     this.checklist = root.querySelector('#hud-checklist')!
     this.counter = root.querySelector('#hud-counter')!
