@@ -196,7 +196,12 @@ export function bootGame2D(registry: Registry, rawLevel: unknown): void {
     level,
     canConnect: (a, b) => graph.canConnect(a, b),
     portScreen: () => null, // 2D board is clicked by data attributes, not projected coords
-    snap: () => null,
+    deviceScreen: () => null,
+    // 2D board has no camera: a flat "ensemble". Held state = the armed port.
+    view: () => ({ mode: 'ensemble', focused: null, held: null, selected: null }),
+    // Real DOM truth: how many ports currently show the ok/bad teaching glow.
+    glowCount: () => document.querySelectorAll('.b2d-port.ok, .b2d-port.bad').length,
+    hints: () => !examMode,
   }
 
   refresh()

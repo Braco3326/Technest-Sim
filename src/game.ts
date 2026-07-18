@@ -31,7 +31,8 @@ import { clockCheck } from './logic/clock'
 
 import { DeviceSpawner } from './scene/DeviceSpawner'
 import { CableRenderer } from './scene/CableRenderer'
-import { Interaction } from './scene/Interaction'
+import { CameraRig } from './scene/CameraRig'
+import { FocusPatch } from './scene/FocusPatch'
 import type { PortPoint } from './scene/snap'
 import type { Intent } from './ui/intents'
 import { Hud } from './ui/hud'
@@ -54,7 +55,13 @@ declare global {
       level: ReturnType<typeof loadLevel>
       canConnect: (a: PortRef, b: PortRef) => ReturnType<ConnectionGraph['canConnect']>
       portScreen: (ref: PortRef) => { x: number; y: number } | null
-      snap: () => { ref: PortRef; ok: boolean } | null
+      deviceScreen: (instanceId: string) => { x: number; y: number } | null
+      /** Focus & Patch state (ADR-0008): camera mode, focused device, held cable. */
+      view: () => { mode: 'ensemble' | 'focus'; focused: string | null; held: PortRef | null; selected: string | null }
+      /** Meshes carrying the teaching glow right now (exam ⇒ always 0). */
+      glowCount: () => number
+      /** Teaching hints gate — read/write (sandbox toggle flips it). */
+      hints: () => boolean
     }
   }
 }
@@ -98,6 +105,11 @@ export function bootGame(registry: Registry, rawLevel: unknown, opts: BootOption
   const sandboxMode = level.id === 'sandbox'
   // Exam mode (Beat 5): same engine, no hints, a clock, a /20 report.
   const examMode = !sandboxMode && new URLSearchParams(location.search).get('mode') === 'exam'
+  // Teaching hints gate (spec §3): ON in Learn/Levels, HARD OFF in Exam,
+  // toggleable in Sandbox (defaults ON for exploration). Gates glow/dim AND
+  // the green/red tint of the held cable — never the cable itself.
+  let hintsOn = !examMode
+  const hints = (): boolean => !examMode && hintsOn
 
   // ── engine ────────────────────────────────────────────────────────────────
   const graph = new ConnectionGraph(registry, level.devices)
@@ -227,6 +239,7 @@ export function bootGame(registry: Registry, rawLevel: unknown, opts: BootOption
     const state = runner.check(graph)
     hud.update(state)
     controlsPanel.update(graph.snapshot())
+    focusPatch.refreshHints() // occupancy moved → recompute glow/dim (spec §3)
     console.info(
       `[${level.id}] ${state.connectedRequired}/${state.totalRequired} required — ${state.won ? 'WIN' : 'in progress'}`,
     )
@@ -389,10 +402,14 @@ export function bootGame(registry: Registry, rawLevel: unknown, opts: BootOption
     scaledMarker = next
   }
 
-  const interaction = new Interaction(scene, camera, cables, portPoints, {
+  // Focus & Patch (ADR-0008, spec §1): double-click focuses, port clicks patch.
+  // Replaces the drag flow entirely — the camera rig captures the env preset
+  // pose as "Ensemble" and never touches the graph (spec §5).
+  const rig = new CameraRig(camera)
+  const focusPatch = new FocusPatch(scene, camera, rig, cables, instances, portPoints, {
     canConnect: (a, b) => graph.canConnect(a, b),
     dispatch,
-    neutralDrag: examMode,
+    hints,
     onCandidate: markerScale,
   })
 
@@ -404,7 +421,6 @@ export function bootGame(registry: Registry, rawLevel: unknown, opts: BootOption
         onFinished: () => undefined,
       })
     : null
-  void interaction
 
   // Sandbox shelves (ADR-0004): catalog-driven, mastery-gated, rig save box.
   if (sandboxMode) {
@@ -435,10 +451,10 @@ export function bootGame(registry: Registry, rawLevel: unknown, opts: BootOption
     )
   }
 
-  // Debug/e2e hook (Playwright drives the same intents a pointer would, and
-  // portScreen() lets it aim REAL pointer drags at port markers).
-  const portScreen = (ref: PortRef): { x: number; y: number } | null => {
-    const world = portPos(ref)
+  // Debug/e2e hook (Playwright drives the same REAL clicks a mouse would:
+  // deviceScreen() aims double-clicks, portScreen() aims port clicks, both
+  // projected live through the CURRENT camera — valid in Ensemble and Focus).
+  const project = (world: Vector3): { x: number; y: number } => {
     const projected = Vector3.Project(
       world,
       Matrix.Identity(),
@@ -451,6 +467,13 @@ export function bootGame(registry: Registry, rawLevel: unknown, opts: BootOption
       y: rect.top + (projected.y / babylon.getRenderHeight()) * rect.height,
     }
   }
+  const portScreen = (ref: PortRef): { x: number; y: number } | null => project(portPos(ref))
+  const deviceScreen = (instanceId: string): { x: number; y: number } | null => {
+    const inst = instances.find((i) => i.instanceId === instanceId)
+    if (!inst) return null
+    const { min, max } = inst.root.getHierarchyBoundingVectors()
+    return project(min.add(max).scale(0.5))
+  }
 
   window.__audioSim = {
     dispatch,
@@ -458,7 +481,10 @@ export function bootGame(registry: Registry, rawLevel: unknown, opts: BootOption
     level,
     canConnect: (a, b) => graph.canConnect(a, b),
     portScreen,
-    snap: () => interaction.snapCandidate,
+    deviceScreen,
+    view: () => focusPatch.view,
+    glowCount: () => focusPatch.glowCount,
+    hints,
   }
 
   babylon.runRenderLoop(() => scene.render())

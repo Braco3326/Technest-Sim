@@ -98,7 +98,11 @@ export class DeviceSpawner {
         const glbRoot = meshes[0]
         glbRoot.name = `glb:${instanceId}`
         glbRoot.parent = root
-        for (const m of meshes) m.isPickable = false
+        // The model is the double-click focus target too (ADR-0008).
+        for (const m of meshes) {
+          m.isPickable = true
+          m.metadata = { ...(m.metadata ?? {}), isDeviceBody: true, instanceId }
+        }
         this.scene.getMeshByName(`box:${instanceId}`)?.setEnabled(false)
       })
       .catch(() => console.warn(`[assets] ${deviceId}.glb unavailable — placeholder kept`))
@@ -113,7 +117,9 @@ export class DeviceSpawner {
     box.parent = root
     box.position.y = h / 2
     box.material = this.material('body', TOKENS.color.deviceBody)
-    box.isPickable = false
+    // Focus & Patch (ADR-0008): the body is the double-click focus target.
+    box.isPickable = true
+    box.metadata = { isDeviceBody: true, instanceId }
 
     // Soft contact shadow: a radial-gradient blob on the floor grounds the
     // device on the white stage (VISION §6 "gentle contact shadows").
