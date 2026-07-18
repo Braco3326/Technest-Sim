@@ -27,6 +27,7 @@
 | Type | famille + tailles xs→xl + poids |
 | Espace/Rayon/Élévation | échelles sm→xl, ombres `card`/`raised` |
 | Motion | `fast/base/slow` + `ease` |
+| Focus & Patch (ADR-0008) | `glowOutline` `glowOutlineWidth` `glowOverlayAlpha` `dimVisibility` `heldCableRadius` `flyMs` |
 
 Diffusion : `injectTokens()` pousse tout sur `:root` en `--tk-*` ; le CSS du HUD
 (index.html) ne consomme QUE ces variables ; la scène Babylon lit `TOKENS.*`
@@ -37,7 +38,13 @@ directement (Color3.FromHexString).
 - Clear color `bg`, sol `floor` (le léger écart crée l'horizon doux).
 - Lumière de musée : hémisphérique 0.95 (groundColor #DDE1E8) + directionnelle 0.35 pour modeler.
 - **Ombres de contact** : blob radial-gradient (`contactShadow`, DynamicTexture partagée) sous chaque device — pas de vraies shadow maps (budget perf, calme visuel).
-- Câbles : caténaires fines, `cable` sombre commité ; drag neutre/`cableOk`/`cableBad`.
+- Câbles : caténaires fines, `cable` sombre commité (rayon fixe) ; drag neutre/`cableOk`/`cableBad`.
+  Le câble **tenu** (drag) utilise `focus.heldCableRadius` (0.02) — plus épais que le commité
+  pour rester lisible en vue Ensemble ; matériau neutral doux (émissif 0.35, pas de flash).
+- **Focus & Patch** (tokens `focus.*`, lus directement côté scène, PAS injectés en CSS) :
+  le halo des cibles compatibles = `glowOutline` (= l'accent, jamais néon) + un lavis translucide
+  `glowOverlayAlpha` (0.3, valeur UNIQUE pour corps et cartels — cohérence sur fond blanc) ;
+  les ports incompatibles reculent à `dimVisibility` (0.35) ; le vol caméra dure `flyMs` (300 ms).
 - Labels 3D : cartels encre-sur-blanc (texture opaque). ⚠️ Piège appris : l'opacityTexture Babylon dérive l'alpha de la LUMINANCE → texte sombre sur transparent = invisible. On n'utilise PLUS d'alpha pour les labels. Police canvas : `bold Npx sans-serif` uniquement (`500 … system-ui` ne parse pas dans le canvas headless).
 
 ## HUD

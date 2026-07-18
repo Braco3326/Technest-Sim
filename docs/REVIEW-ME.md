@@ -155,3 +155,21 @@ genelec-8030c (parfait : 1 XLR-F + IEC) · les 5 micros (1 XLR-M chacun) · km-2
 ### 8.5 Bloqué / à récupérer à la main (datasheets)
 u87-ai (file-finder JS Neumann) · axia-iq (pas de PDF propre) · antelope-ocx-hd (pas de PDF propre) ·
 grace-m905 (manuel proprio seul) · mogami (pas de datasheet d'assemblage). URLs dans les notes.md.
+
+## 9. Run Focus & Patch (2026-07-18) — a valider en jouant
+
+Ouvre http://localhost:3001/?level=a1 (ou npm run dev) et fais UNE connexion complete :
+double-clic sur le SM58 -> clic sur son port -> clic droit (retour) -> regarde les
+cartels teintes en bleu (devices compatibles) -> double-clic sur le Rio -> clic in-mic-1.
+
+Jugements que J'AI tranches (ADR-0008) — dis-moi si tu veux autre chose :
+1. **Esc annule d'abord le cable, puis quitte le focus** (2 pressions). Alternative :
+   Esc quitte toujours le focus et lache le cable en meme temps (1 pression, plus brutal).
+2. **Connexion refusee -> le cable REVIENT en main** pour reessayer (le toast enseigne).
+   Alternative : main vide apres chaque tentative.
+3. **Glow = outline + lavis bleu accent + cartel teinte** (0.35/0.30 alpha). Trop visible ?
+   Pas assez ? C'est du token — reglable en 30 s.
+4. **Toggle Indices en Sandbox : defaut ON.** L'audit precedent (REVIEW-ME §7.1, fader
+   iQ ouvert par defaut en sandbox) reste ouvert et est independant.
+5. Le zoom molette reste PERMIS partout (spec : « Zoom (fine) : scroll wheel ») — l'e2e
+   prouve juste qu'on n'en a jamais BESOIN. Confirme que c'est bien ta lecture de §8.

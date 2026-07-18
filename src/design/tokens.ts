@@ -6,8 +6,7 @@
  * NEVER hardcode a color/duration/spacing outside this file.
  */
 
-export const TOKENS = {
-  color: {
+const color = {
     // Canvas & surfaces
     bg: '#F5F6F8', // 3D scene clear color — soft paper white
     floor: '#FCFCFD', // stage floor — near-white, lets contact shadows read
@@ -44,7 +43,10 @@ export const TOKENS = {
     cableOk: '#1F9D5B',
     cableBad: '#D93A47',
     contactShadow: 'rgba(20, 24, 32, 0.20)', // soft blob under devices
-  },
+} as const
+
+export const TOKENS = {
+  color,
 
   type: {
     family: "'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif",
@@ -66,6 +68,17 @@ export const TOKENS = {
     base: '240ms',
     slow: '420ms',
     ease: 'cubic-bezier(0.2, 0, 0, 1)', // decisive start, soft landing
+  },
+
+  // Focus & Patch interaction (ADR-0008) — 3D-scene numbers, not CSS units,
+  // so they are read directly via TOKENS.focus.* and NOT injected on :root.
+  focus: {
+    glowOutline: color.accent, // compatible-target halo — the one accent, never neon
+    glowOutlineWidth: 0.012, // outline thickness (Babylon world-ish units) at ensemble distance
+    glowOverlayAlpha: 0.3, // one translucent wash for bodies + labels — calm on white
+    dimVisibility: 0.35, // incompatible port markers recede without vanishing
+    heldCableRadius: 0.02, // cable in hand: readable in the wide Ensemble view (committed stays thin)
+    flyMs: 300, // camera flight (spec §2: 250-350 ms eased)
   },
 } as const
 

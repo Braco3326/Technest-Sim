@@ -266,3 +266,65 @@ ADR du run : aucun (pur data). Relecture : docs/REVIEW-ME.md §6 ([A VERIFIER] c
   couverture de tests du tier scene/orchestration.
 - 2D : support sandbox + polish overlap des labels a gauche ; extraction GameSession partagee.
 - getElementById(...)! sans garde (hardening mineur).
+
+## RUN AUTONOME LONG (2026-07-18, ~5h) — FOCUS & PATCH (le coeur, Beat 3)
+
+Source de verite : docs/TekPractice_Interaction-and-Assets.md (relue en ouverture).
+Contexte assume : le drag-to-connect 3D etait l'anti-pattern rejete par la spec §1 —
+autorisation d'Oscar de faire LE gros build et de REMPLACER le drag (pas de double flow).
+
+### FAIT (gates verts a chaque commit : tsc + vitest + e2e + build)
+1. **focusMachine** (commit d1b08b0) — state machine PURE Ensemble<->Focus + curseur
+   selection + cable en main. 15 tests unitaires. ADR-0008.
+2. **CameraRig + FocusPatch + wiring** (ea9ed39) — vol eased 300 ms (arc le plus court),
+   auto-frame du panneau -Z, reduced-motion = cut sec ; double-clic focus (corps des
+   devices rendus pickables, glb inclus), clic port = cable en main (survit au retour
+   Ensemble), clic droit / clic vide = retour, Esc = annulation du plus recent, clavier
+   Tab/Entree/fleches (sans voler le focus DOM du HUD), contextmenu supprime ; glow
+   outline des devices compatibles + dim des ports incompatibles via canConnect injecte ;
+   connexion refusee => le cable REVIENT en main (teach-then-retry). Interaction.ts (drag)
+   SUPPRIME ; snap.ts reduit au type PortPoint ; __audioSim: +deviceScreen/view/glowCount/
+   hints, -snap. La camera ne mute jamais le graphe (test statique).
+3. **Indices mode-gated** (828d821) — spec §3 : ON Learn/Levels, OFF DUR en Examen
+   (glow + tint dry-run du cable), toggle "Indices ON/OFF" en Sandbox (defaut ON).
+   FIX AUDITE : le board 2D (Render2D) coupait PAS son glow ok/bad en examen — corrige
+   (le port arme reste visible : c'est de l'etat, pas un indice).
+4. **Gates spec §8** (8bbacd4) — e2e "A1 cable UNIQUEMENT au double-clic + focus + clics
+   ports, ZERO zoom manuel -> win" (vraie souris, zero dispatch programmatique, helper
+   Esc-recovery qui modelise un vrai utilisateur qui se rate) ; e2e "examen : rien ne glow"
+   (3D focus + ensemble, et 2D) + controle inverse en Levels ; test statique d'architecture
+   (les modules camera n'importent pas ConnectionGraph, focusMachine 100% pure, aucun
+   vocabulaire de regle reimplemente en scene) ; verification par screenshots headless.
+   Lisibilite du glow : overlay translucide sur les corps + CARTELS teintes (un mic de
+   20 px a distance Ensemble ne porte pas un outline seul) — verifie a l'image.
+
+### DECISIONS (ADR-0008)
+- Politique Esc : annule l'engagement le plus recent (cable d'abord, focus ensuite) ;
+  clic droit / clic vide reviennent en Ensemble AVEC le cable (le flow §1 etape 4).
+- Connexion refusee : l'intent part quand meme (le toast R1-R3 EST la lecon), puis
+  repickup — l'eleve reessaie sans re-cliquer la source.
+- Auto-frame : panneau -Z (la ou DeviceSpawner pose les ports), alpha=-pi/2, beta 1.15,
+  radius 2.6x le rayon englobant. Tiendra tel quel quand les .glb remplacent les boites.
+- Touch : mapping documente (double-tap/1 doigt/pincement/2 doigts), implementation
+  tactile reelle = plus tard (stubs pointes dans l'ADR §5).
+
+### 4c — R8 sample-rate : DEJA LIVRE lors d'un run precedent (ADR-0007, commit 7e38e17).
+Rien a refaire ; le prompt docs/prompts/02 est obsolete (garde pour trace).
+### SKIP assume : patchbay (ADR-0002) — attend toujours la decision d'Oscar.
+
+### RESTE / EN COURS
+- Agent designer lance sur le polish tokens (glow/dim/cable tenu/fly) — verdict en fin de run.
+- Voir docs/prompts/08-focus-patch-leftovers.md pour tout ce qui n'est pas fini.
+
+### 4a — Verdict polish designer (fin de run)
+Agent designer livre : groupe TOKENS.focus (glowOutline=accent, glowOutlineWidth 0.012,
+glowOverlayAlpha 0.3 harmonise, dimVisibility 0.35, heldCableRadius 0.02, flyMs 300) ;
+FocusPatch/CableRenderer/CameraRig consomment les tokens (zero constante visuelle locale) ;
+cable committed inchange ; design-system.md documente. Verifie par moi : tsc + 164 vitest +
+32 e2e + build verts, screenshot de controle OK (cartels compatibles teintes, autres blancs).
+Reste mineur (log, pas bloquant) : le cable tenu reste discret en vue Ensemble sur les
+petits devices eloignes — l'information passe par le glow des cartels ; a re-regarder si
+Oscar le veut plus present (token heldCableRadius, 30 s de reglage).
+### 4b — Perf : caps existants juges suffisants (24 devices sandbox, PULSE_CAP 12,
+CableBudget) ; applyHints O(instances x ports) OK a cette echelle — pistes chiffrees dans
+docs/prompts/08 §E, pas d'optimisation a l'aveugle.

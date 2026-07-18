@@ -12,7 +12,7 @@ import { motionEnabled, TOKENS } from '../design/tokens'
 export type DragTint = 'neutral' | 'ok' | 'bad'
 
 const toVec = (p: P3) => new Vector3(p.x, p.y, p.z)
-const CABLE_RADIUS = 0.012
+const CABLE_RADIUS = 0.012 // committed cable — thin dark line on the white floor
 
 export class CableRenderer {
   private committed = new Map<string, Mesh>()
@@ -42,7 +42,12 @@ export class CableRenderer {
 
   beginDrag(from: Vector3): void {
     this.endDrag()
-    this.drag = { mesh: this.buildTube('cable:drag', from, from, SEGMENTS_FULL), from: from.clone() }
+    // Held cable is thicker so it reads in the wide Ensemble view; the radius is
+    // baked here (updateDrag reuses this mesh via instance, keeping the radius).
+    this.drag = {
+      mesh: this.buildTube('cable:drag', from, from, SEGMENTS_FULL, TOKENS.focus.heldCableRadius),
+      from: from.clone(),
+    }
     this.drag.mesh.material = this.mats.neutral
   }
 
@@ -129,14 +134,14 @@ export class CableRenderer {
     return this.pulseMaterial
   }
 
-  private buildTube(name: string, a: Vector3, b: Vector3, segments: number): Mesh {
-    return this.buildTubeFromPath(name, catenaryPoints(a, b, segments))
+  private buildTube(name: string, a: Vector3, b: Vector3, segments: number, radius = CABLE_RADIUS): Mesh {
+    return this.buildTubeFromPath(name, catenaryPoints(a, b, segments), radius)
   }
 
-  private buildTubeFromPath(name: string, path: P3[]): Mesh {
+  private buildTubeFromPath(name: string, path: P3[], radius = CABLE_RADIUS): Mesh {
     const mesh = MeshBuilder.CreateTube(
       name,
-      { path: path.map(toVec), radius: CABLE_RADIUS, tessellation: 8, updatable: true },
+      { path: path.map(toVec), radius, tessellation: 8, updatable: true },
       this.scene,
     )
     mesh.isPickable = false

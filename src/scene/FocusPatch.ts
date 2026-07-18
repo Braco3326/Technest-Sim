@@ -47,15 +47,13 @@ export interface FocusPatchDeps {
 }
 
 const same = (a: PortRef, b: PortRef) => a.instance === b.instance && a.port === b.port
-const OUTLINE_WIDTH = 0.012
-const DIM_VISIBILITY = 0.35
 
 export class FocusPatch {
   private state: FocusState = initialState()
   private glowing = new Set<AbstractMesh>()
   private dimmed = new Set<Mesh>()
   private hoverRef: PortRef | null = null
-  private outlineColor = Color3.FromHexString(TOKENS.color.accent)
+  private outlineColor = Color3.FromHexString(TOKENS.focus.glowOutline)
 
   constructor(
     private scene: Scene,
@@ -267,10 +265,10 @@ export class FocusPatch {
           // at Ensemble distance; the overlay reads from across the stage.
           mesh.renderOutline = true
           mesh.outlineColor = this.outlineColor
-          mesh.outlineWidth = OUTLINE_WIDTH
+          mesh.outlineWidth = TOKENS.focus.glowOutlineWidth
           mesh.renderOverlay = true
           mesh.overlayColor = this.outlineColor
-          mesh.overlayAlpha = 0.35
+          mesh.overlayAlpha = TOKENS.focus.glowOverlayAlpha
           this.glowing.add(mesh)
         }
         // The label card is a billboard with constant screen presence — tinting
@@ -280,7 +278,7 @@ export class FocusPatch {
         if (label) {
           label.renderOverlay = true
           label.overlayColor = this.outlineColor
-          label.overlayAlpha = 0.3
+          label.overlayAlpha = TOKENS.focus.glowOverlayAlpha
           this.glowing.add(label)
         }
       }
@@ -296,10 +294,10 @@ export class FocusPatch {
       if (this.deps.canConnect(held, ref).ok) {
         marker.renderOutline = true
         marker.outlineColor = this.outlineColor
-        marker.outlineWidth = OUTLINE_WIDTH / 2
+        marker.outlineWidth = TOKENS.focus.glowOutlineWidth / 2
         this.glowing.add(marker)
       } else {
-        marker.visibility = DIM_VISIBILITY
+        marker.visibility = TOKENS.focus.dimVisibility
         this.dimmed.add(marker)
       }
     }

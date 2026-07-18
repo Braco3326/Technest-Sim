@@ -5,7 +5,7 @@
  * Camera-only module: imports no engine code and never mutates any graph state.
  */
 import { ArcRotateCamera, Animation, CubicEase, EasingFunction, Vector3 } from '@babylonjs/core'
-import { motionEnabled } from '../design/tokens'
+import { motionEnabled, TOKENS } from '../design/tokens'
 
 export interface CameraPose {
   alpha: number
@@ -21,7 +21,6 @@ export interface FrameTarget {
   boundingRadius: number
 }
 
-export const FLY_MS = 300 // spec §2: 250-350 ms eased
 const FPS = 60
 /** Placeholder port panels face −Z (DeviceSpawner) — arrive looking at them. */
 const FOCUS_ALPHA = -Math.PI / 2
@@ -67,7 +66,7 @@ export class CameraRig {
       this.camera.setTarget(to.target.clone())
       return
     }
-    const frames = Math.round((FLY_MS / 1000) * FPS)
+    const frames = Math.round((TOKENS.focus.flyMs / 1000) * FPS)
     const ease = new CubicEase()
     ease.setEasingMode(EasingFunction.EASINGMODE_EASEINOUT)
     const scene = this.camera.getScene()
