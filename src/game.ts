@@ -449,6 +449,26 @@ export function bootGame(registry: Registry, rawLevel: unknown, opts: BootOption
       Object.keys(ENVIRONMENTS),
       env.id,
     )
+    // Hints toggle (spec §3): Sandbox defaults ON (exploration), switchable
+    // OFF for self-testing. Levels are always ON, Exam is hard OFF (no toggle).
+    const hintsBtn = document.createElement('button')
+    hintsBtn.type = 'button'
+    hintsBtn.id = 'hints-toggle'
+    hintsBtn.className = 'shelf-hints-toggle'
+    const renderHintsBtn = (): void => {
+      hintsBtn.textContent = `Indices : ${hintsOn ? 'ON' : 'OFF'}`
+      hintsBtn.setAttribute('aria-pressed', String(hintsOn))
+      hintsBtn.title = hintsOn
+        ? 'Couper les indices (glow des compatibles) pour t’auto-tester'
+        : 'Réactiver les indices d’exploration'
+    }
+    renderHintsBtn()
+    hintsBtn.addEventListener('click', () => {
+      hintsOn = !hintsOn
+      renderHintsBtn()
+      focusPatch.refreshHints()
+    })
+    document.getElementById('hud-shelf')!.appendChild(hintsBtn)
   }
 
   // Debug/e2e hook (Playwright drives the same REAL clicks a mouse would:

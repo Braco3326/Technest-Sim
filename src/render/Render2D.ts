@@ -21,6 +21,11 @@ export interface Board2DApi {
   getConnections(): SnapshotConnection[]
   canConnect(a: PortRef, b: PortRef): ConnectResult
   connectionAt(ref: PortRef): string | undefined
+  /**
+   * Teaching hints gate (spec §3) — false in Exam: the ok/bad dry-run glow is
+   * a HINT and must vanish; the armed marker stays (it is state, not a hint).
+   */
+  hints(): boolean
 }
 
 const portKey = (r: PortRef) => `${r.instance}␟${r.port}`
@@ -175,13 +180,16 @@ export class Render2D {
       if (id) line.dataset.connection = id
       this.cableLayer.appendChild(line)
     }
-    // arming feedback: the candidate glows; every other port shows green/red dry-run
+    // Arming feedback: the armed port always shows (state); the green/red
+    // dry-run on every other port is a TEACHING HINT — mode-gated (spec §3),
+    // so in Exam you locate and judge the ports yourself.
+    const hints = this.api.hints()
     for (const c of this.svg.querySelectorAll<SVGCircleElement>('.b2d-port')) {
       c.classList.remove('armed', 'ok', 'bad')
       if (!this.armed) continue
       const ref: PortRef = { instance: c.dataset.instance!, port: c.dataset.port! }
       if (portKey(ref) === portKey(this.armed)) c.classList.add('armed')
-      else c.classList.add(this.api.canConnect(this.armed, ref).ok ? 'ok' : 'bad')
+      else if (hints) c.classList.add(this.api.canConnect(this.armed, ref).ok ? 'ok' : 'bad')
     }
   }
 }

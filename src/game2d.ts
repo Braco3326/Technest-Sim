@@ -60,6 +60,8 @@ export function bootGame2D(registry: Registry, rawLevel: unknown): void {
       getConnections: () => graph.getConnections(),
       canConnect: (a, b) => graph.canConnect(a, b),
       connectionAt: (ref) => graph.connectionAt(ref),
+      // Audited fix: the 2D board's ok/bad glow is a hint — OFF in Exam (spec §3).
+      hints: () => !examMode,
     },
     (intent) => dispatch(intent),
   )

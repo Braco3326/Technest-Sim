@@ -329,6 +329,16 @@
         cursor: pointer; transition: border-color var(--tk-motion-fast, 140ms) var(--tk-motion-ease, ease);
       }
       .shelf-item:hover { border-color: var(--tk-accent, #2e5fe6); }
+      /* Sandbox hints toggle (spec §3) — ON explore / OFF self-test. */
+      .shelf-hints-toggle {
+        display: block; width: 100%; margin-top: var(--tk-space-sm, 8px); padding: 6px 10px;
+        border: 1px solid var(--tk-surface-border, #e6e8ee); border-radius: var(--tk-radius-sm, 7px);
+        background: var(--tk-surface, #fff); color: var(--tk-ink, #1b2129);
+        font: inherit; font-size: var(--tk-text-sm, 12.5px); font-weight: var(--tk-weight-medium, 550);
+        cursor: pointer;
+      }
+      .shelf-hints-toggle:hover { border-color: var(--tk-accent, #2e5fe6); }
+      .shelf-hints-toggle[aria-pressed='false'] { color: var(--tk-ink-muted, #5a6372); }
       .shelf-item img { width: 26px; height: 26px; border-radius: 5px; object-fit: cover; }
       .shelf-save { display: flex; gap: 6px; align-items: center; margin-top: var(--tk-space-sm, 8px); }
       .shelf-save input {
