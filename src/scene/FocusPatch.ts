@@ -263,10 +263,25 @@ export class FocusPatch {
         )
         if (!compatible) continue
         for (const mesh of this.bodyMeshes(inst)) {
+          // Outline + translucent overlay wash: the outline alone is sub-pixel
+          // at Ensemble distance; the overlay reads from across the stage.
           mesh.renderOutline = true
           mesh.outlineColor = this.outlineColor
           mesh.outlineWidth = OUTLINE_WIDTH
+          mesh.renderOverlay = true
+          mesh.overlayColor = this.outlineColor
+          mesh.overlayAlpha = 0.35
           this.glowing.add(mesh)
+        }
+        // The label card is a billboard with constant screen presence — tinting
+        // it makes the "this device accepts your cable" signal readable even on
+        // tiny far-away devices (a 20px mic body cannot carry the glow alone).
+        const label = this.scene.getMeshByName(`label:${inst.instanceId}`)
+        if (label) {
+          label.renderOverlay = true
+          label.overlayColor = this.outlineColor
+          label.overlayAlpha = 0.3
+          this.glowing.add(label)
         }
       }
       return
@@ -291,7 +306,10 @@ export class FocusPatch {
   }
 
   private clearHints(): void {
-    for (const mesh of this.glowing) mesh.renderOutline = false
+    for (const mesh of this.glowing) {
+      mesh.renderOutline = false
+      mesh.renderOverlay = false
+    }
     for (const mesh of this.dimmed) mesh.visibility = 1
     this.glowing.clear()
     this.dimmed.clear()
