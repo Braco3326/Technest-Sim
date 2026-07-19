@@ -232,7 +232,15 @@
       "kind": "device",
       "ports": 1,
       "status": "ok",
-      "note": "v2 MCP live: taper + collar + ball grille"
+      "note": "v2 MCP live: taper + collar + ball grille",
+      "source": "modeled",
+      "sourceUrl": "",
+      "author": "TekPractice (procédural interne, Blender)",
+      "license": "internal (own work)",
+      "attributionText": "",
+      "trademark": "generic",
+      "portEmpties": 1,
+      "riggedAt": "2026-07-19"
     },
     {
       "id": "shure-sm57",
