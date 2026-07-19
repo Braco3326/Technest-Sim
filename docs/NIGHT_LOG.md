@@ -413,3 +413,26 @@ en (a) RIG PASS complet sur nos 24 glb + (b) file de sourcing recherchee et veri
 2. Oscar : 2 clics Poly Pizza (ql1 generique, re50).
 3. Optionnel : cle Tripo/Meshy en .env -> generation des 7 introuvables depuis les photos.
 4. Le rig pass re-tournera tel quel sur chaque nouveau fichier (pipeline prouve).
+
+## RUN SOURCING — PHASE TELECHARGEMENT (cle Sketchfab fournie par Oscar)
+
+Pipeline complet OPERATIONNEL : fetch-sketchfab.mjs (API v3 + token .env, meta.json
+licence/auteur a la source) -> rig-all --src (Blender: roty/decimate/empties) ->
+textures webp 1024 + Draco (ALL_EXTENSIONS) -> manifest download-ccby + CREDITS.md auto.
+
+LIVRE (18 devices remplaces par des modeles CC-BY reels, commits par device) :
+- 5 EXACTS + 1 quasi : SM58 (port deplace a l'extremite XLR du mic couche, face '+x'
+  ajoutee au rig), SM57, U87 (245k->4k tris), QSC K12.2 (36KB !), pied K&M, Genelec 8340A.
+- 12 generiques : SM7B->re20, wedge->dbr12, mixer 8 faders->axia-iq, rack LCD->scoop5,
+  Zoom H6->scoopy+, warning light->litt, preampli->isa-one, rack Midiverb->hd-io+ocx-hd,
+  tour PC->hdx+playout, ampli casque->m905.
+- Tailles : 19-372 KB par glb (textures 1024 webp). Verification visuelle : vrai SM58
+  sur vrai pied, K12.2 avec ports au dos, D1 en materiel realiste.
+- TOUTES les licences relues a l'API au moment du download (CC Attribution) ;
+  attribution auto dans CREDITS.md ; trademark: branded-internal (logos textures) —
+  debranding = passe commerciale.
+
+RESTE : ev-re50 + ql1 generique (Poly Pizza, 2 clics Oscar) · 6 proceduraux conserves
+(rio, ql1, 9625, mogami, mika, dbr12-procedural remplace en fait — reste rio/ql1/9625/
+mogami/mika) · nit : le glb du pied K&M contient 2 variantes (depliee+repliee) -> retirer
+la repliee a la prochaine passe Blender.
