@@ -436,3 +436,23 @@ RESTE : ev-re50 + ql1 generique (Poly Pizza, 2 clics Oscar) · 6 proceduraux con
 (rio, ql1, 9625, mogami, mika, dbr12-procedural remplace en fait — reste rio/ql1/9625/
 mogami/mika) · nit : le glb du pied K&M contient 2 variantes (depliee+repliee) -> retirer
 la repliee a la prochaine passe Blender.
+
+## RUN ENVIRONNEMENTS 3D (2026-07-18) — specs Set-System (phase decor) + 3D-Model-Sourcing
+
+- Scan API Sketchfab 4 espaces (CC0/CC-BY only, NC/ND ecartes d'office), vignettes jugees
+  a l'image. 3 salles retenues + 1 trou honnete (studio : rien de realiste en CC -> blanc
+  conserve + queue, la regle de repli du run).
+- Pipeline salles : env-scan (candidats+licences) / env-pack (fetch+meta) / env_prep.py
+  (Blender : echelle en METRES par largeur reelle, ground/centre, decimation <=100k) ->
+  webp1024+Draco. Poids finaux : live 661 KB, theatre 376 KB, radio 971 KB (budget web OK).
+- Integration ADR-0009 : Environment.set {glb, position, rotationY, scale} — la SALLE
+  s'ancre autour de l'origine du materiel (praticable live : y=-1.05) ; chargement
+  non-bloquant, ground blanc retire seulement si la salle charge ; preset blanc ajoute
+  (secours selectionnable). Deviation spec loggee : `set` au lieu de `backdrop` (deja pris).
+- Verifie a l'image et ITERE : plateau (matos SUR le praticable, truss autour), radio
+  (camera resserree DANS la cabine apres 2 iterations, repack 6->9 m), theatre (noir de
+  scene realiste — flag couleur). Screenshots dans le scratchpad (env2-*).
+- Gates verts a chaque commit : 164 vitest + 32 e2e (dont A1 zero-zoom JOUE DANS la salle
+  de concert) + build. Commits par espace + integration. CREDITS/manifest par salle.
+- RESTE : studio realiste (queue IA/modelisation), teinte theatre, echelle wedge,
+  placement fin par device = passe Set Editor (spec §4).

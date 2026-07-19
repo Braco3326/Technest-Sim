@@ -208,3 +208,17 @@ RE20 fidèle (repli SM7B débrandé dispo), Rio3224 fidèle (grille XLR), QL1 fi
 ### [DÉCISION PRISE — à confirmer] Tout le sourcing est CC-BY (zéro CC0 pertinent trouvé).
 Conforme à ton plancher « CC0 + CC-BY » ; implique CREDITS.md tenu à jour et un écran
 d'attribution avant publication commerciale. Les exacts de marque seront débrandés au rig.
+
+## 12. Run environnements 3D (2026-07-18) — a relire en jouant
+
+Ouvre A1 (plateau de concert), B1 (cabine radio), sandbox ?env=theatre. Studio blanc :
+sandbox ?env=blanc (toujours la). Flags :
+1. **Theatre tres SOMBRE** (noir de scene realiste, mais contraste fort avec la DA blanche).
+   Option 30s : eclaircir les materiaux du glb (meme passe que les devices). Ton verdict ?
+2. **Wedge DBR12 sur-echelle** sur le plateau live (normalisation par hauteur sur un modele
+   bas/large) — corrigible en ajustant REAL_SIZE_M ou le modele. Nit visuel.
+3. **Radio** : le mobilier de la salle (bureau/ecran/enceinte sur pied) COHABITE avec le
+   materiel du jeu — voulu ("vraie salle"), mais dis-moi si ca brouille la lecture pedagogique.
+4. **Studio (D1) reste blanc** : aucun candidat CC0/CC-BY realiste (que des dioramas cartoon
+   / bureaux surveillance). En queue : cle IA (text-to-3D) ou modelisation.
+5. Camera plateau : on voit du truss en haut du cadre — ambiance assumee, reglable (data).
