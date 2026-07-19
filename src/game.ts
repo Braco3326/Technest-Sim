@@ -15,6 +15,7 @@ import {
   Matrix,
   MeshBuilder,
   Scene,
+  SceneLoader,
   StandardMaterial,
   Vector3,
 } from '@babylonjs/core'
@@ -76,6 +77,7 @@ import studioJson from '../content/environments/studio.json'
 import theatreJson from '../content/environments/theatre.json'
 import pleinAirJson from '../content/environments/plein-air.json'
 import reportageJson from '../content/environments/reportage.json'
+import blancJson from '../content/environments/blanc.json'
 import { Environment, type EnvironmentT } from '../tools/schemas'
 
 const ENVIRONMENTS: Record<string, unknown> = {
@@ -85,6 +87,7 @@ const ENVIRONMENTS: Record<string, unknown> = {
   theatre: theatreJson,
   'plein-air': pleinAirJson,
   reportage: reportageJson,
+  blanc: blancJson,
 }
 
 function loadEnvironment(id: string | undefined): EnvironmentT {
@@ -162,6 +165,26 @@ export function bootGame(registry: Registry, rawLevel: unknown, opts: BootOption
   groundMat.specularColor = Color3.Black()
   ground.material = groundMat
   ground.isPickable = false
+
+  // Realistic ROOM backdrop (Set-System sourcing): the room wraps AROUND the
+  // origin where the gear already lives — anchored by preset DATA. Non-blocking:
+  // any failure keeps the white studio (assets never block gameplay).
+  if (env.set) {
+    const setCfg = env.set
+    SceneLoader.ImportMeshAsync(null, '/assets/environments/', setCfg.glb, scene)
+      .then(({ meshes }) => {
+        const root = meshes[0]
+        root.name = 'env:set'
+        if (setCfg.scale) root.scaling.setAll(setCfg.scale)
+        if (setCfg.rotationY) root.rotation = new Vector3(0, (setCfg.rotationY * Math.PI) / 180, 0)
+        if (setCfg.position) root.position = Vector3.FromArray(setCfg.position)
+        for (const m of meshes) m.isPickable = false
+        // The room brings its own floor — retire the white ground (z-fight).
+        ground.setEnabled(false)
+        console.info(`[env] set ${setCfg.glb} chargé (${meshes.length} meshes)`)
+      })
+      .catch(() => console.warn(`[env] set ${setCfg.glb} indisponible — studio blanc conservé`))
+  }
 
   const layout = level.layout ?? {}
   const spawner = new DeviceSpawner(scene, registry)

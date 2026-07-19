@@ -119,6 +119,19 @@ export const Environment = z.object({
     floorColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
     floorSize: z.tuple([z.number().positive(), z.number().positive()]),
   }),
+  /**
+   * Optional realistic ROOM backdrop (sourcing run, Set-System): a glb in
+   * public/assets/environments/ anchored AROUND the origin where the gear
+   * lives. Loads non-blocking; failure keeps the white studio (never breaks).
+   * NB: the spec sketch named this field `backdrop: "<glb>"` — backdrop was
+   * already the colors object, so the room lives under `set` (logged).
+   */
+  set: z.object({
+    glb: z.string().min(1),
+    position: z.tuple([z.number(), z.number(), z.number()]).optional(),
+    rotationY: z.number().optional(),
+    scale: z.number().positive().optional(),
+  }).optional(),
   camera: z.object({
     alpha: z.number(),
     beta: z.number(),
