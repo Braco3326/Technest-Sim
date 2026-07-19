@@ -215,7 +215,15 @@
       "tris": 132,
       "kind": "device",
       "ports": 7,
-      "status": "ok"
+      "status": "ok",
+      "source": "modeled",
+      "sourceUrl": "",
+      "author": "TekPractice (procédural interne, Blender)",
+      "license": "internal (own work)",
+      "attributionText": "",
+      "trademark": "generic",
+      "portEmpties": 7,
+      "riggedAt": "2026-07-19"
     },
     {
       "id": "yamaha-rio3224-d2",
@@ -223,7 +231,15 @@
       "tris": 12,
       "kind": "device",
       "ports": 6,
-      "status": "ok"
+      "status": "ok",
+      "source": "modeled",
+      "sourceUrl": "",
+      "author": "TekPractice (procédural interne, Blender)",
+      "license": "internal (own work)",
+      "attributionText": "",
+      "trademark": "generic",
+      "portEmpties": 6,
+      "riggedAt": "2026-07-19"
     },
     {
       "id": "shure-sm58",
@@ -249,7 +265,15 @@
       "kind": "device",
       "ports": 1,
       "status": "ok",
-      "note": "v2 MCP live: tapered handle + flat grille cap"
+      "note": "v2 MCP live: tapered handle + flat grille cap",
+      "source": "modeled",
+      "sourceUrl": "",
+      "author": "TekPractice (procédural interne, Blender)",
+      "license": "internal (own work)",
+      "attributionText": "",
+      "trademark": "generic",
+      "portEmpties": 1,
+      "riggedAt": "2026-07-19"
     },
     {
       "id": "qsc-k12-2",
@@ -257,7 +281,15 @@
       "tris": 196,
       "kind": "device",
       "ports": 3,
-      "status": "ok"
+      "status": "ok",
+      "source": "modeled",
+      "sourceUrl": "",
+      "author": "TekPractice (procédural interne, Blender)",
+      "license": "internal (own work)",
+      "attributionText": "",
+      "trademark": "generic",
+      "portEmpties": 3,
+      "riggedAt": "2026-07-19"
     },
     {
       "id": "yamaha-dbr12",
@@ -265,7 +297,15 @@
       "tris": 196,
       "kind": "device",
       "ports": 3,
-      "status": "ok"
+      "status": "ok",
+      "source": "modeled",
+      "sourceUrl": "",
+      "author": "TekPractice (procédural interne, Blender)",
+      "license": "internal (own work)",
+      "attributionText": "",
+      "trademark": "generic",
+      "portEmpties": 3,
+      "riggedAt": "2026-07-19"
     },
     {
       "id": "km-210-9",
