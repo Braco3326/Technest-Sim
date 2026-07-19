@@ -321,7 +321,15 @@
       "tris": 132,
       "kind": "device",
       "ports": 9,
-      "status": "ok"
+      "status": "ok",
+      "source": "modeled",
+      "sourceUrl": "",
+      "author": "TekPractice (procédural interne, Blender)",
+      "license": "internal (own work)",
+      "attributionText": "",
+      "trademark": "generic",
+      "portEmpties": 9,
+      "riggedAt": "2026-07-19"
     },
     {
       "id": "ev-re20",
@@ -330,7 +338,15 @@
       "kind": "device",
       "ports": 1,
       "status": "ok",
-      "note": "v2 MCP live: fat tan body, vent rings, domed end"
+      "note": "v2 MCP live: fat tan body, vent rings, domed end",
+      "source": "modeled",
+      "sourceUrl": "",
+      "author": "TekPractice (procédural interne, Blender)",
+      "license": "internal (own work)",
+      "attributionText": "",
+      "trademark": "generic",
+      "portEmpties": 1,
+      "riggedAt": "2026-07-19"
     },
     {
       "id": "yellowtec-mika",
@@ -346,7 +362,15 @@
       "tris": 184,
       "kind": "device",
       "ports": 1,
-      "status": "ok"
+      "status": "ok",
+      "source": "modeled",
+      "sourceUrl": "",
+      "author": "TekPractice (procédural interne, Blender)",
+      "license": "internal (own work)",
+      "attributionText": "",
+      "trademark": "generic",
+      "portEmpties": 1,
+      "riggedAt": "2026-07-19"
     },
     {
       "id": "genelec-8030c",
@@ -354,7 +378,15 @@
       "tris": 196,
       "kind": "device",
       "ports": 2,
-      "status": "ok"
+      "status": "ok",
+      "source": "modeled",
+      "sourceUrl": "",
+      "author": "TekPractice (procédural interne, Blender)",
+      "license": "internal (own work)",
+      "attributionText": "",
+      "trademark": "generic",
+      "portEmpties": 2,
+      "riggedAt": "2026-07-19"
     },
     {
       "id": "playout-pc",
@@ -362,7 +394,15 @@
       "tris": 24,
       "kind": "device",
       "ports": 3,
-      "status": "ok"
+      "status": "ok",
+      "source": "modeled",
+      "sourceUrl": "",
+      "author": "TekPractice (procédural interne, Blender)",
+      "license": "internal (own work)",
+      "attributionText": "",
+      "trademark": "generic",
+      "portEmpties": 3,
+      "riggedAt": "2026-07-19"
     },
     {
       "id": "aeta-scoop5-s",
@@ -370,7 +410,15 @@
       "tris": 144,
       "kind": "device",
       "ports": 4,
-      "status": "ok"
+      "status": "ok",
+      "source": "modeled",
+      "sourceUrl": "",
+      "author": "TekPractice (procédural interne, Blender)",
+      "license": "internal (own work)",
+      "attributionText": "",
+      "trademark": "generic",
+      "portEmpties": 4,
+      "riggedAt": "2026-07-19"
     },
     {
       "id": "aeta-scoopy-plus-s",
@@ -378,7 +426,15 @@
       "tris": 144,
       "kind": "device",
       "ports": 3,
-      "status": "ok"
+      "status": "ok",
+      "source": "modeled",
+      "sourceUrl": "",
+      "author": "TekPractice (procédural interne, Blender)",
+      "license": "internal (own work)",
+      "attributionText": "",
+      "trademark": "generic",
+      "portEmpties": 3,
+      "riggedAt": "2026-07-19"
     },
     {
       "id": "ev-re50",
@@ -387,7 +443,15 @@
       "kind": "device",
       "ports": 1,
       "status": "ok",
-      "note": "v2 MCP live: ENG handle + foam windscreen ball"
+      "note": "v2 MCP live: ENG handle + foam windscreen ball",
+      "source": "modeled",
+      "sourceUrl": "",
+      "author": "TekPractice (procédural interne, Blender)",
+      "license": "internal (own work)",
+      "attributionText": "",
+      "trademark": "generic",
+      "portEmpties": 1,
+      "riggedAt": "2026-07-19"
     },
     {
       "id": "avid-protools-hdx",
@@ -395,7 +459,15 @@
       "tris": 24,
       "kind": "device",
       "ports": 2,
-      "status": "ok"
+      "status": "ok",
+      "source": "modeled",
+      "sourceUrl": "",
+      "author": "TekPractice (procédural interne, Blender)",
+      "license": "internal (own work)",
+      "attributionText": "",
+      "trademark": "generic",
+      "portEmpties": 2,
+      "riggedAt": "2026-07-19"
     },
     {
       "id": "avid-hd-io",
@@ -403,7 +475,15 @@
       "tris": 12,
       "kind": "device",
       "ports": 7,
-      "status": "ok"
+      "status": "ok",
+      "source": "modeled",
+      "sourceUrl": "",
+      "author": "TekPractice (procédural interne, Blender)",
+      "license": "internal (own work)",
+      "attributionText": "",
+      "trademark": "generic",
+      "portEmpties": 7,
+      "riggedAt": "2026-07-19"
     },
     {
       "id": "focusrite-isa-one",
@@ -411,7 +491,15 @@
       "tris": 144,
       "kind": "device",
       "ports": 3,
-      "status": "ok"
+      "status": "ok",
+      "source": "modeled",
+      "sourceUrl": "",
+      "author": "TekPractice (procédural interne, Blender)",
+      "license": "internal (own work)",
+      "attributionText": "",
+      "trademark": "generic",
+      "portEmpties": 3,
+      "riggedAt": "2026-07-19"
     },
     {
       "id": "grace-m905",
@@ -419,7 +507,15 @@
       "tris": 144,
       "kind": "device",
       "ports": 7,
-      "status": "ok"
+      "status": "ok",
+      "source": "modeled",
+      "sourceUrl": "",
+      "author": "TekPractice (procédural interne, Blender)",
+      "license": "internal (own work)",
+      "attributionText": "",
+      "trademark": "generic",
+      "portEmpties": 7,
+      "riggedAt": "2026-07-19"
     },
     {
       "id": "neumann-u87-ai",
@@ -428,7 +524,15 @@
       "kind": "device",
       "ports": 1,
       "status": "ok",
-      "note": "v2 MCP live: nickel body + large basket capsule"
+      "note": "v2 MCP live: nickel body + large basket capsule",
+      "source": "modeled",
+      "sourceUrl": "",
+      "author": "TekPractice (procédural interne, Blender)",
+      "license": "internal (own work)",
+      "attributionText": "",
+      "trademark": "generic",
+      "portEmpties": 1,
+      "riggedAt": "2026-07-19"
     },
     {
       "id": "switchcraft-studiopatch-9625",
@@ -436,7 +540,15 @@
       "tris": 144,
       "kind": "device",
       "ports": 4,
-      "status": "ok"
+      "status": "ok",
+      "source": "modeled",
+      "sourceUrl": "",
+      "author": "TekPractice (procédural interne, Blender)",
+      "license": "internal (own work)",
+      "attributionText": "",
+      "trademark": "generic",
+      "portEmpties": 4,
+      "riggedAt": "2026-07-19"
     },
     {
       "id": "antelope-ocx-hd",
@@ -444,7 +556,15 @@
       "tris": 144,
       "kind": "device",
       "ports": 3,
-      "status": "ok"
+      "status": "ok",
+      "source": "modeled",
+      "sourceUrl": "",
+      "author": "TekPractice (procédural interne, Blender)",
+      "license": "internal (own work)",
+      "attributionText": "",
+      "trademark": "generic",
+      "portEmpties": 3,
+      "riggedAt": "2026-07-19"
     },
     {
       "id": "mogami-gold-db25-xlrm",
@@ -452,7 +572,15 @@
       "tris": 236,
       "kind": "device",
       "ports": 3,
-      "status": "ok"
+      "status": "ok",
+      "source": "modeled",
+      "sourceUrl": "",
+      "author": "TekPractice (procédural interne, Blender)",
+      "license": "internal (own work)",
+      "attributionText": "",
+      "trademark": "generic",
+      "portEmpties": 3,
+      "riggedAt": "2026-07-19"
     }
   ]
 }
