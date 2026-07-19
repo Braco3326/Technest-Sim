@@ -21,10 +21,13 @@
     "zod": "^3.23.0"
   },
   "devDependencies": {
+    "@gltf-transform/core": "^4.4.1",
+    "@gltf-transform/extensions": "^4.4.1",
     "@playwright/test": "^1.44.0",
     "@types/node": "^20.0.0",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
+    "draco3dgltf": "^1.5.7",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.0.0",
     "prettier": "^3.2.0",

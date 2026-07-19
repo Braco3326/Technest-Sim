@@ -29,10 +29,10 @@ import { gpioCheck } from './logic/gpio'
 import { mixMinusCheck } from './logic/mixMinus'
 import { clockCheck } from './logic/clock'
 
-import { DeviceSpawner } from './scene/DeviceSpawner'
+import { DeviceSpawner, type DeviceInstance } from './scene/DeviceSpawner'
 import { CableRenderer } from './scene/CableRenderer'
 import { CameraRig } from './scene/CameraRig'
-import { FocusPatch } from './scene/FocusPatch'
+import { bodyCenter, FocusPatch } from './scene/FocusPatch'
 import type { PortPoint } from './scene/snap'
 import type { Intent } from './ui/intents'
 import { Hud } from './ui/hud'
@@ -62,6 +62,8 @@ declare global {
       glowCount: () => number
       /** Teaching hints gate — read/write (sandbox toggle flips it). */
       hints: () => boolean
+      /** Asset load status per instance (e2e: count glb vs placeholder). */
+      assets: () => { instanceId: string; deviceId: string; status: 'glb' | 'placeholder' }[]
     }
   }
 }
@@ -187,6 +189,31 @@ export function bootGame(registry: Registry, rawLevel: unknown, opts: BootOption
 
   // ── orchestrator: intents → engine → scene/UI notifications ──────────────
   const cables = new CableRenderer(scene)
+
+  // When a .glb finishes loading, its ports are RE-ANCHORED onto the real model
+  // (DeviceSpawner). Refresh this instance's portPoints from the moved markers,
+  // then redraw any committed cable touching it. Graph access is READ-ONLY
+  // (getConnections/connectionAt) — the scene never mutates the graph.
+  const resyncInstance = (inst: DeviceInstance): void => {
+    for (const [portId, marker] of inst.portMarkers) {
+      marker.computeWorldMatrix(true)
+      const p = marker.getAbsolutePosition()
+      const existing = portPoints.find((pt) => pt.ref.instance === inst.instanceId && pt.ref.port === portId)
+      if (existing) {
+        existing.x = p.x
+        existing.y = p.y
+        existing.z = p.z
+      } else {
+        portPoints.push({ ref: { instance: inst.instanceId, port: portId }, x: p.x, y: p.y, z: p.z })
+      }
+    }
+    for (const conn of graph.getConnections()) {
+      if (conn.a.instance !== inst.instanceId && conn.b.instance !== inst.instanceId) continue
+      const id = graph.connectionAt(conn.a)
+      if (id) cables.addCable(id, portPos(conn.a), portPos(conn.b)) // addCable replaces by id
+    }
+  }
+  for (const inst of instances) void inst.modelReady.then((ok) => ok && resyncInstance(inst))
   const hud = new Hud(document.getElementById('hud')!, registry, level)
   const progress = new LocalStorageProgressStore(window.localStorage)
   const controlsPanel = new ControlsPanel(
@@ -314,6 +341,8 @@ export function bootGame(registry: Registry, rawLevel: unknown, opts: BootOption
       const p = marker.getAbsolutePosition()
       portPoints.push({ ref: { instance: instanceId, port: portId }, x: p.x, y: p.y, z: p.z })
     }
+    // Re-anchor + redraw once (if) the glb replaces this placeholder.
+    void inst.modelReady.then((ok) => ok && resyncInstance(inst))
     return true
   }
   const spawnDevice = (deviceId: string): void => {
@@ -491,8 +520,10 @@ export function bootGame(registry: Registry, rawLevel: unknown, opts: BootOption
   const deviceScreen = (instanceId: string): { x: number; y: number } | null => {
     const inst = instances.find((i) => i.instanceId === instanceId)
     if (!inst) return null
-    const { min, max } = inst.root.getHierarchyBoundingVectors()
-    return project(min.add(max).scale(0.5))
+    // Aim at the visible BODY center — hierarchy bounds include the floor
+    // shadow blob and label billboard (a mic on a stand would aim at the pole).
+    const center = bodyCenter(inst)
+    return center ? project(center) : null
   }
 
   window.__audioSim = {
@@ -505,6 +536,8 @@ export function bootGame(registry: Registry, rawLevel: unknown, opts: BootOption
     view: () => focusPatch.view,
     glowCount: () => focusPatch.glowCount,
     hints,
+    assets: () =>
+      instances.map((i) => ({ instanceId: i.instanceId, deviceId: i.deviceId, status: i.assetStatus })),
   }
 
   babylon.runRenderLoop(() => scene.render())

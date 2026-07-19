@@ -204,6 +204,9 @@ export function bootGame2D(registry: Registry, rawLevel: unknown): void {
     // Real DOM truth: how many ports currently show the ok/bad teaching glow.
     glowCount: () => document.querySelectorAll('.b2d-port.ok, .b2d-port.bad').length,
     hints: () => !examMode,
+    // 2D board renders no glb — every device is a low-fidelity fallback tile.
+    assets: () =>
+      level.devices.map((d) => ({ instanceId: d.instanceId, deviceId: d.deviceId, status: 'placeholder' as const })),
   }
 
   refresh()

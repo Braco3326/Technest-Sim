@@ -328,3 +328,52 @@ Oscar le veut plus present (token heldCableRadius, 30 s de reglage).
 ### 4b — Perf : caps existants juges suffisants (24 devices sandbox, PULSE_CAP 12,
 CableBudget) ; applyHints O(instances x ports) OK a cette echelle — pistes chiffrees dans
 docs/prompts/08 §E, pas d'optimisation a l'aveugle.
+
+## PASSE DE CORRECTION VISUELLE (2026-07-18, apres Focus & Patch)
+
+Analyse d'Oscar sur capture A1 : modeles douteux, blobs noirs, echelles/orientations
+incoherentes, cables flottants, HUD qui chevauche. Deux agents (developer: chargement/
+echelle/ancrage ; designer: HUD/layout/materiaux) — les deux tues par des erreurs infra
+en plein vol, travail repris et FINI par moi. Diagnostics d'abord, screenshots a chaque fix.
+
+### DIAGNOSTIC GLB (item 1)
+- Les 52 glb chargent tous (0 echec). Runtime expose desormais window.__audioSim.assets()
+  (glb|placeholder par instance) + console.info [assets] par device avec le scale applique.
+- DECOUVERTE MAJEURE : aucun glb ne contient d'empties port_* (contrairement a ASSET_LOG)
+  -> REVIEW-ME §10. Ancrage de repli : grille sur la face -Z du modele normalise.
+- Echelles corrigees au chargement (table REAL_SIZE_M depuis assets-source/notes.md) :
+  rio x2.444, ql1 x1.319, k12/dbr12 x1.44 (et poses au sol — ils flottaient a 10 cm),
+  sm58 x0.796, sm57 x0.831. Origines recentrees, orientation panneau -Z.
+
+### CORRIGE
+1. Chargement : diagnostic + normalisation (echelle 1:1 reelle, ground, centre, orientation).
+2. Blobs noirs : c'etaient (a) les materiaux glb quasi-noirs -> eclaircis via gltf-transform
+   (7 glb A1, anthracite lisible, metallic<=0.4) ; (b) l'ombre de contact qui flottait pour
+   les devices poses en hauteur (mic sur pied a y=1.35) -> blob compense au sol.
+3. Echelle/orientation : cf. normalisation. Micros a 16 cm REELS (petits en Ensemble —
+   assume, les cartels identifient ; la camera Focus les cadre parfaitement).
+4. Cables ANCRES : markers/pick-spheres/labels re-ancres sur le modele au chargement +
+   resync portPoints + re-render des cables existants (modelReady). Screenshot : la
+   catenaire SM58->Rio part du mic sur pied et atterrit DANS la face avant du Rio.
+5. Ports : positions sur le modele (grille -Z reelle) ; look/hover = passe designer B
+   (prompts/08 §A toujours ouvert).
+6. Layout A1 refait (data) : mics a l'avant (SM58 POSE sur le pied K&M a y=1.35),
+   stagebox centre-arriere, console centre-avant, enceintes reparties. Rien hors-champ.
+7. HUD : panneau borne (max-height 60vh + scroll), translucide premium (backdrop-blur),
+   responsive <900px en bandeau haut. Ne recouvre plus la scene, jamais coupe.
+
+### FIXES DE PICKING decouverts par les gates (post-agents)
+- deviceUnderPointer : multiPick + centre-le-plus-proche-du-rayon (un mic POSE sur son
+  pied etait infocusable — le pied gagnait toujours le pick simple).
+- bodyCenter : le centre de visee exclut ombre/cartels (les bounds de hierarchie visaient
+  le milieu du pied, pas le mic).
+- Double-clic atterrissant sur un port = « plonge sur ce device » : annule le pickup
+  accidentel du 1er clic de la paire puis focus le proprietaire (sans ca, un device dont
+  la pick-sphere couvre le corps — un mic — ne pouvait JAMAIS etre focus au double-clic).
+- e2e : helper assetsSettled() — les glb atterrissent en async et re-ancrent les ports ;
+  interagir pendant l'atterrissage etait une course (3 tests flaky -> deterministes).
+
+### ETAT : tsc + 164 vitest + 32 e2e + build VERTS. Screenshots avant/apres dans le
+scratchpad de session (before-*/after-*). RESTE (re-modelisation, passe separee) :
+REVIEW-ME §10 + nits (micros minuscules en Ensemble, recettes K12/DBR12 identiques,
+visuels de connecteurs sur cables).

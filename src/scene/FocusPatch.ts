@@ -109,7 +109,9 @@ export class FocusPatch {
     }
     const port = this.portUnderPointer()
     if (port) {
+      const hadHeld = this.state.held !== null
       this.apply(reduce(this.state, { type: 'PORT_CLICK', ref: port }))
+      if (!hadHeld && this.state.held) this.pickupAt = performance.now()
       return
     }
     const device = this.deviceUnderPointer()
@@ -120,10 +122,26 @@ export class FocusPatch {
     this.apply(reduce(this.state, { type: 'EMPTY_CLICK' }))
   }
 
+  private pickupAt = 0
+
   private onDoubleTap(): void {
-    // Double-click only focuses when it lands on a device BODY — a fast
-    // double-click on a port stays a port action (the TAP already handled it).
-    if (this.portUnderPointer()) return
+    const port = this.portUnderPointer()
+    if (port) {
+      // A double-click landing on a port means "dive on this device" (on tiny
+      // gear like a mic the pick-sphere covers the whole body, so focusing
+      // would otherwise be impossible). Undo the accidental pickup made by the
+      // pair's FIRST click, then focus the port's owner. A cable held from
+      // before (older/different) survives — that is spec §1 step 5.
+      if (
+        this.state.held &&
+        same(this.state.held, port) &&
+        performance.now() - this.pickupAt < 600
+      ) {
+        this.apply(reduce(this.state, { type: 'PORT_CLICK', ref: port })) // held-end click = drop
+      }
+      this.apply(reduce(this.state, { type: 'DEVICE_DOUBLE_CLICK', instanceId: port.instance }))
+      return
+    }
     const device = this.deviceUnderPointer()
     if (device) this.apply(reduce(this.state, { type: 'DEVICE_DOUBLE_CLICK', instanceId: device }))
   }
@@ -342,13 +360,37 @@ export class FocusPatch {
     return best
   }
 
+  /**
+   * multiPick + closest-INSTANCE-center-to-ray: with a small device sitting on
+   * a big prop (SM58 on its K&M stand), single pick() returns whichever mesh is
+   * nearest the camera — often the prop. Aiming is judged per instance center,
+   * exactly like the dense-port disambiguation.
+   */
   private deviceUnderPointer(): string | null {
-    const hit = this.scene.pick(
+    const hits = this.scene.multiPick(
       this.scene.pointerX,
       this.scene.pointerY,
       (m: AbstractMesh) => m.metadata?.isDeviceBody === true,
     )
-    return hit?.pickedMesh?.metadata?.instanceId ?? null
+    if (!hits?.length) return null
+    const ray = this.scene.createPickingRay(this.scene.pointerX, this.scene.pointerY, null, this.camera)
+    let best: string | null = null
+    let bestD = Infinity
+    for (const instanceId of new Set(
+      hits.map((h) => h.pickedMesh?.metadata?.instanceId as string | undefined),
+    )) {
+      if (!instanceId) continue
+      const inst = this.instances.find((i) => i.instanceId === instanceId)
+      if (!inst) continue
+      const center = bodyCenter(inst)
+      if (!center) continue
+      const d = ray.direction.cross(center.subtract(ray.origin)).length()
+      if (d < bestD) {
+        bestD = d
+        best = instanceId
+      }
+    }
+    return best
   }
 
   private bodyMeshes(inst: DeviceInstance): AbstractMesh[] {
@@ -356,4 +398,22 @@ export class FocusPatch {
       .getChildMeshes(false)
       .filter((m) => m.metadata?.isDeviceBody === true)
   }
+}
+
+/**
+ * World center of a device's VISIBLE body meshes only — shadow blob, label
+ * billboards and port markers pollute hierarchy bounds (a mic on a stand would
+ * otherwise "center" halfway down the pole). Shared with game.ts deviceScreen.
+ */
+export function bodyCenter(inst: DeviceInstance): Vector3 | null {
+  let min: Vector3 | null = null
+  let max: Vector3 | null = null
+  for (const m of inst.root.getChildMeshes(false)) {
+    if (m.metadata?.isDeviceBody !== true || !m.isEnabled()) continue
+    m.computeWorldMatrix(true)
+    const bb = m.getBoundingInfo().boundingBox
+    min = min ? Vector3.Minimize(min, bb.minimumWorld) : bb.minimumWorld.clone()
+    max = max ? Vector3.Maximize(max, bb.maximumWorld) : bb.maximumWorld.clone()
+  }
+  return min && max ? min.add(max).scale(0.5) : null
 }

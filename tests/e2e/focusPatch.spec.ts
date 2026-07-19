@@ -11,6 +11,21 @@ import { expect, test, type Page } from '@playwright/test'
 const FLY_SETTLE_MS = 500 // fly is 300ms eased — wait for the frame to be stable
 
 /**
+ * Wait until every device resolved its .glb (or fell back to the placeholder):
+ * models load async and RE-ANCHOR their ports when they land — interacting
+ * mid-landing is a race a test must not depend on. Falls through after 5s
+ * (placeholder fallback is a valid state, never a test failure).
+ */
+async function assetsSettled(page: Page): Promise<void> {
+  await page
+    .waitForFunction(() => window.__audioSim!.assets().every((a) => a.status === 'glb'), undefined, {
+      timeout: 5000,
+    })
+    .catch(() => undefined)
+  await page.waitForTimeout(300) // re-anchor + portPoints resync
+}
+
+/**
  * Double-click a device into focus, with Esc-recovery: if the double-click
  * landed on a port pick-sphere (accidental cable pickup — exactly what can
  * happen to a real user), cancel with Esc and re-aim slightly higher.
@@ -59,6 +74,7 @@ test('A1 wired ONLY via double-click + focus + port clicks, zero manual zoom →
   test.setTimeout(120_000) // 5 connections × several eased camera flights
   await page.goto('/?level=a1')
   await page.waitForFunction(() => !!window.__audioSim)
+  await assetsSettled(page)
   await page.evaluate(() => window.localStorage.clear())
 
   const chain = await page.evaluate(() => window.__audioSim!.level.requiredChain)
@@ -98,6 +114,7 @@ test('exam 3D: cable in hand but NOTHING glows — no device outline, no port hi
 }) => {
   await page.goto('/?level=a1&mode=exam')
   await page.waitForFunction(() => !!window.__audioSim)
+  await assetsSettled(page)
 
   expect(await page.evaluate(() => window.__audioSim!.hints())).toBe(false)
 
@@ -118,6 +135,7 @@ test('exam 3D: cable in hand but NOTHING glows — no device outline, no port hi
 test('levels 3D (control): the same held cable DOES glow compatible devices', async ({ page }) => {
   await page.goto('/?level=a1')
   await page.waitForFunction(() => !!window.__audioSim)
+  await assetsSettled(page)
 
   const chain = await page.evaluate(() => window.__audioSim!.level.requiredChain)
   await focusDevice(page, chain[0].from.instance)
@@ -131,6 +149,7 @@ test('levels 3D (control): the same held cable DOES glow compatible devices', as
 test('exam 2D: arming a port shows NO ok/bad hint classes (audited fix)', async ({ page }) => {
   await page.goto('/?level=a1&mode=exam&render=2d')
   await page.waitForFunction(() => !!window.__audioSim)
+  await assetsSettled(page)
 
   await page.locator('.b2d-port[data-instance="sm58-1"][data-port="out-xlr"]').click()
   await expect(page.locator('.b2d-port.armed')).toHaveCount(1) // state stays visible
@@ -139,6 +158,7 @@ test('exam 2D: arming a port shows NO ok/bad hint classes (audited fix)', async 
   // Control: outside exam the same arming DOES show the dry-run glow.
   await page.goto('/?level=a1&render=2d')
   await page.waitForFunction(() => !!window.__audioSim)
+  await assetsSettled(page)
   await page.locator('.b2d-port[data-instance="sm58-1"][data-port="out-xlr"]').click()
   await expect(page.locator('.b2d-port.ok')).not.toHaveCount(0)
 })
@@ -148,6 +168,7 @@ test('Esc cancels the held cable first, then leaves focus (ADR-0008 Esc policy)'
 }) => {
   await page.goto('/?level=a1')
   await page.waitForFunction(() => !!window.__audioSim)
+  await assetsSettled(page)
 
   const chain = await page.evaluate(() => window.__audioSim!.level.requiredChain)
   await focusDevice(page, chain[0].from.instance)
@@ -166,6 +187,7 @@ test('Esc cancels the held cable first, then leaves focus (ADR-0008 Esc policy)'
 test('keyboard path: Tab + Enter focus a device without any mouse (spec §2)', async ({ page }) => {
   await page.goto('/?level=a1')
   await page.waitForFunction(() => !!window.__audioSim)
+  await assetsSettled(page)
   // Move focus off any HUD element so the canvas shortcuts are live.
   await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur?.())
 

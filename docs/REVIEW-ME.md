@@ -173,3 +173,20 @@ Jugements que J'AI tranches (ADR-0008) — dis-moi si tu veux autre chose :
    iQ ouvert par defaut en sandbox) reste ouvert et est independant.
 5. Le zoom molette reste PERMIS partout (spec : « Zoom (fine) : scroll wheel ») — l'e2e
    prouve juste qu'on n'en a jamais BESOIN. Confirme que c'est bien ta lecture de §8.
+
+## 10. glb sans empties port_* — a regenerer cote Blender (passe re-modelisation)
+
+DIAGNOSTIC (passe de correction visuelle, 2026-07-18) : AUCUN des 50 glb de public/assets
+ne contient les empties `port_<portId>` prevus par blender-pipeline.md — gen_asset.py
+exporte en selection-only et les perd. ASSET_LOG affirmait le contraire (non verifie a
+l'epoque). CONSEQUENCE : l'ancrage des ports utilise la grille sur la face -Z du modele
+NORMALISE (echelle reelle) — les cables tombent sur le modele, mais pas sur les vraies
+positions d'I/O. A la passe de re-modelisation photorealiste (assets-source/), il faudra :
+exporter les empties port_* AVEC chaque glb (use_selection inclut les empties parentes ?
+a verifier), et DeviceSpawner les consommera automatiquement (le code de re-ancrage
+prefere deja les empties quand elles existent — voir normalizeModel/reanchorPorts).
+
+Nits visuels restants (non bloquants, re-modelisation) : micros quasi invisibles a
+l'echelle 1:1 en vue Ensemble (les cartels portent l'identification) ; cable Dante
+rio->ql1 discret ; label K12 sous le panneau HUD selon l'angle ; recettes speaker
+identiques K12/DBR12 (differenciation = re-modelisation).
