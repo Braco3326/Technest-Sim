@@ -190,3 +190,21 @@ Nits visuels restants (non bloquants, re-modelisation) : micros quasi invisibles
 l'echelle 1:1 en vue Ensemble (les cartels portent l'identification) ; cable Dante
 rio->ql1 discret ; label K12 sous le panneau HUD selon l'angle ; recettes speaker
 identiques K12/DBR12 (differenciation = re-modelisation).
+
+## 11. Run sourcing 3D (2026-07-18) — tes 3 actions + flags
+
+### Tes débloquages (chacun ~2 min, détail dans assets-source/SOURCING-QUEUE.md)
+1. **Login/clé Sketchfab** (gratuit) → débloque 15+ candidats CC-BY vérifiés, dont 5 EXACTS
+   (QSC K12.2 !, SM58, SM57, U87, pied K&M) + la Genelec 8340A (même design que la 8030C).
+2. **2 téléchargements Poly Pizza directs** (sans compte) : console numérique low-poly (ql1
+   générique) + micro reporter (re50) — boutons Download sur les pages listées.
+3. **Clé IA optionnelle** (TRIPO_API_KEY ou MESHY_API_KEY dans .env, free tier) → pour les
+   introuvables ci-dessous.
+
+### [FLAG] À modéliser / IA (aucun candidat CC0/CC-BY correct sur tout le balayage)
+patchbay 9625 (façade 96 TT), loom Mogami (splines + embouts XLR CC-BY), bras m!ka,
+RE20 fidèle (repli SM7B débrandé dispo), Rio3224 fidèle (grille XLR), QL1 fidèle, RCU m905.
+
+### [DÉCISION PRISE — à confirmer] Tout le sourcing est CC-BY (zéro CC0 pertinent trouvé).
+Conforme à ton plancher « CC0 + CC-BY » ; implique CREDITS.md tenu à jour et un écran
+d'attribution avant publication commerciale. Les exacts de marque seront débrandés au rig.

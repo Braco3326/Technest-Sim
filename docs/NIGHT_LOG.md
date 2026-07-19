@@ -377,3 +377,39 @@ en plein vol, travail repris et FINI par moi. Diagnostics d'abord, screenshots a
 scratchpad de session (before-*/after-*). RESTE (re-modelisation, passe separee) :
 REVIEW-ME §10 + nits (micros minuscules en Ensemble, recettes K12/DBR12 identiques,
 visuels de connecteurs sur cables).
+
+## RUN SOURCING 3D (2026-07-18) — spec docs/TekPractice_3D-Model-Sourcing.md
+
+CONTRAINTE DECOUVERTE EN OUVERTURE : zero telechargement non-assiste possible (MCP Sketchfab
+sans cle, API Poly Pizza 401, hotlink 403, pas de cles IA en .env) -> le run s'est reorganise
+en (a) RIG PASS complet sur nos 24 glb + (b) file de sourcing recherchee et verifiee.
+
+### (a) RIG PASS — 22/24 devices LIVRES (commits par device, pushes)
+- Pipeline neuf : tools/blender/rig_empties.py (Blender 5.1 headless, scene purgee, export
+  AVEC empties) + rig-all.mjs (placements par panneau FONCTIONNEL, verification que les
+  empties survivent a l'export, Draco via API gltf-transform — PAS optimize(), qui prune
+  les nodes sans mesh, c.-a-d. exactement nos empties ; manifest etendu au schema spec).
+- DeviceSpawner prefere desormais les empties port_* (fallback grille -Z) — commit fb93831.
+- Placements reels : XLR a la BASE des 5 micros ; I/O au DOS des enceintes/console/racks ;
+  face AVANT du Rio (rangees XLR) et du mic ISA One ; patchbay TT devant + DB25 derriere.
+- Preuve visuelle : marqueur du SM58 a la base du micro sur son pied (screenshot).
+- 2 sans ports (km-210-9, yellowtec-mika) -> skip normal. REVIEW-ME §10 (glb sans empties)
+  est CLOS pour le present ; la regle vaut pour tout futur asset (le verifier casse le rig
+  si un port manque).
+- Gates a chaque lot : 164 vitest + 32 e2e + build verts.
+
+### (b) SOURCING — 3 agents de recherche, licences verifiees a la source
+- Methode robuste : pages Sketchfab = SPA vides pour fetch -> licence lue sur l'API
+  officielle v3 par modele (la donnee de la page). Poly Pizza lu sur pages /m/.
+- Resultat : 5 EXACTS CC-BY (QSC K12.2, SM58, SM57, U87, pied K&M) + 1 quasi-exact
+  (Genelec 8340A) + ~12 generiques solides + 7 introuvables (-> IA/modeler).
+- ZERO CC0 pertinent sur tout le balayage -> tout sera CC-BY avec attribution (CREDITS.md).
+- 6 modeles ecartes pour licence NC/ND/SA (listes, a ne jamais reprendre).
+- Livrables internes (gitignores) : assets-source/SOURCING-QUEUE.md (file consolidee,
+  3 debloquages Oscar) + CREDITS.md (squelette d'attribution).
+
+### RESTE
+1. Oscar : login Sketchfab OU cle API MCP -> je telecharge/rig les 15+ candidats tout seul.
+2. Oscar : 2 clics Poly Pizza (ql1 generique, re50).
+3. Optionnel : cle Tripo/Meshy en .env -> generation des 7 introuvables depuis les photos.
+4. Le rig pass re-tournera tel quel sur chaque nouveau fichier (pipeline prouve).
