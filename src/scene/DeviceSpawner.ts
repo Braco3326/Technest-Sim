@@ -266,13 +266,24 @@ export class DeviceSpawner {
   }
 
   /**
-   * Re-anchor the existing port markers / pick-spheres / labels onto the −Z face
-   * of the NORMALISED model, using REAL dimensions (falls back to the measured
-   * normalised bounds when the id is unknown). Look (size/color) is untouched —
-   * only positions move. NOTE: current glb assets carry NO `port_*` empties
-   * (gen_asset.py exports selection-only), so anchoring uses the −Z face grid;
-   * see docs/REVIEW-ME.md §10.
+   * Re-anchor the existing port markers / pick-spheres / labels onto the model.
+   * PREFERRED source: a `port_<portId>` empty exported inside the glb (the
+   * sourcing rig pass places them at the REAL I/O positions) — the marker lands
+   * exactly on the modeled connector. FALLBACK (glb without empties, see
+   * docs/REVIEW-ME.md §10): a grid on the −Z face of the NORMALISED model.
+   * Look (size/color) is untouched — only positions move.
    */
+  private portEmpty(glbRoot: AbstractMesh, portId: string): TransformNode | null {
+    const exact = `port_${portId}`
+    let fallback: TransformNode | null = null
+    for (const n of glbRoot.getDescendants(false)) {
+      if (!(n instanceof TransformNode)) continue
+      if (n.name === exact) return n
+      if (n.name.startsWith(exact)) fallback = n // tolerate .001-style suffixes
+    }
+    return fallback
+  }
+
   private reanchorPorts(
     device: DeviceT,
     instanceId: string,
@@ -292,8 +303,18 @@ export class DeviceSpawner {
     }
 
     const slots = portGrid(device.ports.length, w, h, d)
+    const rootOrigin =
+      glbRoot.parent instanceof TransformNode
+        ? (glbRoot.parent as TransformNode).getAbsolutePosition()
+        : Vector3.Zero()
     device.ports.forEach((port, i) => {
-      const { local } = slots[i]
+      // Real I/O empty from the rigged glb wins; the grid slot is the fallback.
+      const empty = this.portEmpty(glbRoot, port.portId)
+      let local = slots[i].local
+      if (empty) {
+        empty.computeWorldMatrix(true)
+        local = empty.getAbsolutePosition().subtract(rootOrigin)
+      }
       const marker = portMarkers.get(port.portId)
       if (marker) {
         marker.position = local.clone()
