@@ -49,11 +49,22 @@
       .hud-panel {
         position: absolute; top: var(--tk-space-lg, 20px); left: var(--tk-space-lg, 20px);
         max-width: 380px;
+        /* Opaque fallback first; browsers with color-mix + backdrop-filter get the
+           premium translucent-white so the scene stays perceivable beneath. */
         background: var(--tk-surface, #fff);
+        background: color-mix(in srgb, var(--tk-surface, #fff) 92%, transparent);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
         border: 1px solid var(--tk-surface-border, #e6e8ee);
         border-radius: var(--tk-radius-md, 12px);
         box-shadow: var(--tk-elev-card);
         padding: var(--tk-space-md, 14px) var(--tk-space-lg, 20px);
+      }
+      /* Brief/objectives panel must never be clipped at the bottom, and must not
+         swallow the stage: bound its height and let its body scroll. */
+      #hud-objectives {
+        max-height: 60vh; overflow-y: auto; pointer-events: auto;
+        -webkit-overflow-scrolling: touch;
       }
       .hud-panel h1 { font-size: var(--tk-text-lg, 16px); font-weight: var(--tk-weight-bold, 650); margin-bottom: 6px; letter-spacing: -0.01em; }
 
@@ -88,6 +99,19 @@
         color: #fff; font-size: 10px; line-height: 12px; text-align: center;
       }
       #hud-counter { margin-top: var(--tk-space-sm, 8px); font-size: var(--tk-text-xs, 11px); color: var(--tk-ink-faint, #8b93a3); }
+
+      /* Narrow viewports: the brief becomes a compact full-width top banner so it
+         never covers the stage sideways. */
+      @media (max-width: 900px) {
+        #hud-objectives {
+          left: var(--tk-space-md, 14px); right: var(--tk-space-md, 14px);
+          max-width: none; max-height: 35vh;
+          padding: var(--tk-space-sm, 8px) var(--tk-space-md, 14px);
+        }
+        #hud-objectives h1 { margin-bottom: 3px; }
+        #hud-objectives .hud-brief,
+        #hud-objectives #hud-levels { margin-bottom: var(--tk-space-sm, 8px); }
+      }
 
       #hud-controls {
         top: auto; left: auto; right: var(--tk-space-lg, 20px); bottom: var(--tk-space-lg, 20px);
