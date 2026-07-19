@@ -590,5 +590,34 @@
       "portEmpties": 3,
       "riggedAt": "2026-07-19"
     }
+  ],
+  "environments": [
+    {
+      "id": "live-stage",
+      "source": "download-ccby",
+      "sourceUrl": "https://sketchfab.com/3d-models/music-concert-stage-low-poly-89629aceff334b34a76c30d42f8327bd",
+      "author": "Sameer.Uddin",
+      "license": "Creative Commons Attribution",
+      "attributionText": "« Music_concert_stage_Low_poly » par Sameer.Uddin (https://sketchfab.com/3d-models/music-concert-stage-low-poly-89629aceff334b34a76c30d42f8327bd) — Creative Commons Attribution — modifié (échelle, décimation, optimisation)",
+      "trademark": "generic"
+    },
+    {
+      "id": "theatre-stage",
+      "source": "download-ccby",
+      "sourceUrl": "https://sketchfab.com/3d-models/theatre-stage-5c53624a0a334242ad04d7a11a2dcf8e",
+      "author": "mynameismary",
+      "license": "Creative Commons Attribution",
+      "attributionText": "« Theatre stage » par mynameismary (https://sketchfab.com/3d-models/theatre-stage-5c53624a0a334242ad04d7a11a2dcf8e) — Creative Commons Attribution — modifié (échelle, décimation, optimisation)",
+      "trademark": "generic"
+    },
+    {
+      "id": "radio-booth",
+      "source": "download-ccby",
+      "sourceUrl": "https://sketchfab.com/3d-models/ab-radio-studio-44a60d726b194b1e87614d7bcedcb074",
+      "author": "Amasah Blankson",
+      "license": "Creative Commons Attribution",
+      "attributionText": "« AB Radio Studio » par Amasah Blankson (https://sketchfab.com/3d-models/ab-radio-studio-44a60d726b194b1e87614d7bcedcb074) — Creative Commons Attribution — modifié (échelle, décimation, optimisation)",
+      "trademark": "generic"
+    }
   ]
 }
