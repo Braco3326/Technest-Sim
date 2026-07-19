@@ -13,15 +13,17 @@ import { mkdtempSync, readFileSync, writeFileSync, copyFileSync, statSync } from
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { NodeIO } from '@gltf-transform/core'
-import { KHRONOS_EXTENSIONS, KHRDracoMeshCompression } from '@gltf-transform/extensions'
+import { ALL_EXTENSIONS, KHRDracoMeshCompression } from '@gltf-transform/extensions'
+import { textureCompress } from '@gltf-transform/functions'
 import draco3d from 'draco3dgltf'
+import sharp from 'sharp'
 
 const BLENDER = 'C:/Program Files/Blender Foundation/Blender 5.1/blender.exe'
 const ROOT = new URL('../..', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1')
 
 /** portId → {f: '-z'|'+z'|'bottom', u, v} — the functional panel per device. */
 const PLACEMENTS = {
-  'shure-sm58': { 'out-xlr': { f: 'bottom', u: 0.5, v: 0.5 } },
+  'shure-sm58': { 'out-xlr': { f: '+x', u: 0.5, v: 0.5 } },
   'shure-sm57': { 'out-xlr': { f: 'bottom', u: 0.5, v: 0.5 } },
   'ev-re20': { 'out-xlr': { f: 'bottom', u: 0.5, v: 0.5 } },
   'ev-re50': { 'out-xlr': { f: 'bottom', u: 0.5, v: 0.5 } },
@@ -134,37 +136,55 @@ const PLACEMENTS = {
 const catalog = JSON.parse(readFileSync(join(ROOT, 'content/catalog.json'), 'utf8'))
 const manifestPath = join(ROOT, 'public/assets/ASSET_MANIFEST.json')
 
-const io = new NodeIO().registerExtensions(KHRONOS_EXTENSIONS).registerDependencies({
+const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({
   'draco3d.decoder': await draco3d.createDecoderModule(),
   'draco3d.encoder': await draco3d.createEncoderModule(),
 })
 
-const ids = process.argv.slice(2)
+// Args: <id>… [--src <file.gltf|glb>] [--decimate <tris>] [--roty <deg>] [--meta <meta.json>]
+// With --src the rig consumes a DOWNLOADED candidate (CC-BY): manifest gets the
+// download-ccby entry and assets-source/CREDITS.md the attribution line.
+const argv = process.argv.slice(2)
+const flag = (name) => {
+  const i = argv.indexOf(`--${name}`)
+  return i >= 0 ? argv[i + 1] : undefined
+}
+const ids = argv.filter((a, i) => !a.startsWith('--') && (i === 0 || !argv[i - 1].startsWith('--')))
+const SRC = flag('src')
+const DECIMATE = flag('decimate') ?? '0'
+const ROTY = flag('roty') ?? '0'
+const META = flag('meta')
 if (!ids.length) {
-  console.error('usage: node tools/blender/rig-all.mjs <device-id>…')
+  console.error('usage: node tools/blender/rig-all.mjs <device-id>… [--src f] [--decimate n] [--roty deg] [--meta meta.json]')
   process.exit(1)
 }
+if (SRC && ids.length !== 1) throw new Error('--src rigs exactly one device')
 
 for (const id of ids) {
   const device = catalog.devices.find((d) => d.id === id)
   if (!device) throw new Error(`unknown device ${id}`)
-  const placement = PLACEMENTS[id]
+  let placement = PLACEMENTS[id]
   if (!placement) {
-    console.log(`SKIP ${id} (no ports / no placement)`)
-    continue
+    if (!SRC) {
+      console.log(`SKIP ${id} (no ports / no placement)`)
+      continue
+    }
+    placement = {} // portless prop (stand/arm): model swap only, no empties
   }
   // Every catalog port must have a placement — the empties ARE the contract.
   const missing = device.ports.map((p) => p.portId).filter((p) => !placement[p])
   if (missing.length) throw new Error(`${id}: missing placements for ${missing.join(', ')}`)
 
-  const src = join(ROOT, 'public/assets', `${id}.glb`)
+  const dst = join(ROOT, 'public/assets', `${id}.glb`)
+  const src = SRC ?? dst
   const tmp = join(mkdtempSync(join(tmpdir(), 'rig-')), `${id}.glb`)
 
-  // 1. Blender: import + empties + export (headless, wiped scene).
+  // 1. Blender: import + (roty/decimate) + empties + export (headless, wiped scene).
   const out = execFileSync(
     BLENDER,
     ['--background', '--factory-startup', '--python', join(ROOT, 'tools/blender/rig_empties.py'), '--',
-      '--in', src, '--out', tmp, '--spec', JSON.stringify({ ports: placement })],
+      '--in', src, '--out', tmp, '--spec', JSON.stringify({ ports: placement }),
+      '--decimate', DECIMATE, '--roty', ROTY],
     { encoding: 'utf8' },
   )
   if (!out.includes('RIG_OK')) throw new Error(`${id}: blender rig failed\n${out.slice(-1500)}`)
@@ -176,26 +196,53 @@ for (const id of ids) {
   const expected = device.ports.map((p) => `port_${p.portId}`)
   const absent = expected.filter((e) => !portNodes.includes(e))
   if (absent.length) throw new Error(`${id}: empties lost on export: ${absent.join(', ')}`)
+  // Textures from downloaded models are often 2K PBR sets — resize to 1024 webp
+  // (budget: a device glb should stay under ~1 MB; procedural glbs have none).
+  await doc.transform(textureCompress({ encoder: sharp, targetFormat: 'webp', resize: [1024, 1024] }))
   doc.createExtension(KHRDracoMeshCompression).setRequired(true)
-  await io.write(src, doc) // replaces public/assets/<id>.glb in place
+  await io.write(dst, doc) // replaces public/assets/<id>.glb
 
-  // 3. Manifest entry (spec §License logging schema).
+  // 3. Manifest entry (spec §License logging schema) — CC-BY when --meta given.
+  const meta = META ? JSON.parse(readFileSync(META, 'utf8')) : null
+  const attribution = meta
+    ? `« ${meta.name} » par ${meta.author} (${meta.viewerUrl}) — ${meta.license} — modifié (rig port_*, échelle, optimisation)`
+    : ''
   const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'))
   const entry = manifest.assets.find((a) => a.id === id)
-  const patch = {
-    source: 'modeled',
-    sourceUrl: '',
-    author: 'TekPractice (procédural interne, Blender)',
-    license: 'internal (own work)',
-    attributionText: '',
-    trademark: 'generic',
-    portEmpties: expected.length,
-    riggedAt: new Date().toISOString().slice(0, 10),
-  }
+  const patch = meta
+    ? {
+        source: 'download-ccby',
+        sourceUrl: meta.viewerUrl,
+        author: meta.author,
+        license: meta.license,
+        attributionText: attribution,
+        trademark: 'branded-internal', // logos texture possibles — débranding = passe commerciale
+        portEmpties: expected.length,
+        riggedAt: new Date().toISOString().slice(0, 10),
+      }
+    : {
+        source: 'modeled',
+        sourceUrl: '',
+        author: 'TekPractice (procédural interne, Blender)',
+        license: 'internal (own work)',
+        attributionText: '',
+        trademark: 'generic',
+        portEmpties: expected.length,
+        riggedAt: new Date().toISOString().slice(0, 10),
+      }
   if (entry) Object.assign(entry, patch)
   else manifest.assets.push({ id, kind: 'device', status: 'ok', ...patch })
   writeFileSync(manifestPath, JSON.stringify(manifest, null, 2))
 
-  const kb = Math.round(statSync(src).size / 102.4) / 10
-  console.log(`RIGGED ${id}: ${expected.length} port empties, ${kb} KB`)
+  // 4. CREDITS.md (gitignored, source de vérité d'attribution).
+  if (meta) {
+    const creditsPath = join(ROOT, 'assets-source', 'CREDITS.md')
+    const line = `- ${id} — ${attribution}\n`
+    const credits = readFileSync(creditsPath, 'utf8')
+    if (!credits.includes(meta.viewerUrl) || !credits.includes(`- ${id} `))
+      writeFileSync(creditsPath, credits + line)
+  }
+
+  const kb = Math.round(statSync(dst).size / 102.4) / 10
+  console.log(`RIGGED ${id}: ${expected.length} port empties, ${kb} KB${meta ? ` — CC-BY: ${meta.author}` : ''}`)
 }

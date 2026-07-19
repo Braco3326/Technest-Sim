@@ -36,6 +36,33 @@ def main() -> None:
 
     bpy.ops.import_scene.gltf(filepath=src)
 
+    # Optional yaw fix for downloaded models whose I/O panel faces the wrong way
+    # (applied BEFORE bounds/empties so anchors follow).
+    import math
+
+    roty = float(args.get("roty", "0"))
+    if roty:
+        bpy.ops.object.select_all(action="SELECT")
+        for ob in bpy.data.objects:
+            if ob.parent is None:
+                ob.rotation_euler[2] += math.radians(roty)
+        bpy.ops.object.transform_apply(rotation=True)
+
+    # Optional decimation toward a total-triangle budget (spec: devices 800-4000).
+    target = int(args.get("decimate", "0"))
+    if target > 0:
+        total = sum(len(o.data.polygons) for o in bpy.data.objects if o.type == "MESH")
+        if total > target:
+            ratio = max(0.01, target / total)
+            for o in list(bpy.data.objects):
+                if o.type != "MESH" or len(o.data.polygons) < 8:
+                    continue
+                mod = o.modifiers.new("dec", "DECIMATE")
+                mod.ratio = ratio
+                bpy.context.view_layer.objects.active = o
+                bpy.ops.object.modifier_apply(modifier=mod.name)
+            print(f"DECIMATED {total} -> ~{target} tris (ratio {ratio:.3f})")
+
     # Combined world bounds of every imported mesh.
     import mathutils
 
@@ -66,6 +93,10 @@ def main() -> None:
             pos = (xg, lo.y - 0.012, lo.z + v * h)
         elif f == "bottom":
             pos = (xg, center.y + (v - 0.5) * d, lo.z - 0.006)
+        elif f == "+x":  # right end (e.g. XLR at the tail of a horizontal mic)
+            pos = (hi.x + 0.008, center.y + (u - 0.5) * d, lo.z + v * h)
+        elif f == "-x":  # left end
+            pos = (lo.x - 0.008, center.y + (u - 0.5) * d, lo.z + v * h)
         else:
             raise ValueError(f"unknown face {f}")
 
